@@ -652,7 +652,7 @@ function build() {
     ].filter(Boolean).join('\n');
 
     const page = shell
-      .replace('{{slot:title}}', () => esc(`${meta.title_zh} · 長讀癌症基因體學入門`))
+      .replace('{{slot:title}}', () => esc(`${meta.title_zh} · MRD 偵測方法知識庫`))
       .replace('{{slot:desc}}', () => esc(meta.sub || meta.title_zh))
       .replace('{{slot:wrapclass}}', () => dec.toc.length >= 3 ? '' : 'wrap--plain')
       .replace('{{slot:body}}', () => head + body)
@@ -842,7 +842,7 @@ function writeIndex(modules, shell) {
   const body =
     `<header class="mhead">` +
     `<p class="mhead__kicker">自學課程</p>` +
-    `<h1>長讀癌症基因體學 · 入門教材</h1>` +
+    `<h1>MRD 偵測方法知識庫</h1>` +
     `</header>` +
 
     /* ① 鉤子：先讓人知道這在解什麼問題，再談課程安排。
@@ -896,7 +896,7 @@ function writeIndex(modules, shell) {
     `</section>`;
 
   const page = shell
-    .replace('{{slot:title}}', () => '長讀癌症基因體學 · 入門教材')
+    .replace('{{slot:title}}', () => 'MRD 偵測方法知識庫')
     .replace('{{slot:desc}}', () => '供中正大學資工系黃耀廷實驗室新進成員自學的教材')
     .replace('{{slot:wrapclass}}', () => 'wrap--plain')
     .replace('{{slot:body}}', () => body)
@@ -967,14 +967,14 @@ function writePrintAll(modules, shell) {
   }
 
   const body =
-    `<header class="mhead"><h1>長讀癌症基因體學 · 入門教材</h1>` +
+    `<header class="mhead"><h1>MRD 偵測方法知識庫</h1>` +
     `<p class="mhead__sub">完整手冊（列印版）· 中正大學資工系黃耀廷實驗室</p>` +
     `<p class="note">本頁串接所有模組，可使用瀏覽器的列印功能另存為 PDF。` +
     `紙本版本會將互動元件改為靜態說明。</p></header>` +
     parts.join('\n<hr>\n');
 
   const page = shell
-    .replace('{{slot:title}}', () => '完整手冊（列印版）· 長讀癌症基因體學入門')
+    .replace('{{slot:title}}', () => '完整手冊（列印版）· MRD 偵測方法知識庫')
     .replace('{{slot:desc}}', () => '所有模組串接成單一頁面，供列印或存成 PDF')
     .replace('{{slot:wrapclass}}', () => 'wrap--plain')
     .replace('{{slot:body}}', () => body)
@@ -1015,7 +1015,7 @@ function writeGlossary(glo, modules, shell) {
     `<div class="glist">${items}</div>`;
 
   const page = shell
-    .replace('{{slot:title}}', () => '術語表 · 長讀癌症基因體學入門')
+    .replace('{{slot:title}}', () => '術語表 · MRD 偵測方法知識庫')
     .replace('{{slot:desc}}', () => '中英雙語術語表')
     .replace('{{slot:wrapclass}}', () => 'wrap--plain')
     .replace('{{slot:body}}', () => body)
