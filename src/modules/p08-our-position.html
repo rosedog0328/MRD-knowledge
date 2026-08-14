@@ -1,0 +1,291 @@
+<!--tw
+{
+  "objectives": [
+    "陳述本專案相對於文獻的結構性優勢與劣勢，並附可比較的數字",
+    "依唯一同平台的論文，校準本專案偵測極限的合理預期",
+    "列出可在現有資料上立即進行、且不需新增樣本的四項改進",
+    "就六個步驟各自提出建議選項，並說明其依據"
+  ]
+}
+-->
+
+<section data-part="why">
+<h2>為什麼重要</h2>
+
+<p class="prose">前七頁整理文獻，本頁把結論轉為本專案的具體判斷：
+<b>哪些做法我們能用、哪些用不了、合理的預期是什麼</b>。</p>
+
+<p class="prose">本頁的每一項判斷都可回溯至前面頁面的依據。
+與文獻整理不同，這一頁的內容<b>會隨本專案的實測結果而修正</b> ——
+它是目前的最佳判斷，不是定論。</p>
+</section>
+
+
+<section data-part="concept">
+<h2>本專案的位置</h2>
+
+<h3>結構性優勢</h3>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>優勢</th><th>本專案</th><th>文獻對照</th></tr></thead>
+<tbody>
+<tr>
+  <td><b>[[compendium]] 規模</b></td>
+  <td><b>35,603 個位點</b></td>
+  <td>[[NanoRCS]] 10–582 個；[[INVAR]] 10³；[[iDES]] 僅 30 個即達 0.0025%</td>
+</tr>
+<tr>
+  <td><b>無分子數天花板</b></td>
+  <td>[[in silico admixture|電腦模擬混合]]的細胞株</td>
+  <td>真實血漿僅 10³–10⁴ 個 [[genomic equivalents|基因組當量]]</td>
+</tr>
+<tr>
+  <td><b>[[read length advantage|讀長]]</b></td>
+  <td>數 kb</td>
+  <td>Illumina 150 bp —— 只能捕捉 48% 的 [[phased variant|PV]]</td>
+</tr>
+<tr>
+  <td>可任意重跑</td>
+  <td>模擬混合，replicate 成本低</td>
+  <td>濕實驗稀釋成本高、replicate 少</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h3>結構性劣勢</h3>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>劣勢</th><th>本專案</th><th>文獻對照</th></tr></thead>
+<tbody>
+<tr>
+  <td><b>錯誤率</b></td>
+  <td><b>約 6.7e-3（Q21）</b></td>
+  <td>NanoRCS 7.2e-4（Q31）；AccuScan 4.2e-7；[[Landau gen3|Landau 第三代]] 7.7e-7</td>
+</tr>
+<tr>
+  <td><b>獨立陰性個體</b></td>
+  <td><b>5 個</b></td>
+  <td>[[MRDetect]] 30；[[ichorCNA]] 27；[[iDES]] 12；[[NanoRCS]] 7</td>
+</tr>
+<tr>
+  <td><b>replicate 數</b></td>
+  <td><b>每 TF 3 個</b></td>
+  <td>MRDetect 11；Landau 第三代 <b>50</b></td>
+</tr>
+<tr>
+  <td>深度掃描</td>
+  <td>單一深度 25×</td>
+  <td>MRDetect 10–120×；Landau 第三代 70／40／20×</td>
+</tr>
+<tr>
+  <td>降噪手段</td>
+  <td>無 [[UMI]]、無 [[duplex sequencing|duplex]]、無 [[RCA]]</td>
+  <td>四類做法中三類不可用</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h3>期望值校準</h3>
+
+<div class="guardrail guardrail--warn">
+<p class="guardrail__hd">唯一同平台的論文，數字必須正視</p>
+<p class="prose">[[NanoRCS]] 是 28 篇中<b>唯一在 [[ONT simplex|ONT]] 平台上做 cfDNA 腫瘤偵測</b>的方法論文。
+它使用 [[RCA]] 共識（本專案沒有）把錯誤率改善 9.4 倍至 Q31，
+達到的偵測極限是 <b>TF 0.24%</b>。</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th></th><th>NanoRCS</th><th>本專案</th></tr></thead>
+<tbody>
+<tr><td>平台</td><td>ONT + RCA 共識建庫</td><td>ONT <b>標準 simplex</b></td></tr>
+<tr><td>錯誤率</td><td>7.2e-4（Q31）</td><td><b>約 6.7e-3（Q21）</b> —— 差 9.4 倍</td></tr>
+<tr><td>[[LLOD]]</td><td>TF 0.24%</td><td>目標 TF <b>0.01%</b> —— 低 24 倍</td></tr>
+<tr><td>[[compendium]]</td><td>10–582 個位點</td><td><b>35,603 個</b> —— 多兩個數量級</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="prose">亦即：<b>在錯誤率比我們好 9.4 倍的條件下，該方法只達到比我們的目標高 24 倍的偵測極限。</b></p>
+<p class="prose">緩衝因素有二：本專案的 compendium 大兩個數量級（廣度累加的效果強得多），
+且不受 [[genomic equivalents|基因組當量]]天花板限制。</p>
+<p class="prose"><b>這兩組因素能否相抵，是本專案的核心科學問題。</b>
+建議寫入研究日記作為期望值基準，而非在結果不如預期時才回頭解釋。</p>
+</div>
+</section>
+
+
+<section data-part="evidence">
+<h2>可立即進行的四項改進</h2>
+
+<p class="prose">以下四項<b>皆為純計算方法，不需新增樣本或改變建庫</b>，
+且在現有資料上即可執行。依優先序排列。</p>
+
+<h3>一 · 同分子多突變的盤點</h3>
+
+<p class="prose">測量現有比對檔中，有多少條 read 同時命中兩個以上的 [[compendium]] 位點。</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th></th><th>內容</th></tr></thead>
+<tbody>
+<tr><td>依據</td><td>[[PhasED-seq]]：2× [[phased variant|PV]] 背景 8.0e-7、3× 為 3.4e-8，且不需分子條碼</td></tr>
+<tr><td>為何優先</td><td>這是本專案<b>最可能做出方法學新意</b>的方向；
+    Illumina 受讀長限制只能捕捉 48% 的 PV，ONT 無此限制</td></tr>
+<tr><td>成本</td><td>不需新資料，現有 BAM 即可計算</td></tr>
+<tr><td><b>必須同時驗證</b></td>
+    <td><b>ONT 的錯誤是否獨立</b> —— homopolymer 與甲基化 [[trinucleotide context|context]]
+    造成的系統性錯誤可能在同一條 read 上相關聯，使「機率相乘」的前提失效</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>二 · 依 context 分層估背景錯誤率</h3>
+
+<p class="prose">逐位置、逐取代類型建立背景分布，而非使用單一的全域錯誤率。</p>
+
+<ul class="prose">
+<li><b>依據</b>：[[INVAR]] 實測顯示，最吵與最靜的 [[trinucleotide context|三核苷酸脈絡]]
+之間背景錯誤率差<b>逾兩個數量級</b>。</li>
+<li><b>本專案的等價問題</b>：ONT 在甲基化 [[CpG]] 位點的背景是否顯著高於全域？
+本專案的資料帶 5mCG 標籤，而 somatic 變異以 C→T 為大宗 ——
+若甲基化的 C 被系統性誤讀為 T，那會是<b>與真訊號同向</b>的偽陽性。</li>
+<li><b>參照</b>：[[AccuScan]] 即把 CpG 位點的 C→T <b>排除於錯誤率計算之外</b>。</li>
+<li>進一步可做 [[iDES]] 的[[background polishing|背景拋光]]，
+但該法需 12 個陰性訓練樣本，本專案僅有 5 個。</li>
+</ul>
+
+<h3>三 · 離群抑制與單分子準則</h3>
+
+<p class="prose">兩個獨立團隊得到的同一個洞見：低 TF 下真訊號應隨機散布，
+每個位點最多一條支持 read；<b>支持數偏多的位點反而可疑</b>。</p>
+
+<ul class="prose">
+<li>[[INVAR]] 的[[outlier suppression|離群抑制]]：對照訊號降約 3 倍，病人訊號保留 96.1%。
+<b>INVAR2 開源碼提供完整演算法與預設參數</b>（見 <a href="p01.html">p01</a>）。</li>
+<li>[[AccuScan]] 的[[single-molecule rule|單分子準則]]：低負荷時排除支持分子數 &gt;1 的位點。</li>
+<li>兩者皆不依賴任何平台特性。</li>
+</ul>
+
+<h3>四 · 改用不需陰性世代的門檻</h3>
+
+<p class="prose">本專案僅有 5 個獨立陰性個體，不足以支撐需要 12–30 個的門檻決定方式。
+兩條替代路徑皆有一線期刊先例：</p>
+
+<ul class="prose">
+<li><b>[[cross-patient control|跨個體陰性對照]]</b>（[[INVAR]]，Sci Transl Med）——
+本專案的 [[cross-sample normal|跨個體正常樣本]]即為此法的實作。</li>
+<li><b>[[nominal specificity|統計模型反推門檻]]</b>（[[AccuScan]]、[[iDES]]）——
+完全不需陰性樣本，背景由樣本自身量測。</li>
+</ul>
+
+<p class="prose">採用後者的附帶效益：原本綁在估參數上的陰性樣本得以釋出，
+可改派為測試集的陰性樣本，解決「[[specificity|特異度]]沒有乾淨分母」的問題。</p>
+</section>
+
+
+<section data-part="predict">
+<h2>六步的建議選項</h2>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>步驟</th><th>建議</th><th>依據</th></tr></thead>
+<tbody>
+<tr>
+  <td><b>① 追蹤標的</b></td>
+  <td>維持現行的 35,603 位點</td>
+  <td>規模是本專案的優勢；germline 移除為 11 篇的共同步驟。
+      可考慮加入 [[MRD-EDGE]] 的 caller-agnostic 把關（配對正常樣本有任何 ALT 支持即剔除）</td>
+</tr>
+<tr>
+  <td><b>② 驗證資料</b></td>
+  <td><b>補 replicate 數與深度掃描</b></td>
+  <td>MRDetect n=11、[[Landau gen3|Landau 第三代]] n=50 且掃 3 個深度；本專案目前 n=3、單一深度。
+      另可用 germline 差異當代理標的建立獨立驗證管道（[[AccuScan]] 作法）</td>
+</tr>
+<tr>
+  <td><b>③ read 層去噪</b></td>
+  <td><b>統計建模四項全做</b>，並評估 PV 可行性</td>
+  <td>化學路線本專案做不到；ML 路線缺 [[R1/R2 concordance|R1/R2]] 特徵。
+      統計建模是唯一完整可用的一類，而目前一項都還沒做</td>
+</tr>
+<tr>
+  <td><b>④ 樣本層分數</b></td>
+  <td>[[INVAR]] 式的[[likelihood ratio|廣義概似比]]，或 [[Lung-CLiP]] 式的樣本層分類器</td>
+  <td>兩者皆不需[[control cohort|對照世代]]估 μ/σ；
+      前者有開源實作，輸入僅需每位點的四個量</td>
+</tr>
+<tr>
+  <td><b>⑤ 門檻</b></td>
+  <td><b>統計模型反推</b>，保留跨個體樣本作驗證</td>
+  <td>5 個陰性個體不足以做 [[iDES]] 式的背景拋光訓練；
+      門檻須凍結後才跑測試集</td>
+</tr>
+<tr>
+  <td><b>⑥ 評估</b></td>
+  <td>獨立 [[held-out|保留測試集]] + 分 TF 分層 + 多工作點</td>
+  <td>[[Lung-CLiP]] 的切分紀律；[[CAPP-Seq]] 的分層報告；
+      [[ichorCNA]] 的 Clopper–Pearson 信賴區間（小 n 時必要）</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2>拆解過程推翻的五個判斷</h2>
+
+<p class="prose">以下是拆解<b>之前</b>的認知，拆完後證實有誤。
+若在專案的較早文件中讀到這些說法，以此處為準。</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>原本的認知</th><th>修正</th></tr></thead>
+<tbody>
+<tr><td>[[AccuScan]] 示範「純計算的單讀取錯誤校正」</td>
+    <td><b>錯</b> —— 它依賴 [[RCA]] [[concatemer|串聯體]]建庫（濕實驗）。標準 ONT 資料做不到</td></tr>
+<tr><td>[[MRDetect]] 的去噪在 ONT 上「需調整」</td>
+    <td><b>錯</b> —— 是<b>不可移植</b>：5 特徵砍掉 R1/R2、動搖 PIR，再失去 R1/R2 concordance 這道獨立過濾</td></tr>
+<tr><td>第三代 [[duplex sequencing|duplex]] 是最佳解，應跟進</td>
+    <td><b>錯</b> —— 作者自承 [[tumor-informed]] 情境下標準 WGS + 更高輸入量預期更好</td></tr>
+<tr><td>Phase 4 的 [[CNA]] 模組可在低 TF 提供訊號</td>
+    <td><b>錯</b> —— [[ichorCNA]] 與 [[NanoRCS]] 獨立佐證 TF &lt;3% 時 CNA 失效</td></tr>
+<tr><td>compendium 越大訊號越強</td>
+    <td><b>不完全對</b> —— [[INVAR]] 實測其 39% 的追蹤位點在血漿中從未被偵測到，
+    這些位點只會稀釋分母</td></tr>
+</tbody>
+</table>
+</div>
+
+{{guard:18 | 本頁的判斷會隨實測而修正}}
+<p class="prose">前七頁整理的是文獻事實，本頁是<b>基於這些事實的推論</b>。</p>
+<p class="prose">其中至少三項尚未經本專案實測驗證：
+ONT 的錯誤是否獨立（決定 PV 路線可行性）、
+甲基化 [[CpG]] 的背景是否顯著偏高、
+以及 compendium 中有多少比例的位點實際不帶訊號。</p>
+<p class="prose">這些問題的答案會改變上表的建議。
+<b>實測結果與本頁不一致時，以實測為準</b>，並更新本頁。</p>
+{{/guard}}
+</section>
+
+
+<section data-part="practice">
+<h2>下一步</h2>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>順序</th><th>工作</th><th>需要什麼</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><b>PV 盤點</b>：統計命中 ≥2 個 compendium 位點的 read 比例</td><td>現有 BAM</td></tr>
+<tr><td>2</td><td><b>ONT 錯誤獨立性檢驗</b>：同一條 read 上的錯誤是否相關</td><td>現有 BAM + 陰性樣本</td></tr>
+<tr><td>3</td><td><b>依 context 分層估背景</b>，特別檢查甲基化 CpG 的 C→T</td><td>現有資料 + MM/ML 標籤</td></tr>
+<tr><td>4</td><td>實作[[outlier suppression|離群抑制]]與[[single-molecule rule|單分子準則]]</td><td>INVAR2 開源碼可參照</td></tr>
+<tr><td>5</td><td>補 replicate 數與深度掃描</td><td>重跑混合流程</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="prose">前三項都是<b>量測</b>而非實作 —— 它們的結果決定後續的方法設計，
+因此應先於任何實作進行。</p>
+</section>

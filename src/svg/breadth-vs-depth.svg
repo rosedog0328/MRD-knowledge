@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 466">
+  <title>基因組當量的物理上限，使加深定序在低腫瘤分數時失效</title>
+  <desc>左半部說明問題：一毫升血漿只含約一千到一萬個基因組當量。
+        當腫瘤分數為十萬分之一時，某個特定位點上帶有突變的分子期望數遠小於一。
+        也就是說，那條分子很可能根本沒有被抽進樣本裡。
+        圖中以一排小圓代表被抽到的分子，其中沒有任何一個是腫瘤來源。
+        既然分子不存在於樣本中，無論把該位點定序到多深都不可能測到它。
+        右半部說明解法：改為同時觀察全基因體上數千個位點。
+        每個位點各自的偵測機率仍然極低，但只要有任何一個位點命中就算偵測到。
+        累積數千次獨立機會之後，整體偵測機率可以接近百分之百。
+        下方以偵測機率公式 p 等於一減去 e 的負 n d k 次方說明此關係，
+        其中 n 是基因組當量數、d 是偵測極限、k 是追蹤的位點數。
+        結論是廣度取代深度：增加位點數比增加深度有效得多。</desc>
+
+  <text class="ttl bold zh" x="20" y="34">為什麼「加深定序」在低腫瘤分數時沒有用</text>
+
+  <!-- ══ 左：問題 ══ -->
+  <rect class="box" x="20" y="58" width="450" height="320" rx="10"/>
+  <text class="anno bold zh" x="44" y="90">① 問題：分子數有物理上限</text>
+
+  <text class="tick zh" x="44" y="122">1 mL 血漿 ≈ 1,000–10,000 個基因組當量（GE）</text>
+  <text class="tick zh" x="44" y="144">若 TF = 10⁻⁵，某個位點上帶突變的分子期望數：</text>
+
+  <text class="anno mono bold mid somatic" x="245" y="180" style="font-size:22px">10,000 × 10⁻⁵ = 0.1 條</text>
+
+  <text class="tick zh" x="44" y="212">→ 十次抽樣裡，有九次那條分子根本不在樣本裡</text>
+
+  <!-- 分子示意 -->
+  <text class="tick zh" x="44" y="252">樣本中該位點被抽到的分子：</text>
+  <circle class="mark ref" cx="60" cy="284" r="11"/>
+  <circle class="mark ref" cx="90" cy="284" r="11"/>
+  <circle class="mark ref" cx="120" cy="284" r="11"/>
+  <circle class="mark ref" cx="150" cy="284" r="11"/>
+  <circle class="mark ref" cx="180" cy="284" r="11"/>
+  <circle class="mark ref" cx="210" cy="284" r="11"/>
+  <circle class="mark ref" cx="240" cy="284" r="11"/>
+  <circle class="mark ref" cx="270" cy="284" r="11"/>
+  <text class="tick zh" x="292" y="290">全是正常分子</text>
+
+  <text class="anno bold bad zh" x="44" y="330">定序到 100X、10,000X 都一樣測不到 —</text>
+  <text class="anno bold bad zh" x="44" y="354">因為那條分子不存在於樣本中。</text>
+
+  <!-- ══ 右：解法 ══ -->
+  <rect class="box" x="500" y="58" width="480" height="320" rx="10"/>
+  <text class="anno bold zh" x="524" y="90">② 解法：改用廣度</text>
+
+  <text class="tick zh" x="524" y="122">同時觀察全基因體上數千個位點。</text>
+  <text class="tick zh" x="524" y="144">每個位點各自機率仍極低，但只要任一命中即算偵測到。</text>
+
+  <!-- 多位點示意 -->
+  <text class="tick zh" x="524" y="182">位點 1</text>
+  <circle class="mark ref" cx="620" cy="176" r="9"/><circle class="mark ref" cx="646" cy="176" r="9"/>
+  <circle class="mark ref" cx="672" cy="176" r="9"/><circle class="mark ref" cx="698" cy="176" r="9"/>
+
+  <text class="tick zh" x="524" y="212">位點 2</text>
+  <circle class="mark ref" cx="620" cy="206" r="9"/><circle class="mark ref" cx="646" cy="206" r="9"/>
+  <circle class="mark ref" cx="672" cy="206" r="9"/><circle class="mark ref" cx="698" cy="206" r="9"/>
+
+  <text class="tick zh" x="524" y="242">位點 3</text>
+  <circle class="mark ref" cx="620" cy="236" r="9"/><circle class="mark somatic" cx="646" cy="236" r="9"/>
+  <circle class="mark ref" cx="672" cy="236" r="9"/><circle class="mark ref" cx="698" cy="236" r="9"/>
+  <text class="anno bold somatic zh" x="722" y="242">← 命中</text>
+
+  <text class="tick zh" x="524" y="272">⋮</text>
+  <text class="tick zh" x="524" y="298">位點 35,603</text>
+  <circle class="mark ref" cx="660" cy="292" r="9"/><circle class="mark ref" cx="686" cy="292" r="9"/>
+
+  <text class="anno bold ok zh" x="524" y="336">只要有一個位點命中，這份檢體就判為陽性。</text>
+  <text class="tick zh" x="524" y="360">數千次獨立機會累積，整體偵測機率可接近 100%。</text>
+
+  <!-- 公式 -->
+  <rect class="box plain" x="20" y="392" width="960" height="60" rx="8"/>
+  <text class="anno bold zh" x="44" y="418">偵測機率：</text>
+  <text class="anno mono bold accent" x="146" y="418" style="font-size:20px">p = 1 − e^(−n·d·k)</text>
+  <text class="tick zh" x="44" y="442">n＝基因組當量數　d＝偵測極限　k＝追蹤的位點數　→ 增加 k 比增加深度有效得多</text>
+</svg>

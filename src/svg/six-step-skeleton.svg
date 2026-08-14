@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 400">
+  <title>所有 MRD 偵測方法都要回答的六個問題</title>
+  <desc>由左至右六個步驟，構成本知識庫的組織骨架。
+        第一步是追蹤標的：要追蹤哪些位點或特徵，這份清單怎麼得到。
+        第二步是驗證資料：用什麼資料證明方法有效，通常是稀釋序列。
+        第三步是 read 層去噪：怎麼分辨真訊號與定序錯誤。
+        第四步是樣本層分數：把成千上萬個位點的觀測合成一個數字。
+        第五步是門檻：判定有癌的線畫在哪裡，由誰決定。
+        第六步是評估：怎麼證明結果沒有過度擬合。
+        圖下方標出第三步與第四步之間是本領域的分水嶺：
+        有些方法把力氣放在壓低錯誤率，有些放在更好的整合統計或分類器。
+        不論用突變、片段長度還是甲基化，不論全基因體還是標的定序，
+        都要回答同樣這六個問題，差別只在每一步選了哪個做法。</desc>
+
+  <text class="ttl bold zh" x="20" y="34">所有 MRD 偵測方法的六步共同骨架</text>
+  <text class="tick zh" x="20" y="60">不論用突變、片段長度還是甲基化，不論全基因體還是 panel，都要回答同樣六個問題</text>
+
+  <!-- 六個步驟方塊 -->
+  <g>
+    <rect class="box plain" x="20" y="88" width="148" height="118" rx="10"/>
+    <text class="lbl bold mid accent" x="94" y="120">①</text>
+    <text class="anno bold mid zh" x="94" y="150">追蹤標的</text>
+    <text class="tick mid zh" x="94" y="176">追蹤哪些位點？</text>
+    <text class="tick mid zh" x="94" y="194">清單怎麼來？</text>
+  </g>
+  <g>
+    <rect class="box plain" x="184" y="88" width="148" height="118" rx="10"/>
+    <text class="lbl bold mid accent" x="258" y="120">②</text>
+    <text class="anno bold mid zh" x="258" y="150">驗證資料</text>
+    <text class="tick mid zh" x="258" y="176">用什麼資料</text>
+    <text class="tick mid zh" x="258" y="194">證明它有效？</text>
+  </g>
+  <g>
+    <rect class="box" x="348" y="88" width="148" height="118" rx="10"/>
+    <text class="lbl bold mid accent" x="422" y="120">③</text>
+    <text class="anno bold mid zh" x="422" y="150">read 層去噪</text>
+    <text class="tick mid zh" x="422" y="176">怎麼分辨真訊號</text>
+    <text class="tick mid zh" x="422" y="194">與定序錯誤？</text>
+  </g>
+  <g>
+    <rect class="box" x="512" y="88" width="148" height="118" rx="10"/>
+    <text class="lbl bold mid accent" x="586" y="120">④</text>
+    <text class="anno bold mid zh" x="586" y="150">樣本層分數</text>
+    <text class="tick mid zh" x="586" y="176">幾千個位點</text>
+    <text class="tick mid zh" x="586" y="194">怎麼變一個數字？</text>
+  </g>
+  <g>
+    <rect class="box plain" x="676" y="88" width="148" height="118" rx="10"/>
+    <text class="lbl bold mid accent" x="750" y="120">⑤</text>
+    <text class="anno bold mid zh" x="750" y="150">門檻</text>
+    <text class="tick mid zh" x="750" y="176">線畫在哪？</text>
+    <text class="tick mid zh" x="750" y="194">誰決定的？</text>
+  </g>
+  <g>
+    <rect class="box plain" x="840" y="88" width="140" height="118" rx="10"/>
+    <text class="lbl bold mid accent" x="910" y="120">⑥</text>
+    <text class="anno bold mid zh" x="910" y="150">評估</text>
+    <text class="tick mid zh" x="910" y="176">怎麼證明沒有</text>
+    <text class="tick mid zh" x="910" y="194">過度擬合？</text>
+  </g>
+
+  <!-- 箭頭 -->
+  <path class="conn" d="M168 147 L184 147" marker-end="url(#a1)"/>
+  <path class="conn" d="M332 147 L348 147" marker-end="url(#a1)"/>
+  <path class="conn thick" d="M496 147 L512 147" marker-end="url(#a1)"/>
+  <path class="conn" d="M660 147 L676 147" marker-end="url(#a1)"/>
+  <path class="conn" d="M824 147 L840 147" marker-end="url(#a1)"/>
+  <defs>
+    <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path class="conn" d="M0 0 L10 5 L0 10 z"/>
+    </marker>
+  </defs>
+
+  <!-- 分水嶺標註 -->
+  <path class="guide" d="M504 76 L504 218"/>
+  <text class="anno bold accent zh" x="504" y="248" text-anchor="middle">↑ 本領域的分水嶺</text>
+
+  <rect class="box plain" x="140" y="266" width="330" height="104" rx="10"/>
+  <text class="anno bold zh" x="164" y="296">力氣放在 ③ 壓低錯誤率</text>
+  <text class="tick zh" x="164" y="322">iDES 的背景拋光、duplex 定序、</text>
+  <text class="tick zh" x="164" y="342">RCA 共識（AccuScan、NanoRCS）</text>
+
+  <rect class="box plain" x="530" y="266" width="330" height="104" rx="10"/>
+  <text class="anno bold zh" x="554" y="296">力氣放在 ④ 更好的整合</text>
+  <text class="tick zh" x="554" y="322">INVAR 的概似比、Lung-CLiP 的</text>
+  <text class="tick zh" x="554" y="342">樣本層分類器、Monte Carlo 估 TF</text>
+</svg>

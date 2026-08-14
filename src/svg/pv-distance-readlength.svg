@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 380">
+  <title>同相變異的間距分布，決定不同定序平台能捕捉多少比例</title>
+  <desc>橫軸是同一分子上兩個突變之間的間距，由左至右從二十個鹼基對遞增到數千個鹼基對。
+        上方一列標出兩個平台能涵蓋的範圍。
+        Illumina 的雙端讀取有效涵蓋約一百五十到三百個鹼基對，
+        依 PhasED-seq 的量測，其中間距小於八十個鹼基對者佔全部同相變異的百分之四十八，
+        且間距小於二十個鹼基對者的獨立深度幾乎等同樣本整體深度，
+        間距達八十個鹼基對者仍保有中位獨立深度的一半以上。
+        ONT 的讀取長度是數千個鹼基對，涵蓋範圍延伸到圖的最右端，
+        理論上能捕捉任意間距的組合，且不因間距增加而損失深度。
+        圖下方標出本專案應先做的測量：
+        在現有的比對檔上統計有多少條讀取同時命中兩個以上的變異清單位點，
+        這個數字決定這條路線是否值得投入，且不需要任何新資料。</desc>
+
+  <text class="ttl bold zh" x="20" y="34">PV 間距 × read 長度：ONT 的涵蓋範圍大好幾個數量級</text>
+
+  <!-- 座標軸 -->
+  <path class="axis" d="M80 250 L950 250"/>
+  <text class="tick mid zh" x="120" y="278">20 bp</text>
+  <text class="tick mid zh" x="260" y="278">80 bp</text>
+  <text class="tick mid zh" x="420" y="278">300 bp</text>
+  <text class="tick mid zh" x="620" y="278">1 kb</text>
+  <text class="tick mid zh" x="850" y="278">數 kb</text>
+  <path class="axis" d="M120 250 L120 258"/>
+  <path class="axis" d="M260 250 L260 258"/>
+  <path class="axis" d="M420 250 L420 258"/>
+  <path class="axis" d="M620 250 L620 258"/>
+  <path class="axis" d="M850 250 L850 258"/>
+  <text class="anno zh" x="500" y="308" text-anchor="middle">同一分子上兩個突變的間距 →</text>
+
+  <!-- Illumina 涵蓋 -->
+  <rect class="bar warn" x="80" y="96" width="345" height="34" rx="6"/>
+  <text class="anno bold mid zh" x="252" y="119">Illumina 2×150bp</text>
+  <text class="tick zh" x="440" y="119">涵蓋到此為止</text>
+
+  <!-- ONT 涵蓋 -->
+  <rect class="bar ok" x="80" y="150" width="870" height="34" rx="6"/>
+  <text class="anno bold mid zh" x="500" y="173">ONT 數 kb read —— 理論上任意間距都涵蓋，且不損失深度</text>
+
+  <!-- 分界線 -->
+  <path class="guide" d="M425 88 L425 250"/>
+
+  <!-- 標註 48% -->
+  <rect class="box plain" x="80" y="196" width="345" height="42" rx="6"/>
+  <text class="anno bold mid zh" x="252" y="224">48% 的 PV 落在這個區間</text>
+
+  <rect class="box plain" x="445" y="196" width="505" height="42" rx="6"/>
+  <text class="anno bold mid ok zh" x="697" y="224">另外 52% —— Illumina 捕捉不到，ONT 可以</text>
+
+  <!-- 深度保留度標註 -->
+  <text class="tick zh" x="80" y="72">獨立深度保留</text>
+  <text class="tick ok zh" x="212" y="72">&lt;20bp ≈ 100%</text>
+  <text class="tick warn zh" x="348" y="72">80bp ≈ 50%</text>
+
+  <!-- 行動 -->
+  <rect class="box" x="20" y="326" width="960" height="44" rx="8"/>
+  <text class="anno bold accent zh" x="44" y="354">下一步該做的測量：現有 BAM 中，有多少條 read 同時命中 ≥2 個 compendium 位點？（不需新資料）</text>
+</svg>

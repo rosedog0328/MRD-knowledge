@@ -1,0 +1,377 @@
+/* ============================================================================
+   layout.css — 頁面骨架、導覽、目錄
+   ============================================================================ */
+
+.site-header {
+  position: sticky; top: 0; z-index: 30;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: saturate(1.6) blur(10px);
+  border-bottom: 1px solid var(--rule);
+}
+.site-header__in {
+  max-width: 78rem; margin: 0 auto;
+  padding: .55rem var(--sp-5);
+  display: flex; align-items: center; gap: var(--sp-4);
+}
+.brand {
+  font-weight: 700; font-size: .95rem;
+  color: var(--ink); text-decoration: none;
+  white-space: nowrap;
+}
+.brand small { display: block; font-weight: 400; font-size: .74rem; color: var(--muted); }
+.site-header__spacer { flex: 1; }
+
+.hbtn {
+  font: inherit; font-size: .82rem;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: .25em .6em;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.hbtn:hover { background: var(--paper-sunken); color: var(--ink); }
+.hbtn[aria-pressed="true"] {
+  background: var(--accent); color: var(--accent-ink); border-color: var(--accent);
+}
+.hgroup { display: flex; gap: -1px; }
+.hgroup .hbtn { border-radius: 0; margin-left: -1px; }
+.hgroup .hbtn:first-child { border-radius: 6px 0 0 6px; margin-left: 0; }
+.hgroup .hbtn:last-child  { border-radius: 0 6px 6px 0; }
+
+/* --- 主體：內容 + 右側目錄 --------------------------------------------- */
+.wrap {
+  max-width: 78rem; margin: 0 auto;
+  padding: var(--sp-6) var(--sp-5) var(--sp-8);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 15rem;
+  gap: var(--sp-7);
+  align-items: start;
+}
+.wrap--plain { grid-template-columns: minmax(0, 1fr); }
+
+.main { min-width: 0; }
+
+.toc--sticky {
+  position: sticky; top: 4.2rem;
+  font-size: .82rem;
+  line-height: 1.6;
+  border-left: 2px solid var(--rule);
+  padding-left: var(--sp-4);
+  max-height: calc(100vh - 6rem);
+  overflow-y: auto;
+}
+.toc--sticky h2 {
+  font-size: .74rem; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--muted); margin: 0 0 .6em;
+}
+.toc--sticky ol { list-style: none; margin: 0; padding: 0; }
+.toc--sticky li { margin-bottom: .35em; }
+.toc--sticky li.lv3 { padding-left: .9em; font-size: .95em; }
+.toc--sticky li.lv4 { padding-left: 1.8em; font-size: .9em; }
+.toc--sticky a { color: var(--muted); text-decoration: none; }
+.toc--sticky a:hover { color: var(--accent); }
+.toc--sticky a[aria-current="true"] { color: var(--accent); font-weight: 600; }
+
+@media (max-width: 62rem) {
+  .wrap { grid-template-columns: minmax(0, 1fr); }
+  .toc--sticky { display: none; }
+}
+@media (max-width: 34rem) {
+  .wrap { padding: var(--sp-5) var(--sp-4) var(--sp-7); }
+  .site-header__in { padding: .5rem var(--sp-4); gap: var(--sp-2); }
+  .brand small { display: none; }
+}
+
+/* --- Module 頁首 -------------------------------------------------------- */
+.mhead { margin-bottom: var(--sp-6); }
+.mhead__kicker {
+  font-size: .8rem; color: var(--muted);
+  letter-spacing: .04em; text-transform: uppercase;
+  margin-bottom: .3em;
+}
+.mhead h1 { margin-bottom: .35em; }
+.mhead__sub { color: var(--muted); font-size: .95rem; margin-bottom: var(--sp-4); }
+.mhead__meta { display: flex; flex-wrap: wrap; gap: var(--sp-2); align-items: center; }
+
+.chip {
+  font-size: .76rem;
+  background: var(--paper-sunken);
+  border: 1px solid var(--rule);
+  border-radius: 100px;
+  padding: .2em .7em;
+  color: var(--muted);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.chip--accent { background: var(--term-bg); border-color: var(--accent); color: var(--accent); }
+a.chip:hover { border-color: var(--accent); color: var(--accent); }
+
+.objectives {
+  background: var(--paper-sunken);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  padding: var(--sp-4) var(--sp-5);
+  margin: var(--sp-5) 0 var(--sp-6);
+}
+.objectives h2 {
+  font-size: .82rem; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--muted); margin: 0 0 .5em;
+}
+.objectives ul { margin: 0; padding-inline-start: 1.2em; font-size: .93rem; }
+.objectives li { margin-bottom: .3em; }
+
+/* --- 五段式區塊標記 ----------------------------------------------------- */
+/* 目錄連到的是 h2/h3 的 id（不是 .part 的），所以 scroll-margin 一定要
+   下在標題上 —— 只給 .part 的話每次點目錄，標題都會剛好躲進 sticky
+   頁首底下，看起來像跳錯位置。 */
+.part { scroll-margin-top: 4.5rem; }
+.main h2[id], .main h3[id] { scroll-margin-top: 4.8rem; }
+.part > h2 { display: flex; align-items: baseline; gap: .55em; }
+.part > h2::before {
+  content: attr(data-num);
+  font-size: .72em;
+  font-weight: 700;
+  color: var(--accent-ink);
+  background: var(--accent);
+  border-radius: 100px;
+  min-width: 1.9em;
+  padding: .1em .5em;
+  text-align: center;
+  flex: none;
+}
+
+/* --- 上下篇導覽 --------------------------------------------------------- */
+.pager {
+  display: flex; gap: var(--sp-4);
+  margin-top: var(--sp-8);
+  padding-top: var(--sp-5);
+  border-top: 1px solid var(--rule);
+}
+.pager a {
+  flex: 1;
+  display: block;
+  padding: var(--sp-4);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: var(--ink);
+  font-size: .92rem;
+}
+.pager a:hover { border-color: var(--accent); background: var(--paper-sunken); }
+.pager small { display: block; color: var(--muted); font-size: .78rem; margin-bottom: .2em; }
+.pager .next { text-align: right; }
+@media (max-width: 40rem) { .pager { flex-direction: column; } .pager .next { text-align: left; } }
+
+.site-footer {
+  border-top: 1px solid var(--rule);
+  padding: var(--sp-5);
+  text-align: center;
+  color: var(--muted);
+  font-size: .82rem;
+}
+
+/* --- 首頁：鉤子、四個事實、起點 ---------------------------------------- */
+
+/* 鉤子：先讓人知道這在解什麼問題，再談課程安排 */
+.home-hook {
+  border-left: 4px solid var(--accent);
+  background: var(--term-bg);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: var(--sp-5) var(--sp-5) var(--sp-4);
+  margin: var(--sp-5) 0;
+  max-width: var(--measure);
+}
+.home-hook p { margin-bottom: .8em; }
+.home-hook > :last-child { margin-bottom: 0; }
+.home-hook__q {
+  font-size: 1.12rem;
+  font-weight: 600;
+  line-height: 1.7;
+  padding: .6em 0;
+  color: var(--ink);
+}
+
+/* 自學者最先想問的四件事 */
+.home-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--sp-3);
+  margin: var(--sp-5) 0 var(--sp-6);
+}
+.home-facts > div {
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--paper-raised);
+}
+.home-facts dt {
+  font-size: .76rem;
+  letter-spacing: .04em;
+  color: var(--muted);
+  margin-bottom: .3em;
+}
+.home-facts dd {
+  margin: 0;
+  font-size: .92rem;
+  line-height: 1.6;
+}
+
+/* 明確的起點：不要讓人在 15 張卡片裡自己猜 */
+.home-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  align-items: center;
+  margin: var(--sp-6) 0 var(--sp-5);
+}
+.btn--big {
+  font-size: 1.02rem;
+  font-weight: 600;
+  padding: .7em 1.5em;
+  border-radius: var(--radius);
+  text-decoration: none;
+  display: inline-block;
+}
+.btn--big:hover { text-decoration: none; }
+
+/* --- 首頁模組卡 --------------------------------------------------------- */
+.mgroup { margin-top: var(--sp-6); }
+.mgroup > h2 {
+  font-size: .8rem; text-transform: uppercase; letter-spacing: .08em;
+  color: var(--muted); margin: 0 0 var(--sp-3);
+  padding-bottom: .4em; border-bottom: 1px solid var(--rule);
+}
+/* --- 研究指引：課程之外的區塊 -------------------------------------------
+   為什麼要跟課程 group 長得不一樣：前面五個 group 是同一條路徑上的段落，
+   研究指引不是 —— 它不計時數、沒有學習檢核、語體也不同。
+   如果它跟「基礎／工具／核心」用同一套樣式，捲到這裡的人會以為課程還沒完。
+   所以整段沉一階、上緣用虛線（跟首頁路徑圖第六格的虛線框同一個語彙）。 */
+.mgroup--research {
+  margin-top: var(--sp-7);
+  padding: var(--sp-5) var(--sp-4) var(--sp-4);
+  border-top: 2px dashed var(--rule);
+  background: var(--paper-sunken);
+  border-radius: 12px;
+}
+.mgroup--research > h2 { border-bottom: none; padding-bottom: 0; }
+.mgroup__intro {
+  margin: 0 0 var(--sp-5);
+  font-size: .88rem; line-height: 1.85; color: var(--muted);
+  max-width: 46rem;
+}
+
+/* 一個主題自成一塊。兩個主題並列之後才看得出來的問題：卡片編號是
+   「上／中／下」，捲下來會讀到 上 中 下 上 下，兩個「上」相鄰而卡片上
+   沒有任何東西指出它們分屬不同主題。把每個主題包成一塊，編號就只在
+   塊內被讀，不會跨主題連起來。 */
+.topic + .topic { margin-top: var(--sp-5); padding-top: var(--sp-5); border-top: 1px solid var(--rule); }
+.topic__name {
+  font-size: 1.02rem; font-weight: 700; color: var(--ink);
+  margin: 0 0 var(--sp-2);
+}
+.topic__sub {
+  margin: 0 0 var(--sp-3);
+  font-size: .87rem; line-height: 1.8; color: var(--muted);
+  max-width: 46rem;
+}
+.topic__meta {
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: .5rem var(--sp-3);
+  margin: 0 0 var(--sp-3);
+  font-size: .76rem; color: var(--muted);
+}
+.topic__pre { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .35rem; }
+.topic__count::before { content: "◇"; margin-inline-end: .4em; }
+
+/* 窄螢幕把左右內距收掉：卡片本身已經有內距，再套一層會讓 19rem 的
+   grid 欄位被擠到換行。上下內距與虛線上緣保留，那才是「這裡換了一種東西」
+   的訊號。 */
+@media (max-width: 34rem) {
+  .mgroup--research {
+    padding-inline: 0;
+    border-radius: 0;
+    background: none;
+    padding-block: var(--sp-4) 0;
+  }
+}
+
+.mgrid {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; gap: var(--sp-3);
+  grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
+}
+.mcard { margin: 0; }
+.mcard > a {
+  display: flex; align-items: flex-start; gap: var(--sp-3);
+  height: 100%;
+  padding: var(--sp-4);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  text-decoration: none; color: var(--ink);
+  background: var(--paper-raised);
+  transition: border-color .12s, transform .12s;
+}
+.mcard > a:hover { border-color: var(--accent); transform: translateY(-1px); }
+.mcard__num {
+  flex: none;
+  min-width: 1.9rem; height: 1.9rem;
+  display: grid; place-items: center;
+  border-radius: 8px;
+  background: var(--paper-sunken);
+  border: 1px solid var(--rule);
+  font-family: var(--font-mono); font-weight: 700; font-size: .85rem;
+  color: var(--muted);
+}
+.mcard__body { flex: 1; min-width: 0; display: block; }
+.mcard__body b { display: block; font-size: .98rem; line-height: 1.5; }
+.mcard__body i {
+  display: block; font-style: normal; font-size: .76rem;
+  color: var(--muted); font-family: var(--font-latin); margin-top: .05em;
+}
+/* 卡片顯示的是「這個模組回答什麼問題」，不是術語清單 */
+.mcard__q {
+  display: block; font-size: .84rem; color: var(--muted);
+  line-height: 1.65; margin-top: .4em;
+}
+.mcard__time {
+  display: inline-block; margin-top: .5em;
+  font-size: .74rem; color: var(--muted);
+  border: 1px solid var(--rule); border-radius: 100px;
+  padding: .1em .6em;
+}
+.mcard__state { flex: none; margin-top: .1em; }
+
+/* 首頁卡片的進度環（JS 用 innerHTML 拼出來，見 index-page.js）。
+   顏色放在這裡而不是寫成 presentation attribute，理由跟 diagram.css
+   一樣：改一次 token，深淺色主題同步跟上。 */
+.ring { display: block; }
+.ring__track { fill: none; stroke: var(--rule); stroke-width: 3; }
+.ring__arc   { fill: none; stroke: var(--accent); stroke-width: 3; stroke-linecap: round; }
+.ring__tick  { fill: none; stroke: var(--ok); stroke-width: 2.2;
+               stroke-linecap: round; stroke-linejoin: round; }
+
+/* --- 詞彙表 ------------------------------------------------------------- */
+.glist { display: grid; gap: var(--sp-4); }
+.gitem {
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: var(--sp-4) var(--sp-5);
+  scroll-margin-top: 5rem;
+}
+.gitem > h2 {
+  margin: 0 0 .35em;
+  font-size: 1.05rem;
+  font-family: var(--font-latin);
+}
+.gitem > h2 small { font-weight: 400; color: var(--muted); font-size: .82rem; }
+.gitem__aka, .gitem__mods, .gitem__see {
+  font-size: .82rem; color: var(--muted);
+  margin: .5em 0 0;
+  display: flex; flex-wrap: wrap; gap: .3em; align-items: center;
+}
+.gitem .term__def { font-size: .95rem; }
+
+.import-panel { border-left-color: var(--accent); }

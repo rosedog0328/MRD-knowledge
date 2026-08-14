@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620">
+  <title>這份知識庫在做什麼</title>
+  <desc>由上而下三層。第一層是輸入：十一篇 MRD 偵測方法論文，
+        各自來自不同實驗室、不同年份、不同定序平台，
+        用詞、量測單位與報告方式互不一致，直接並排閱讀難以比較。
+        第二層是處理方式：把每一篇拆進同一組欄位，也就是六步共同骨架，
+        每一步記錄該方法的可實作規格、達到的數字、作者自承的限制，
+        以及本專案對能否移植到 ONT 平台的判斷。
+        第三層是輸出：一張十一篇乘以六步的矩陣，共六十六格規格。
+        由此可以直接看出每一步有哪些做法可選、各自的代價是什麼，
+        成為本專案設計自己方法時的選單。
+        同一批拆解結果同時以網頁提供給人閱讀，以結構化 JSON 提供給 AI agent 讀取。</desc>
+
+  <!-- ── 第一層：輸入 ── -->
+  <text class="lbl bold zh" x="20" y="34">① 輸入：11 篇 MRD 偵測方法論文</text>
+  <text class="tick zh" x="20" y="58">不同實驗室、不同年份、不同平台 —— 用詞與報告方式互不一致</text>
+
+  <g>
+    <rect class="box plain" x="24" y="76" width="126" height="62" rx="8"/>
+    <text class="anno bold mid zh" x="87" y="103">MRDetect</text>
+    <text class="tick mid zh" x="87" y="124">2020 · WGS</text>
+
+    <rect class="box plain" x="164" y="76" width="126" height="62" rx="8"/>
+    <text class="anno bold mid zh" x="227" y="103">CAPP-Seq</text>
+    <text class="tick mid zh" x="227" y="124">2014 · panel</text>
+
+    <rect class="box plain" x="304" y="76" width="126" height="62" rx="8"/>
+    <text class="anno bold mid zh" x="367" y="103">iDES</text>
+    <text class="tick mid zh" x="367" y="124">2016 · 背景拋光</text>
+
+    <rect class="box plain" x="444" y="76" width="126" height="62" rx="8"/>
+    <text class="anno bold mid zh" x="507" y="103">INVAR</text>
+    <text class="tick mid zh" x="507" y="124">2020 · 統計整合</text>
+
+    <rect class="box plain" x="584" y="76" width="126" height="62" rx="8"/>
+    <text class="anno bold mid zh" x="647" y="103">PhasED-seq</text>
+    <text class="tick mid zh" x="647" y="124">2021 · 同分子</text>
+
+    <rect class="box plain" x="724" y="76" width="126" height="62" rx="8"/>
+    <text class="anno bold mid zh" x="787" y="103">NanoRCS</text>
+    <text class="tick mid zh" x="787" y="124">2025 · ONT</text>
+
+    <rect class="box plain" x="864" y="76" width="112" height="62" rx="8"/>
+    <text class="anno bold mid zh" x="920" y="103">⋯</text>
+    <text class="tick mid zh" x="920" y="124">另 5 篇</text>
+  </g>
+
+  <path class="conn thick" d="M500 152 L500 176" marker-end="url(#kb-arrow)"/>
+  <defs>
+    <marker id="kb-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path class="conn" d="M0 0 L10 5 L0 10 z"/>
+    </marker>
+  </defs>
+
+  <!-- ── 第二層：處理 ── -->
+  <rect class="box" x="24" y="188" width="952" height="196" rx="10"/>
+  <text class="lbl bold zh" x="48" y="220">② 拆進同一組欄位：六步共同骨架</text>
+  <text class="tick zh" x="48" y="244">每一篇的每一步，都記錄下面四件事</text>
+
+  <g>
+    <rect class="box plain" x="48" y="262" width="216" height="100" rx="8"/>
+    <text class="anno bold mid zh" x="156" y="290">可實作規格</text>
+    <text class="tick mid zh" x="156" y="314">超參數、訓練資料</text>
+    <text class="tick mid zh" x="156" y="334">怎麼來、演算法</text>
+    <text class="tick mid zh" x="156" y="354">← 取自論文</text>
+
+    <rect class="box plain" x="280" y="262" width="216" height="100" rx="8"/>
+    <text class="anno bold mid zh" x="388" y="290">達到的數字</text>
+    <text class="tick mid zh" x="388" y="314">錯誤率、偵測極限</text>
+    <text class="tick mid zh" x="388" y="334">敏感度、特異度</text>
+    <text class="tick mid zh" x="388" y="354">← 取自論文</text>
+
+    <rect class="box plain" x="512" y="262" width="216" height="100" rx="8"/>
+    <text class="anno bold mid zh" x="620" y="290">作者自承的限制</text>
+    <text class="tick mid zh" x="620" y="314">他們自己說</text>
+    <text class="tick mid zh" x="620" y="334">哪裡不行</text>
+    <text class="tick mid zh" x="620" y="354">← 取自論文</text>
+
+    <rect class="box plain" x="744" y="262" width="208" height="100" rx="8"/>
+    <text class="anno bold mid accent zh" x="848" y="290">能否移植到 ONT</text>
+    <text class="tick mid zh" x="848" y="314">可移植／需調整／</text>
+    <text class="tick mid zh" x="848" y="334">不可移植</text>
+    <text class="tick mid warn zh" x="848" y="354">← 本專案的判斷</text>
+  </g>
+
+  <path class="conn thick" d="M500 396 L500 420" marker-end="url(#kb-arrow)"/>
+
+  <!-- ── 第三層：輸出 ── -->
+  <text class="lbl bold zh" x="20" y="452">③ 輸出：11 篇 × 6 步 ＝ 66 格規格</text>
+
+  <rect class="box" x="24" y="470" width="608" height="130" rx="10"/>
+  <text class="anno bold zh" x="48" y="500">一張可比較的矩陣</text>
+  <text class="tick zh" x="48" y="526">每一步有哪些做法可選、各自的代價是什麼 ——</text>
+  <text class="tick zh" x="48" y="548">這就是本專案設計自己方法時的選單。</text>
+  <text class="tick zh" x="48" y="578">同一步的做法數：③ 去噪有 7 種、④ 分數有 8 種、⑤ 門檻有 6 種</text>
+
+  <rect class="box plain" x="652" y="470" width="324" height="130" rx="10"/>
+  <text class="anno bold zh" x="676" y="500">兩種讀法，同一份來源</text>
+  <text class="tick zh" x="676" y="526">人 → 本網站（含圖與術語 tooltip）</text>
+  <text class="tick zh" x="676" y="548">AI agent → 結構化 JSON</text>
+  <text class="tick zh" x="676" y="578">內容相同，不會分歧</text>
+</svg>

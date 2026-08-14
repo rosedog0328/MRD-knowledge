@@ -1,0 +1,254 @@
+<!--tw
+{
+  "objectives": [
+    "區分八種把多位點觀測聚合成單一分數的統計方法，並說明各自的輸入需求",
+    "指出哪些方法需要陰性樣本世代、哪些不需要",
+    "說明六種門檻決定方式，以及在陰性樣本稀缺時可用的兩條路徑",
+    "依 INVAR2 開源實作，陳述廣義概似比檢定的完整計算流程"
+  ]
+}
+-->
+
+<section data-part="why">
+<h2>為什麼重要</h2>
+
+<p class="prose">前一步處理的是單一觀測的可信度，這一步處理的是<b>如何把成千上萬個
+弱觀測合成一個判定</b>。</p>
+
+<p class="prose">這兩步對本專案特別關鍵，原因是[[control cohort|陰性樣本]]稀缺：
+本專案只有 5 個獨立陰性個體，
+而文獻中的方法動輒需要 12 至 30 個。
+本頁的核心問題是：<b>有沒有不需要陰性樣本世代的路徑</b>。</p>
+
+<p class="prose">答案是有，而且有兩條，各有一線期刊的先例。</p>
+</section>
+
+
+<section data-part="concept">
+<h2>④ 樣本層分數：八種做法</h2>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>做法</th><th>方法</th><th>輸出</th><th>需要陰性世代？</th></tr></thead>
+<tbody>
+<tr><td>[[detection rate|偵測率]] → [[Z-score]]</td><td>[[MRDetect]]、[[MRD-EDGE]]</td>
+    <td>標準化分數</td><td><b>是</b>（估 μ、σ）</td></tr>
+<tr><td><b>[[detection probability model|Poisson／幾何模型]]</b></td><td>[[iDES]]、[[PhasED-seq]]</td>
+    <td>偵測機率</td><td>否</td></tr>
+<tr><td><b>依 variant type 分層的二項式對數概似</b></td><td>[[AccuScan]]</td>
+    <td>對數概似</td><td><b>否</b>（背景由樣本自身量測）</td></tr>
+<tr><td><b>[[likelihood ratio|廣義概似比]]</b></td><td>[[INVAR]]</td>
+    <td>LR 與 [[IMAF]]</td><td>否</td></tr>
+<tr><td><b>[[Monte Carlo]] 模擬</b></td><td>[[NanoRCS]]</td>
+    <td>最可能的 TF</td><td>否</td></tr>
+<tr><td><b>[[HMM]] + Student's t + [[EM algorithm|EM]]</b></td><td>[[ichorCNA]]</td>
+    <td>CNA 片段 + TF</td><td>是（27 個健康捐贈者參考集）</td></tr>
+<tr><td><b>樣本層級 ML 分類器</b></td><td>[[Lung-CLiP]]</td>
+    <td>0–1 機率</td><td>是（訓練集）</td></tr>
+<tr><td>[[Stouffer's method|Stouffer 合併]]</td><td>[[MRD-EDGE]]</td>
+    <td>合併多個獨立 Z</td><td>是</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="guardrail guardrail--info">
+<p class="guardrail__hd">共同點與關鍵分歧</p>
+<p class="prose"><b>共同點</b>：八種做法全部都在做同一件事 ——
+把 N 個弱觀測合成一個數。差別只在使用哪個機率模型。</p>
+<p class="prose"><b>關鍵分歧</b>：只有 [[MRDetect]] 世系需要
+[[control cohort|對照世代]]來估 [[Z-score]] 的 μ 與 σ。
+其餘做法或用統計模型直接推導，或由樣本自身量測背景 ——
+<b>不消耗稀缺的陰性樣本</b>。</p>
+</div>
+
+<h3>本專案已否決 Z-score 路線</h3>
+
+<p class="prose">本專案於 2026-08-08 將 [[Z-score]] 降級為選項之一，理由有三：
+常態假設從未檢定；它把稀缺的陰性樣本綁去估參數，
+導致測試集沒有乾淨的陰性樣本可算 [[specificity|特異度]]；
+且它只用到一個純量，丟棄其他可用的檢體層級資訊。</p>
+
+<p class="prose">因此本頁其餘七種做法都是實際的候選，而非僅供參考。</p>
+</section>
+
+
+<section data-part="evidence">
+<h2>兩個最完整的替代方案</h2>
+
+<h3>其一：iDES 的偵測機率模型</h3>
+
+<p class="prose">最簡潔的一種。三個參數皆為本專案已知或可量測的量。</p>
+
+{{eq}}
+p = 1 − e^{−n·d·k}
+{{note}}
+{{m: n}} 為基因組當量數、{{m: d}} 為偵測極限、{{m: k}} 為追蹤位點數。
+可解任一參數 —— 例如給定 {{m: k = 35{,}603}} 與目標 {{m: p}}，反推所需的 {{m: d}}。
+{{/eq}}
+
+<p class="prose">[[iDES]] 以此建立 read support 門檻，
+不需要任何陰性樣本；其代價是模型較粗，
+未區分不同位點的背景差異。</p>
+
+<h3>其二：INVAR 的廣義概似比檢定</h3>
+
+<p class="prose">較完整的一種，且<b>有開源實作可直接對照</b>。
+論文僅稱「INVAR likelihood ratio」，
+以下取自 INVAR2 原始碼（<code>R/shared/detectionFunctions.R</code>）。</p>
+
+<p class="prose">對數概似函數：令 {{m: M}} 為某位點的 mutant read 數、{{m: R}} 為深度、
+{{m: AF}} 為該位點在腫瘤中的 [[VAF]]、{{m: e}} 為背景錯誤率、{{m: p}} 為樣本的 ctDNA 水準，</p>
+
+{{eq}}
+q = AF·(1−e)·p + (1−AF)·e·p + e·(1−p)
+{{note}}
+{{m: q}} 是在給定 {{m: p}} 下，該位點觀測到 mutant read 的機率 ——
+三項分別對應「真訊號被正確讀出」「真訊號被讀錯」「野生型被讀錯」。
+{{/eq}}
+
+{{eq}}
+\log L = \frac{1}{n} \sum ( \text{lchoose}(R, M) + M · \log q + (R − M) · \log (1 − q) )
+{{note}}
+{{m: n}} 為位點數；{{m: \text{lchoose}(R,M)}} 即 R 取 M 的二項式係數取對數。
+原始碼中此式除以 {{m: \text{length}(R)}}，即對位點數取平均。
+{{/eq}}
+
+<p class="prose">樣本的 ctDNA 水準 {{m: p}} 以 EM 演算法估計：</p>
+
+{{cli}}
+# estimate_p_EM(M, R, AF, e, initial_p = 0.01, iterations = 200)
+g = AF*(1-e) + (1-AF)*e
+
+for (i in 1:200) {
+  # E 步
+  Z_0 <- (1-g)*p / ((1-g)*p + (1-e)*(1-p))
+  Z_1 <- g*p     / (g*p     + e*(1-p))
+  # M 步
+  p <- sum(M*Z_1 + (R-M)*Z_0) / sum(R)
+}
+{{/cli}}
+
+<p class="prose">最後取虛無假設與最大概似估計之差：</p>
+
+{{eq}}
+LR = \log L(p = \hat{p}_{MLE}) − \log L(p = 0)
+{{note}}
+虛無假設為 {{m: p = 0}}（樣本不含 ctDNA）。
+{{m: LR}} 越大，「含 ctDNA」的解釋越優於「不含」。
+{{/eq}}
+
+<div class="guardrail guardrail--info">
+<p class="guardrail__hd">為什麼這個方案對本專案特別合適</p>
+<ul class="prose">
+<li><b>不需要對照世代</b>估 μ、σ —— 繞開陰性樣本稀缺的困境。</li>
+<li>輸入只需要每個位點的四個量：{{m: M}}、{{m: R}}、{{m: AF}}、{{m: e}}，全部是本專案已有或可算的。</li>
+<li>有開源實作可比對，不必從論文文字重建。</li>
+<li>⚠️ 原始碼另有 <code>*_with_RL</code> 版本，把片段長度分布納入概似式 ——
+<b>該版本對細胞株 gDNA 不適用</b>，應使用無片段長度的版本。</li>
+</ul>
+</div>
+</section>
+
+
+<section data-part="predict">
+<h2>⑤ 門檻：六種決定方式</h2>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>方式</th><th>方法</th><th>需要幾個陰性樣本</th></tr></thead>
+<tbody>
+<tr><td>對照世代的 [[Z-score]]（spec 95%）</td><td>[[MRDetect]]、[[MRD-EDGE]]</td><td><b>30</b></td></tr>
+<tr><td>健康捐贈者參考集</td><td>[[ichorCNA]]</td><td><b>27</b></td></tr>
+<tr><td>[[background polishing|背景拋光]]的訓練世代</td><td>[[iDES]]</td><td><b>12</b></td></tr>
+<tr><td>與健康對照背景比（Fisher's exact）</td><td>[[NanoRCS]]</td><td>7</td></tr>
+<tr><td><b>[[cross-patient control|跨病人陰性對照]] + ROC</b></td><td><b>[[INVAR]]</b></td>
+    <td><b>0 個專用</b>（用其他病人的樣本）</td></tr>
+<tr><td><b>[[nominal specificity|統計模型設定名目特異度]]</b></td><td><b>[[AccuScan]]</b>、[[iDES]]</td>
+    <td><b>0</b></td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>陰性樣本稀缺的兩條解法</h3>
+
+<p class="prose">本專案僅有 5 個獨立陰性個體（4 個 UCSC normal 加 held-out 的 COLO829BL），
+不足以支撐前四種方式。但最後兩種不受此限：</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>解法</th><th>作法</th><th>先例</th></tr></thead>
+<tbody>
+<tr>
+  <td><b>用其他個體的樣本當陰性對照</b></td>
+  <td>把 A 的變異清單套到 B 的樣本上 —— 任兩個個體的 somatic 變異幾乎不重疊，故 B 自然是 A 的陰性對照</td>
+  <td>[[INVAR]]（Sci Transl Med）：要求 [[specificity|特異度]] ≥90%，實測中位 95%<br>[[MRD-EDGE]] 亦採此法</td>
+</tr>
+<tr>
+  <td><b>完全不用陰性樣本</b></td>
+  <td>設定 [[nominal specificity|名目特異度]]（如 99%），由背景錯誤模型直接反推門檻</td>
+  <td>[[AccuScan]]：背景由樣本自身量測；實測特異度 ≥99%</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<p class="prose">本專案現行的 [[cross-sample normal|跨個體正常樣本]]即是第一條解法的實作，
+與 INVAR 的 [[cross-patient control]] 概念相同。</p>
+
+{{guard:10 | INVAR 作者自承：逐 cohort 定門檻不是長久之計}}
+<p class="prose">INVAR 在 Discussion 中寫道，其效能是以
+「ROC analysis <b>across individual cohorts</b>」評估的，
+但「when applied at scale, it would be <b>desirable to set a fixed
+specificity threshold</b>」。</p>
+<p class="prose">換言之，作者自己認為逐世代重新畫 ROC 定門檻只是權宜之計，
+規模化時應改為<b>固定特異度門檻</b>。</p>
+<p class="prose">這正對應本專案的要求：門檻只能用訓練／驗證樣本決定，
+決定後<b>凍結並寫入報告</b>，再跑測試集。</p>
+{{/guard}}
+
+{{guard:11 | 提供過任何擬合量的樣本，不得再充當測試集的陰性樣本}}
+<p class="prose">凡是從資料學出來的量都算擬合，不只是模型權重 ——
+還包括<b>判定門檻</b>、標準化參數、以及（若沿用 Z-score）μ 與 σ。</p>
+<p class="prose">用來提供這些量的陰性樣本，若又拿去算 [[specificity|特異度]]，
+等於用訓練資料證明自己不會誤判。</p>
+<p class="prose">這條紀律與論文無關，不因換掉 Z-score 而消失。
+但<b>哪些樣本拿去擬合是自由的設計選擇</b> ——
+若改用不需陰性樣本的門檻（上表最後兩種），
+原本綁在估參數上的樣本即可釋出，改派為測試集的陰性樣本。</p>
+{{/guard}}
+
+<h3>Lung-CLiP 的多工作點報告法</h3>
+
+<p class="prose">[[Lung-CLiP]] 沒有只報一個門檻，而是<b>依臨床用途報告兩個工作點</b>：</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>工作點</th><th>用途</th><th>stage I</th><th>stage II</th><th>stage III</th></tr></thead>
+<tbody>
+<tr><td><b>98% [[specificity|特異度]]</b></td><td>獨立篩檢工具，須最小化偽陽性</td><td>41%</td><td>54%</td><td>67%</td></tr>
+<tr><td><b>80% 特異度</b></td><td>影像檢查前的初篩，偽陽性可接受</td><td>63%</td><td>69%</td><td>75%</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="prose">此作法比只挑一個最漂亮的數字誠實，
+且明確把門檻的選擇與<b>使用情境</b>綁定。值得本專案沿用。</p>
+</section>
+
+
+<section data-part="practice">
+<h2>小結</h2>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>觀察</th><th>依據</th></tr></thead>
+<tbody>
+<tr><td>八種聚合方法都在做同一件事，差別只在機率模型</td><td>11 篇 s4</td></tr>
+<tr><td><b>只有 MRDetect 世系需要對照世代估 μ/σ</b></td><td>各篇 s4</td></tr>
+<tr><td>陰性樣本稀缺有兩條解法，皆有一線期刊先例</td><td>INVAR s5、AccuScan s5</td></tr>
+<tr><td>INVAR 的 GLRT 有開源實作，輸入僅需四個量</td><td>INVAR2 <code>detectionFunctions.R</code></td></tr>
+<tr><td>門檻應與使用情境綁定，並報告多個工作點</td><td>Lung-CLiP s5</td></tr>
+</tbody>
+</table>
+</div>
+</section>

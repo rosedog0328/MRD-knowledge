@@ -1,0 +1,238 @@
+<!--tw
+{
+  "objectives": [
+    "區分五種定義追蹤標的的方式，並說明位點數與每位點深度之間的取捨",
+    "指出 11 篇方法在建立標的清單時的唯一共同步驟",
+    "比較三種驗證資料的設計，並說明各自能與不能支持什麼結論",
+    "就 replicate 數與深度掃描點數，評估本專案驗證設計的缺口"
+  ]
+}
+-->
+
+<section data-part="why">
+<h2>為什麼重要</h2>
+
+<p class="prose">前兩步決定了後面所有步驟的上限。
+[[compendium|追蹤標的]]的數量與品質決定訊號的天花板；
+驗證資料的設計決定所宣稱的 [[LLOD|偵測極限]]能否被採信。</p>
+
+<p class="prose">這兩步也是本專案已經完成、因而可以直接對照的部分 ——
+現行 compendium 為 35,603 個位點，
+[[in silico admixture|電腦模擬混合]]已產出四組 TF 的檢體。
+本頁的用途是判斷這些設計相對於文獻處於什麼位置。</p>
+</section>
+
+
+<section data-part="concept">
+<h2>① 追蹤標的：五種做法</h2>
+
+<div class="table-wrap">
+<table>
+<thead><tr>
+  <th>做法</th><th>代表方法</th><th>規模</th><th>代價</th>
+</tr></thead>
+<tbody>
+<tr>
+  <td><b>全基因體 somatic SNV</b></td>
+  <td>[[MRDetect]]、[[MRD-EDGE]]、[[Landau gen3|Landau 第三代]]、[[AccuScan]]</td>
+  <td>10³–10⁵ 位點</td>
+  <td>需腫瘤 WGS；每位點深度僅 20–120 倍</td>
+</tr>
+<tr>
+  <td><b>演算法設計的通用 panel</b></td>
+  <td>[[CAPP-Seq]]、[[iDES]]</td>
+  <td>125 kb，中位 4 SNV／病人</td>
+  <td>需濕實驗 [[hybrid capture|捕捉]]；病人覆蓋率有上限</td>
+</tr>
+<tr>
+  <td><b>[[patient-specific panel|個人化 panel]]</b></td>
+  <td>[[INVAR]]、[[PhasED-seq]]</td>
+  <td>10²–10³ 位點</td>
+  <td>每位病人需重新設計探針</td>
+</tr>
+<tr>
+  <td><b>[[phased variant|同分子多突變]]</b></td>
+  <td>[[PhasED-seq]]</td>
+  <td>固態瘤中位 118 個 PV（範圍 14–622）</td>
+  <td>PV 稀少的病人受益有限</td>
+</tr>
+<tr>
+  <td><b>不需要 compendium</b></td>
+  <td>[[ichorCNA]]、[[Lung-CLiP]]</td>
+  <td>—</td>
+  <td>靈敏度較低（TF 3%／stage I 41%）</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h3>共同點：germline 移除，無一例外</h3>
+
+<p class="prose">五種做法在其他方面差異極大，但<b>全部都必須移除 germline 變異</b>。
+這是唯一貫穿所有方法的步驟，因為 germline 位點在血漿中的 [[VAF]] 約為 0.5，
+會完全淹沒 10⁻⁵ 量級的腫瘤訊號。</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>方法</th><th>germline 移除方式</th></tr></thead>
+<tbody>
+<tr><td>[[MRDetect]]</td><td>三個 caller 取交集；CH 相關基因 MAF&gt;5%、其餘 MAF≥1% 剔除（1000G + ExAC）；另建 [[blacklist|黑名單]]</td></tr>
+<tr><td>[[MRD-EDGE]]</td><td>≥2／3 caller 共識，<b>再加一層 caller-agnostic 把關</b>：候選位點若在配對正常樣本有任何 ALT 支持 read 即剔除</td></tr>
+<tr><td>[[AccuScan]]</td><td>gnomAD 3.1；<b>並將 [[CpG]] 位點的 C→T 排除於錯誤率計算之外</b></td></tr>
+<tr><td>[[iDES]]</td><td>建背景模型前先排除 [[SNP|germline SNP]]</td></tr>
+<tr><td><b>本專案</b></td><td>[[germline filtering ladder|C0→C5 階梯]]：ClairS 原始 11 萬 → +gnomAD → +matched-normal → +dbSNP → <b>+CoLoRSdb 長讀長 PON</b>（35,603 位點）</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="guardrail guardrail--info">
+<p class="guardrail__hd">MRD-EDGE 新增的那一層值得直接借用</p>
+<p class="prose">第二代把多 caller 共識由「三者交集」放寬為「≥2／3」，
+但補上一道<b>與 caller 無關</b>的把關：候選 SNV 只要在配對正常樣本中有<b>任何</b> ALT 支持 read
+（不論是否通過 germline calling 門檻）即予剔除。</p>
+<p class="prose">本專案只有單一 caller，無多 caller 共識可比照，
+但這一層可直接疊加於既有的族群資料庫過濾之上。</p>
+</div>
+
+<h3>位點數與每位點深度的取捨</h3>
+
+<p class="prose">兩條路線在 {{m: p = 1 − e^{−n·d·k}}} 中選擇了不同的參數：
+panel 路線壓低 {{m: d}}（超深覆蓋降低錯誤率），
+WGS 路線提高 {{m: k}}（位點數多兩至三個數量級）。</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th></th><th>panel 路線</th><th>WGS 路線</th><th>本專案</th></tr></thead>
+<tbody>
+<tr><td>位點數</td><td>10²–10³</td><td>10³–10⁵</td><td><b>35,603</b></td></tr>
+<tr><td>每位點深度</td><td>10³–10⁴ 倍</td><td>20–120 倍</td><td><b>25 倍</b></td></tr>
+<tr><td>代表</td><td>CAPP-Seq、INVAR</td><td>MRDetect、AccuScan</td><td>—</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="prose">本專案在位點數上與 WGS 路線同級、深度偏低。
+作為對照：[[iDES]] 僅用 <b>30 個突變</b>加約 3,000 個
+[[genomic equivalents|基因組當量]]即達 0.0025% 的偵測極限 ——
+但那是在 10⁴ 倍深度下達成的，不可直接類比。</p>
+</section>
+
+
+<section data-part="evidence">
+<h2>② 驗證資料：三種設計</h2>
+
+<p class="prose"><b>11 篇全部都以某種形式的稀釋序列量測偵測極限，無一例外。</b>
+沒有任何一篇僅憑臨床樣本宣稱 LLOD。</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>設計</th><th>方法</th><th>特徵</th></tr></thead>
+<tbody>
+<tr>
+  <td><b>[[in silico admixture|電腦模擬混合]]</b></td>
+  <td>MRDetect、MRD-EDGE、Landau 第三代</td>
+  <td>TF 精確已知、replicate 便宜；不含建庫變異</td>
+</tr>
+<tr>
+  <td><b>[[dilution series|濕實驗稀釋序列]]</b></td>
+  <td>INVAR、iDES、PhasED-seq、AccuScan、NanoRCS</td>
+  <td>含建庫變異、貼近實況；成本高、replicate 少</td>
+</tr>
+<tr>
+  <td><b>germline 當代理標的</b></td>
+  <td>AccuScan</td>
+  <td>用兩位健康捐贈者間相異的 germline SNV 當標的，真值精確</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h3>設計參數對照</h3>
+
+<div class="table-wrap">
+<table>
+<thead><tr>
+  <th>方法</th><th>TF 範圍</th><th>replicate</th><th>深度掃描</th>
+</tr></thead>
+<tbody>
+<tr><td>[[MRDetect]]</td><td>1e-5 – 0.2</td><td><b>n=11</b>（陰性 n=20，共 341）</td><td>10–120 倍</td></tr>
+<tr><td>[[Landau gen3|Landau 第三代]]</td><td>1e-6 – 1e-2</td><td><b>n=50</b></td><td>70／40／20 倍</td></tr>
+<tr><td>[[MRD-EDGE]]</td><td>1e-4 – 1e-6（濕實驗）</td><td>duplicate；陰性 15–30</td><td>—</td></tr>
+<tr><td>[[AccuScan]]</td><td>1e-4 – 1e-6</td><td>21 個混合樣本 × marker 重抽 1000 次</td><td>60 倍</td></tr>
+<tr><td>[[PhasED-seq]]</td><td>0.1% – 0.00005%</td><td>—</td><td>—</td></tr>
+<tr><td><b>本專案</b></td><td><b>1e-2 – 1e-4</b></td><td><b>n=3</b></td><td><b>單一深度 25 倍</b></td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="guardrail guardrail--warn">
+<p class="guardrail__hd">本專案驗證設計的兩個缺口</p>
+<ol class="prose">
+<li><b>replicate 數偏低。</b>每個 TF 僅 3 個，MRDetect 為 11、Landau 第三代為 50。
+replicate 少會使分布估計不穩，直接影響 [[specificity|特異度]]的信賴區間寬度。</li>
+<li><b>只有單一深度。</b>文獻普遍掃描 2–3 個深度點以建立「深度 × TF」的偵測面。
+單一深度無法回答「若提高至 50 倍能改善多少」這個問題 ——
+而依 <a href="p03.html">p03</a> 的錯誤率／深度匯率，這正是本專案最需要量化的取捨。</li>
+</ol>
+<p class="prose">兩者皆為<b>可補的設計缺口</b>，不需新資料來源，只需重跑混合流程。</p>
+</div>
+
+<h3>AccuScan 的代理標的設計值得借用</h3>
+
+<p class="prose">AccuScan 在分析驗證階段不使用腫瘤，
+而是把健康捐贈者 A 的 cfDNA 稀釋進健康捐贈者 B，
+以<b>兩人之間相異的 germline SNV</b>（超過 10 萬個）作為追蹤標的。</p>
+
+<p class="prose">此設計的優點是真值完全精確：germline 位點的基因型已知，
+不受 somatic caller 偽陽性影響。
+本專案可用 HCC1395 與 HCC1395BL 之間的 germline 差異做同樣的事，
+作為 somatic [[compendium]] 之外的<b>獨立驗證管道</b> ——
+若在 germline 代理標的上的偵測表現與 somatic 標的差異很大，
+即指向 compendium 本身的品質問題而非偵測流程的問題。</p>
+</section>
+
+
+<section data-part="predict">
+<h2>不要搞混</h2>
+
+{{guard:6 | compendium 大不等於訊號強 —— 有一部分位點根本不會出現在血漿中}}
+<p class="prose">[[INVAR]] 的作者在 Discussion 中明確指出這一點，並給了數字：
+在其稀釋序列中，8,660 個追蹤突變裡有 <b>3,355 個（39%）在血漿中從未被偵測到</b>。</p>
+<p class="prose">若把這些位點移除，[[informative reads|有效讀取]]數會減少 39%，
+估計的 [[IMAF]] 相應上升。作者的結論是：縱向趨勢不受影響，
+但<b>絕對 [[tumor fraction|腫瘤分數]]的估計存在此一不確定範圍</b>。</p>
+<p class="prose">成因是腫瘤內異質性 —— 部分位點只存在於未釋出 ctDNA 的次選殖中。
+本專案的 35,603 個位點同樣可能有相當比例屬於此類，
+這會<b>稀釋分母</b>而非增強訊號。</p>
+{{/guard}}
+
+{{guard:7 | 電腦模擬混合與濕實驗稀釋，能支持的結論不同}}
+<p class="prose">[[in silico admixture|模擬混合]]的 TF 精確已知、replicate 便宜，
+適合掃描參數空間與量測演算法的極限。
+但它<b>不含建庫變異</b> —— 抽樣是在既有 read 上做的，
+不會重現 DNA 損傷、[[hybrid capture|捕捉]]偏差或 PCR 誤差。</p>
+<p class="prose">[[dilution series|濕實驗稀釋]]涵蓋整條流程，
+但成本高、replicate 少，難以掃描參數。</p>
+<p class="prose">因此模擬混合可以支持「此演算法在此錯誤率下的極限為何」，
+但不足以支持「此方法在實際檢體上的效能為何」。
+本專案僅有模擬混合，<b>報告時應明確標示此前提</b>。</p>
+{{/guard}}
+</section>
+
+
+<section data-part="practice">
+<h2>小結</h2>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>觀察</th><th>依據</th></tr></thead>
+<tbody>
+<tr><td>germline 移除是唯一貫穿所有方法的步驟</td><td>11 篇 s1</td></tr>
+<tr><td>11 篇全部以稀釋序列量測 LLOD，無一例外</td><td>11 篇 s2</td></tr>
+<tr><td>本專案位點數與 WGS 路線同級（35,603），深度偏低（25 倍）</td><td>各篇 s1 規模</td></tr>
+<tr><td><b>本專案的 replicate 數與深度掃描明顯不足</b></td><td>MRDetect n=11、Landau 第三代 n=50 且掃 3 個深度</td></tr>
+<tr><td>compendium 中可能有相當比例的位點不會出現在檢體中</td><td>INVAR 作者自承：39%</td></tr>
+</tbody>
+</table>
+</div>
+</section>

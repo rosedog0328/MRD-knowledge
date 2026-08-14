@@ -1,0 +1,226 @@
+<!--tw
+{
+  "objectives": [
+    "區分 read 層級與樣本層級的判定單元，並說明兩者的指標為何不可互相取代",
+    "依切分紀律的嚴謹程度為 11 篇分級，並指出多數論文未明確聲明的部分",
+    "陳述偵測極限不可跨方法直接比較的三個前提",
+    "彙整 11 篇作者自承的限制，作為評估各方法適用範圍的依據"
+  ]
+}
+-->
+
+<section data-part="why">
+<h2>為什麼重要</h2>
+
+<p class="prose">前五步決定方法怎麼做，這一步決定<b>報出來的數字能不能採信</b>。</p>
+
+<p class="prose">只要牽涉「從資料學出來的東西」——
+分類器權重、判定門檻、標準化參數 —— 就有過度擬合的疑慮。
+本領域的多數論文報告了漂亮的 AUC，
+但<b>只有少數明確攤開訓練與測試如何切分</b>。</p>
+
+<p class="prose">本頁同時處理一個本專案特有的風險：
+[[sample-level evaluation|判定單元]]的混淆。</p>
+</section>
+
+
+<section data-part="concept">
+<h2>兩個判定層級</h2>
+
+{{svg:sample-vs-read-level | read 層級與樣本層級的判定單元不同。前者的分類指標是去噪器的內部品質，後者才是偵測效能。}}
+
+<p class="prose">本專案內有兩個分類問題，容易被混為一談：</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th></th><th>read 層級</th><th>樣本層級</th></tr></thead>
+<tbody>
+<tr><td>判斷單元</td><td>一條支持 read</td><td><b>一個檢體（一個 BAM）</b></td></tr>
+<tr><td>問題</td><td>這條 read 是真變異還是定序錯誤？</td><td>這份檢體含不含腫瘤？</td></tr>
+<tr><td>樣本數</td><td>成千上萬</td><td>個位數到數十</td></tr>
+<tr><td>標籤來源</td><td>代理標籤（非金標準）</td><td>已知的 [[tumor fraction|TF]]</td></tr>
+<tr><td>指標的意義</td><td>去噪器的內部品質</td><td><b>偵測效能</b></td></tr>
+</tbody>
+</table>
+</div>
+
+{{guard:12 | read 層去噪器的 F1 不是偵測效能，不得混報}}
+<p class="prose">read 層去噪器也會算出 precision／recall／F1，
+但那量測的是「這個去噪器分辨 read 的能力」，
+與「這份檢體有沒有被正確判定」是兩件事。</p>
+<p class="prose">[[sample-level evaluation|偵測結果的 TP／FP／FN]]<b>一律定義在樣本層級</b>：
+TF=1% 的檢體判有癌為 TP、TF=0.1% 的檢體判沒癌為 FN、
+normal-only 判有癌為 FP。</p>
+<p class="prose">若要提及去噪器的分數，必須明寫「這是 read-level 去噪分類器的內部指標，
+非檢體偵測效能」，並置於方法或附錄，不置於結論。</p>
+{{/guard}}
+</section>
+
+
+<section data-part="evidence">
+<h2>切分紀律：11 篇的分級</h2>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>等級</th><th>方法</th><th>作法</th></tr></thead>
+<tbody>
+<tr>
+  <td><b>最嚴</b></td><td>[[Lung-CLiP]]</td>
+  <td><b>不同機構前瞻收案的獨立驗證世代</b>；並在 Discussion 明文批評同世代交叉驗證</td>
+</tr>
+<tr>
+  <td>嚴</td><td>[[MRD-EDGE]]</td>
+  <td>train／val／test <b>依病人</b>切分（非依 fragment）；訓練與 PON 用過的對照不進臨床分析</td>
+</tr>
+<tr>
+  <td>中</td><td>[[MRDetect]]</td>
+  <td>訓練 SVM 的 8 個對照與估噪音的 30 個對照分開；但 TF=0 replicate 同時用於噪音估計與效能評估</td>
+</tr>
+<tr>
+  <td>未明說</td>
+  <td>[[INVAR]]、[[iDES]]、[[CAPP-Seq]]、[[AccuScan]]、[[NanoRCS]]、[[PhasED-seq]]、[[ichorCNA]]</td>
+  <td>未見獨立 [[held-out|保留測試集]]的明確聲明</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h3>Lung-CLiP 的原文</h3>
+
+<p class="prose">這是本領域唯一在一線期刊上明文指出此問題的段落：</p>
+
+<blockquote class="prose">
+「unlike prior studies that <b>did not perform validation or used cross-validation
+within the same case:control cohort</b>, we employed an <b>independent validation cohort
+that was prospectively enrolled at a different institution</b>.
+This <b>decreases the risk of model over-fitting leading to overly optimistic results</b>.」
+</blockquote>
+
+<p class="prose">此段直接對應本專案已記錄的一條已知坑：
+對 read 做隨機切分會讓同一個 BAM 的 read 同時進入訓練與測試集，
+使測試分數虛高 —— 那是「記住這個樣本」而非「學會分辨」。</p>
+
+<div class="guardrail guardrail--info">
+<p class="guardrail__hd">切分單位是樣本，不是 read</p>
+<p class="prose">同一個檢體的 read 共享批次、化學與覆蓋度特性。
+對 read 做 <code>train_test_split</code> 等同於在訓練集上測試。</p>
+<p class="prose">read 層的隨機切分只能用於訓練過程內部（如提早停止、模型選擇），
+<b>不得用它產生對外報告的測試指標</b>。</p>
+</div>
+
+<h3>共同點：三件事 11 篇全部做到</h3>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>共同做法</th><th>說明</th></tr></thead>
+<tbody>
+<tr><td><b>以稀釋序列量測偵測極限</b></td>
+    <td>無一篇僅憑臨床樣本宣稱 [[LLOD]]</td></tr>
+<tr><td><b>報告 [[specificity|特異度]]</b></td>
+    <td>因其只由陰性樣本算出，不受陽性／陰性組成比例影響，是跨研究比較的主指標</td></tr>
+<tr><td><b>分層報告</b></td>
+    <td>依分期（CAPP-Seq、Lung-CLiP）、依 TF（MRDetect、Landau 第三代）、依 [[marker|標的]]數（AccuScan）</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="prose">分層報告的理由是：把不同難度的檢體混算，
+數字會被組成比例綁架。[[CAPP-Seq]] 的 stage II–IV 為 100%、stage I 僅 50%，
+若混算則兩者皆被掩蓋。</p>
+</section>
+
+
+<section data-part="predict">
+<h2>偵測極限總表</h2>
+
+<div class="table-wrap">
+<table>
+<thead><tr>
+  <th>方法</th><th>LLOD</th><th>條件</th>
+</tr></thead>
+<tbody>
+<tr><td>[[MRDetect]]</td><td>SNV ~1e-5</td><td>35×；高突變負荷 + 120× 可達 1e-6；CNA 需 1 Gb aneuploidy</td></tr>
+<tr><td>[[MRD-EDGE]]</td><td>1e-6</td><td>melanoma，AUC 0.84；CNV 需 ≥200 Mb aneuploidy</td></tr>
+<tr><td>[[Landau gen3|Landau 第三代]]</td><td>ppm 級</td><td>~120×；模擬顯示測 TF&lt;1e-5 需 ~100× 且錯誤率 &lt;1e-4</td></tr>
+<tr><td>[[CAPP-Seq]]</td><td>~0.02%</td><td>96% 特異度；~10,000× 深度</td></tr>
+<tr><td>[[iDES]]</td><td><b>0.0025%</b></td><td>僅需 30 個突變 + ~3,000 GE；duplex 子集可達 0.00025%</td></tr>
+<tr><td>[[INVAR]]</td><td>ppm 級</td><td>需 ~1e6 [[informative reads|有效讀取]] + UMI；無 UMI 時 3.6e-5</td></tr>
+<tr><td>[[PhasED-seq]]</td><td>線性至 5e-7</td><td>與 SNV 方法的分野點在 TF 0.01%</td></tr>
+<tr><td>[[AccuScan]]</td><td>cVAF 1e-6</td><td>99% 名目特異度、60×；10 PPM 需 ≥10K [[marker|標的]]</td></tr>
+<tr><td>[[ichorCNA]]</td><td><b>TF 3%</b></td><td>需 arm-level &gt;100 Mb 事件</td></tr>
+<tr><td>[[NanoRCS]]</td><td><b>TF 0.24%</b></td><td><b>ONT + [[RCA]] 共識</b>，多模態合併</td></tr>
+<tr><td>[[Lung-CLiP]]</td><td>不以 TF 表述</td><td>98% 特異度下 stage I 41%</td></tr>
+</tbody>
+</table>
+</div>
+
+{{guard:13 | 偵測極限不可跨方法直接比較 —— 三個前提}}
+<p class="prose">上表的數字在不同條件下量得，並排閱讀極易誤導。至少有三個前提不同：</p>
+<ol class="prose">
+<li><b>每位點深度</b>：[[patient-specific panel|panel]] 方法為 10³–10⁴ 倍，
+WGS 方法僅 20–120 倍。同樣的 LLOD 在兩者代表完全不同的技術難度。</li>
+<li><b>追蹤位點數</b>：由 30 個（iDES）到 35,603 個（本專案）不等，
+依 {{m: p = 1 − e^{−n·d·k}}}，位點數直接影響可達的偵測機率。</li>
+<li><b>特異度工作點</b>：有的報 96%、有的報 99%、有的報 95%。
+特異度提高必然壓低敏感度，未標明工作點的 LLOD 無法解讀。</li>
+</ol>
+<p class="prose"><b>引用任何 LLOD 時，必須同時陳述深度、位點數與特異度。</b></p>
+{{/guard}}
+
+<h3>作者自承的限制</h3>
+
+<p class="prose">以下取自各篇 Discussion，是作者自己承認的不足 ——
+比第三方推測可靠，且往往指向該方法真正的適用邊界。</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>方法</th><th>作者自承的主要限制</th></tr></thead>
+<tbody>
+<tr><td>[[MRDetect]]</td>
+    <td>「provides <b>limited confidence in the sensitivity to detect any individual site</b>」——
+    能判斷檢體有無腫瘤，但無法可靠判斷任一特定位點。若治療決策需要特定 driver 資訊，深度標的定序更合適</td></tr>
+<tr><td>[[INVAR]]</td>
+    <td>[[IMAF]] 是跨所有有效讀取的平均，腫瘤內異質性會灌大突變清單而<b>人為壓低 IMAF</b>：
+    稀釋序列的 8,660 個突變中有 <b>3,355 個（39%）在血漿中從未偵測到</b></td></tr>
+<tr><td>[[Landau gen3|Landau 第三代]]</td>
+    <td>duplex 只有一部分 read 能成對，<b>捕獲的獨立分子數少一個數量級</b>；
+    且在 [[tumor-informed]] 情境下，加大輸入量的標準 WGS 預期可達到更低的偵測極限</td></tr>
+<tr><td>[[CAPP-Seq]]</td>
+    <td>stage I 敏感度僅 <b>50%</b> —— 早期疾病正是最需要、卻最測不到的情境</td></tr>
+<tr><td>[[iDES]]</td>
+    <td>立體型背景<b>無法被分子條碼可靠壓抑</b>，故需另做背景拋光；
+    duplex 子集雖能再低 10 倍，但雙股分子回收率有技術限制</td></tr>
+<tr><td>[[PhasED-seq]]</td>
+    <td>[[phased variant|PV]] 僅在 B 細胞惡性腫瘤集中於立體型區域；
+    固態瘤 PV 數差異極大（14–622），<b>PV 稀少的病人受益有限</b></td></tr>
+<tr><td>[[AccuScan]]</td>
+    <td>目前僅用<b>單一 SNV 的簡單統計模型</b>，尚未納入機器學習；作者引用 MRDetect 指出此處仍有提升空間</td></tr>
+<tr><td>[[ichorCNA]]</td>
+    <td>偵測下限 <b>TF 3%</b>，且需 arm-level 大片段事件；<b>低 aneuploidy 的腫瘤會失效</b></td></tr>
+<tr><td>[[NanoRCS]]</td>
+    <td>「for <b>uninformed</b> SNV analysis in liquid biopsies, a <b>Q70 or higher will be required</b>
+    to detect TFs &gt; 1%」；CNA 與片段體學在 <b>TF &lt;3% 時失效</b></td></tr>
+<tr><td>[[Lung-CLiP]]</td>
+    <td>98% 特異度下 stage I 敏感度僅 41%；聚焦單一癌別換得專屬特徵，代價是無法泛化</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+
+<section data-part="practice">
+<h2>小結</h2>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>觀察</th><th>依據</th></tr></thead>
+<tbody>
+<tr><td>read 層與樣本層的指標不可互相取代</td><td>本專案評估規範</td></tr>
+<tr><td><b>11 篇中僅 3 篇明確聲明切分紀律</b></td><td>各篇 s6</td></tr>
+<tr><td>Lung-CLiP 在 Nature 上明文批評同世代交叉驗證</td><td>Lung-CLiP Discussion</td></tr>
+<tr><td>全部都以稀釋序列量 LLOD、報特異度、做分層報告</td><td>11 篇 s6</td></tr>
+<tr><td><b>LLOD 跨方法不可比較</b>（深度、位點數、特異度三者皆不同）</td><td>各篇 llod 欄位</td></tr>
+</tbody>
+</table>
+</div>
+</section>

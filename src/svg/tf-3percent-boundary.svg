@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 400">
+  <title>各訊號模態的適用區間，以及本專案目標落在哪裡</title>
+  <desc>橫軸是腫瘤分數，由右至左遞減，從百分之十降到十的負六次方。
+        圖中以三條水平帶標出不同訊號模態的適用範圍。
+        第一條是拷貝數變異，其偵測下限為腫瘤分數百分之三，
+        這個界線由 ichorCNA 與 NanoRCS 兩篇獨立論文分別佐證，
+        低於此值時拷貝數訊號失效。
+        第二條是片段體學，適用範圍與拷貝數相近，同樣在百分之三以下失效。
+        第三條是單核苷酸變異，可以一路延伸到十的負六次方，
+        是極低腫瘤分數區間唯一可用的訊號。
+        圖下方以虛線標出本專案的目標區間，
+        位於十的負三次方到十的負四次方之間，
+        明顯低於拷貝數與片段體學的失效界線。
+        結論是本專案第四階段的拷貝數模組，在目標區間內可能沒有訊號，
+        這不是失敗而是這條界線的必然結果，應先預期並寫進計畫。</desc>
+
+  <text class="ttl bold zh" x="20" y="34">訊號模態有硬界線 —— TF 低於 3% 時只有 SNV 可用</text>
+  <text class="tick zh" x="20" y="58">兩篇獨立論文佐證同一條線：ichorCNA 的偵測下限 TF 3%；NanoRCS 實測 TF &lt;3% 時 CNA 與 fragmentomics 失效</text>
+
+  <!-- 座標軸（由右至左遞減） -->
+  <path class="axis" d="M90 300 L950 300"/>
+  <text class="tick mid zh" x="900" y="326">10%</text>
+  <text class="tick mid zh" x="760" y="326">3%</text>
+  <text class="tick mid zh" x="620" y="326">1%</text>
+  <text class="tick mid zh" x="450" y="326">1e-3</text>
+  <text class="tick mid zh" x="290" y="326">1e-4</text>
+  <text class="tick mid zh" x="140" y="326">1e-6</text>
+  <path class="axis" d="M900 300 L900 308"/><path class="axis" d="M760 300 L760 308"/>
+  <path class="axis" d="M620 300 L620 308"/><path class="axis" d="M450 300 L450 308"/>
+  <path class="axis" d="M290 300 L290 308"/><path class="axis" d="M140 300 L140 308"/>
+  <text class="anno zh" x="520" y="356" text-anchor="middle">← 腫瘤分數 TF 遞減</text>
+
+  <!-- 三條模態帶 -->
+  <text class="anno bold zh" x="20" y="112">CNA</text>
+  <rect class="bar warn" x="760" y="94" width="190" height="26" rx="5"/>
+  <text class="tick zh" x="620" y="113">↤ 失效</text>
+
+  <text class="anno bold zh" x="20" y="158">fragmentomics</text>
+  <rect class="bar warn" x="760" y="140" width="190" height="26" rx="5"/>
+  <text class="tick zh" x="620" y="159">↤ 失效</text>
+
+  <text class="anno bold zh" x="20" y="204">SNV</text>
+  <rect class="bar ok" x="140" y="186" width="810" height="26" rx="5"/>
+  <text class="anno bold mid zh" x="545" y="205">唯一能延伸到極低 TF 的訊號</text>
+
+  <!-- 3% 界線 -->
+  <path class="guide thick" d="M760 84 L760 300"/>
+  <text class="anno bold mid warn zh" x="760" y="76">TF 3% 界線</text>
+
+  <!-- 本專案目標區間 -->
+  <rect class="region" x="290" y="230" width="160" height="46" rx="6"/>
+  <text class="anno bold mid accent zh" x="370" y="258">本專案目標</text>
+  <path class="guide" d="M290 230 L290 300"/>
+  <path class="guide" d="M450 230 L450 300"/>
+
+  <!-- 結論 -->
+  <rect class="box" x="20" y="366" width="960" height="30" rx="6"/>
+  <text class="anno bold zh" x="44" y="388">→ Phase 4 的 CNA 模組在目標區間可能沒有訊號。這不是失敗，是這條界線的必然結果 —— 應先預期並寫進計畫。</text>
+</svg>

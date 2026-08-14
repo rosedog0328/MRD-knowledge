@@ -1,0 +1,103 @@
+/* ============================================================================
+   print.css — 學生會列印，這半天的投資一定用得到
+   ============================================================================ */
+
+@media print {
+  @page { size: A4; margin: 18mm 16mm; }
+
+  /* 強制淺色：深色模式會吃掉一整個碳粉匣 */
+  :root, :root[data-theme="dark"] {
+    --paper: #fff; --paper-raised: #fff; --paper-sunken: #fff;
+    --ink: #000; --muted: #444;
+    --rule: #999; --rule-strong: #666; --shadow: transparent;
+    --term-bg: #fff; --muted-fill: #f0f0f0;
+
+    --hp1: #1F6FEB; --hp1-fill: #DCE8FD;
+    --hp2: #B4590A; --hp2-fill: #FAE7D2;
+    --hp0: #777;    --hp0-fill: #EEE;
+    --somatic: #C0202D;  --somatic-fill: #FBDDDF;
+    --germline: #2F6B47; --germline-fill: #DCEDE3;
+    --artifact: #6E4E96; --artifact-fill: #EBE2F5;
+    --met: #A5117A; --unmet: #A5117A;
+    --ok: #226622; --ok-fill: #EAF3EA;
+    --bad: #A32020; --bad-fill: #F8E6E6;
+    --warn: #8A5200; --warn-fill: #FBF1DF;
+    --accent: #14418C; --accent-ink: #fff;
+  }
+
+  html { font-size: 10.5pt; }
+  body { background: #fff; }
+
+  /* 螢幕專用介面全部移除 */
+  .site-header, .toc--sticky, .site-footer, .skip-link,
+  .widget__ctl, .widget__hd, .pager, .theme-toggle, .gloss-toggle,
+  .progress-ring, .quiz__actions, .banner {
+    display: none !important;
+  }
+
+  .wrap { display: block; max-width: none; padding: 0; }
+  .prose { max-width: none; }
+
+  /* 圖表保留顏色 */
+  .dia-svg, .fig img, .widget__stage svg, .wlegend i {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* 紙上不能有東西藏在互動後面 */
+  details, details[open] { display: block; }
+  details > summary { list-style: none; font-weight: 600; }
+  details > :not(summary) { display: block !important; }
+  .reveal > summary::before { content: "" !important; }
+  .reveal > summary::after {
+    content: "（答案如下）";
+    font-weight: 400; color: var(--muted); font-size: .9em;
+  }
+  .reveal--aside > summary::after { content: "（補充說明如下）"; }
+  /* 摺疊版警告框在紙上就是普通警告框，不要留下展開箭頭 */
+  details.guardrail > summary::after { content: "" !important; }
+  .quiz__why, .quiz__explain { display: block !important; }
+
+  /* 分頁控制 */
+  .dia, .fig, .widget, .quiz__item, .guardrail, .reveal, .source-card, pre, .eq {
+    break-inside: avoid; page-break-inside: avoid;
+  }
+  h1, h2, h3 { break-after: avoid; page-break-after: avoid; }
+  .part { break-before: auto; }
+
+  /* 連結展開 URL，但站內連結不展（會變成一堆 m07.html 噪音） */
+  a[href^="http"]::after {
+    content: " ⟨" attr(href) "⟩";
+    font-size: .78em; color: #555; word-break: break-all;
+  }
+  a[href^="#"]::after, a[href$=".html"]::after { content: ""; }
+
+  /* tooltip 絕不能就地列印 —— 會把每一段內文炸開。
+     改用 build 產生的 per-module 詞彙附錄。 */
+  .term__pop { display: none !important; }
+  .term {
+    border-bottom: 1px dotted #666;
+    background: none !important;
+  }
+
+  .glossary-appendix {
+    display: block !important;
+    break-before: page;
+    font-size: .92em;
+  }
+  .glossary-appendix dt {
+    font-weight: 700; font-family: var(--font-latin);
+    margin-top: .7em;
+  }
+  .glossary-appendix dd { margin: .1em 0 0; color: #333; }
+
+  /* widget 印出目前狀態 + 說明 */
+  .widget::after {
+    content: "（互動元件：完整版請見數位版本）";
+    display: block;
+    font-size: .82em; color: #555;
+    padding: 0 1em 1em;
+  }
+
+  .mhead__meta .chip { border: 1px solid #999; }
+}

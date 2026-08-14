@@ -1,0 +1,138 @@
+/* ============================================================================
+   tokens.css — 設計 token（唯一的顏色來源）
+   ----------------------------------------------------------------------------
+   規則一：任何 SVG 都不准寫死顏色。全部走 class → diagram.css → 這裡的 token。
+   規則二：色相依「標記形狀」分工，不依語意混用。見 _defs.svg 檔頭的說明。
+   規則三：artifact 與 unmethylated 除了色相，另外帶「圖樣／空心」通道，
+           因為灰階列印會把色相通道整個吃掉。
+   ============================================================================ */
+
+:root {
+  color-scheme: light dark;
+
+  /* ---- 語意基因體色盤（淺色）------------------------------------------
+     hp1 藍 / hp2 橘 是刻意選的：對 deuteranopia（最常見的色盲）而言，
+     藍↔橘的分辨度遠高於常見的紅↔綠。五份 deck 每一張圖都用到這兩色。   */
+  --hp1: #1F6FEB;            --hp1-fill: #D8E6FD;
+  --hp2: #C2620B;            --hp2-fill: #FBE6CE;
+  --hp0: #7A8794;            --hp0-fill: #EDF0F3;   /* 未標記 / 無法判定 */
+  --germline: #3F7D58;       --germline-fill: #DCEDE3;
+  --somatic: #CF2230;        --somatic-fill: #FBDDDF;
+  --artifact: #7E57A8;       --artifact-fill: #EBE2F5;  /* 另加斜線 pattern */
+  --met: #A5117A;                                   /* 實心 = methylated   */
+  --unmet: #A5117A;                                 /* 空心 = unmethylated */
+
+  /* ---- IUPAC 鹼基色：只用在「字母」上，永不用在 read 本體 ---- */
+  --base-a: #1E8E3E;
+  --base-c: #1A73E8;
+  --base-g: #B06000;
+  --base-t: #D93025;
+
+  /* ---- 中性色 / 介面 ---- */
+  --paper: #FFFFFF;
+  --paper-raised: #FFFFFF;
+  --paper-sunken: #F5F7FA;
+  --ink: #16202B;
+  --muted: #5A6B7B;
+  --muted-fill: #EDF0F3;
+  --rule: #D3DAE1;
+  --rule-strong: #9AA7B4;
+  --shadow: rgba(16, 32, 48, .16);
+  --accent: #1F6FEB;
+  --accent-ink: #FFFFFF;
+  --term-bg: #F0F5FF;
+
+  --ok: #2E7D32;   --ok-fill: #E6F4E7;
+  --warn: #B26A00; --warn-fill: #FDF1DE;
+  --bad: #C62828;  --bad-fill: #FBE4E4;
+
+  /* ---- 字型 ----------------------------------------------------------
+     PingFang TC 確實存在（macOS 註冊為 sealed system asset，
+     `ls /System/Library/Fonts/` 看不到，要用 system_profiler 才查得到）。
+     刻意不列 Hiragino Sans GB 與 STHeiti：它們是簡體字面，
+     會把「骨 直 說 內 錄」渲染成大陸字形。                              */
+  --font-zh: "PingFang TC", "Noto Sans TC", "Source Han Sans TC",
+             "Microsoft JhengHei", "微軟正黑體", "Heiti TC", "Songti TC",
+             sans-serif;
+  --font-latin: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter,
+                "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+               "DejaVu Sans Mono", monospace;
+
+  /* ---- 尺度 ---- */
+  --fs-base: 17px;    /* CJK 需比拉丁大約 1pt 才等效可讀 */
+  --lh-body: 1.85;    /* CJK 無 x-height 喘息空間，1.75–1.9 是舒適帶 */
+  --measure: 38em;    /* 1em ≈ 1 漢字，故 ≈38 字/行 */
+  --sp-1: .25rem; --sp-2: .5rem;  --sp-3: .75rem; --sp-4: 1rem;
+  --sp-5: 1.5rem; --sp-6: 2rem;   --sp-7: 3rem;   --sp-8: 4rem;
+  --radius: 8px;
+  --radius-lg: 14px;
+}
+
+/* ---- 深色模式 ---------------------------------------------------------
+   同時支援系統偏好與手動切換。手動切換（[data-theme]）必須贏過系統偏好，
+   所以 :not([data-theme="light"]) 是必要的。                            */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --hp1: #79B0FF;        --hp1-fill: #16324F;
+    --hp2: #F2A24C;        --hp2-fill: #4A2E11;
+    --hp0: #8C99A6;        --hp0-fill: #232B33;
+    --germline: #6FC08C;   --germline-fill: #153726;
+    --somatic: #FF7A85;    --somatic-fill: #4A1A1F;
+    --artifact: #B79BE0;   --artifact-fill: #2E2340;
+    --met: #F06FC4;        --unmet: #F06FC4;
+
+    --base-a: #5BD07E; --base-c: #7FB2FF; --base-g: #E0A64C; --base-t: #FF8A80;
+
+    --paper: #10161C;
+    --paper-raised: #18212A;
+    --paper-sunken: #0B1015;
+    --ink: #E4EAF0;
+    --muted: #9AA7B4;
+    --muted-fill: #232B33;
+    --rule: #2C3742;
+    --rule-strong: #48586A;
+    --shadow: rgba(0, 0, 0, .5);
+    --accent: #79B0FF;
+    --accent-ink: #0B1015;
+    --term-bg: #16324F;
+
+    --ok: #7BC67E;   --ok-fill: #15301A;
+    --warn: #E0A64C; --warn-fill: #3A2A10;
+    --bad: #FF8A80;  --bad-fill: #3D1A18;
+  }
+}
+
+:root[data-theme="dark"] {
+  --hp1: #79B0FF;        --hp1-fill: #16324F;
+  --hp2: #F2A24C;        --hp2-fill: #4A2E11;
+  --hp0: #8C99A6;        --hp0-fill: #232B33;
+  --germline: #6FC08C;   --germline-fill: #153726;
+  --somatic: #FF7A85;    --somatic-fill: #4A1A1F;
+  --artifact: #B79BE0;   --artifact-fill: #2E2340;
+  --met: #F06FC4;        --unmet: #F06FC4;
+
+  --base-a: #5BD07E; --base-c: #7FB2FF; --base-g: #E0A64C; --base-t: #FF8A80;
+
+  --paper: #10161C;
+  --paper-raised: #18212A;
+  --paper-sunken: #0B1015;
+  --ink: #E4EAF0;
+  --muted: #9AA7B4;
+  --muted-fill: #232B33;
+  --rule: #2C3742;
+  --rule-strong: #48586A;
+  --shadow: rgba(0, 0, 0, .5);
+  --accent: #79B0FF;
+  --accent-ink: #0B1015;
+  --term-bg: #16324F;
+
+  --ok: #7BC67E;   --ok-fill: #15301A;
+  --warn: #E0A64C; --warn-fill: #3A2A10;
+  --bad: #FF8A80;  --bad-fill: #3D1A18;
+}
+
+/* 字級縮放：實驗室 27" 螢幕上 17px 偏小，SMB 上大家會放大 */
+:root[data-fs="s"]  { --fs-base: 15.5px; }
+:root[data-fs="l"]  { --fs-base: 19px; }
+:root[data-fs="xl"] { --fs-base: 21px; }

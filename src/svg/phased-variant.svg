@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 440">
+  <title>同相變異的原理：兩個位置同時出錯的機率是相乘的</title>
+  <desc>上半部左側是單鹼基的情況：一條 read 在某位置與參考不符，
+        它可能是真突變，也可能是定序錯誤，兩者機率同一個數量級，無法區分。
+        上半部右側是同相變異的情況：同一條 read 上有兩個位置都與參考不符，
+        且兩處都落在腫瘤的變異清單上。
+        若定序錯誤彼此獨立，兩處同時出錯的機率是各自機率相乘，
+        因此背景率大幅下降。
+        中間一列給出實測數字：iDES 的單鹼基背景為三點三乘以十的負五次方，
+        雙股定序為一點二乘以十的負五次方，
+        而二重同相變異為八乘以十的負七次方，三重為三點四乘以十的負八次方。
+        下半部是本專案關心的重點：
+        Illumina 的讀取長度只有一百五十個鹼基對，
+        因此只有約百分之四十八的同相變異間距小於八十個鹼基對而能被捕捉；
+        ONT 的讀取長度是數千個鹼基對，理論上可以捕捉任意間距的組合。
+        圖最下方標明一個尚未驗證的前提：機率相乘假設錯誤彼此獨立，
+        而 ONT 的同聚物與甲基化脈絡造成的系統性錯誤可能在同一條讀取上相關聯，
+        使此假設失效，因此必須實測驗證。</desc>
+
+  <text class="ttl bold zh" x="20" y="34">phased variants：用「同分子巧合」換準確度</text>
+
+  <!-- 上：單鹼基 vs 同相 -->
+  <rect class="box plain" x="20" y="58" width="460" height="150" rx="10"/>
+  <text class="anno bold zh" x="44" y="88">單鹼基：分不出來</text>
+  <rect class="read" x="60" y="112" width="380" height="14" rx="6"/>
+  <circle class="mark somatic" cx="230" cy="119" r="8"/>
+  <text class="tick mid zh" x="230" y="150">這一處與參考不符</text>
+  <text class="tick zh" x="60" y="180">可能是真突變，也可能是定序錯誤 ——</text>
+  <text class="anno bold bad zh" x="60" y="200">兩者機率同一個數量級</text>
+
+  <rect class="box" x="520" y="58" width="460" height="150" rx="10"/>
+  <text class="anno bold zh" x="544" y="88">同相變異：機率相乘</text>
+  <rect class="read" x="560" y="112" width="380" height="14" rx="6"/>
+  <circle class="mark somatic" cx="670" cy="119" r="8"/>
+  <circle class="mark somatic" cx="810" cy="119" r="8"/>
+  <path class="guide" d="M670 132 L670 142 L810 142 L810 132"/>
+  <text class="tick mid zh" x="740" y="162">同一條分子上，兩處都命中變異清單</text>
+  <text class="tick zh" x="560" y="188">同時出錯的機率 = 各自機率相乘 →</text>
+  <text class="anno bold ok zh" x="560" y="200"> </text>
+  <text class="anno bold ok" x="852" y="188" style="font-size:17px">背景驟降</text>
+
+  <!-- 中：實測數字 -->
+  <text class="anno bold zh" x="20" y="240">實測背景率（12 位健康成人 cfDNA）</text>
+  <rect class="box plain" x="20" y="252" width="228" height="82" rx="8"/>
+  <text class="tick mid zh" x="134" y="278">iDES 單鹼基</text>
+  <text class="anno mono bold mid warn" x="134" y="310" style="font-size:20px">3.3e-5</text>
+
+  <rect class="box plain" x="264" y="252" width="228" height="82" rx="8"/>
+  <text class="tick mid zh" x="378" y="278">duplex 單鹼基</text>
+  <text class="anno mono bold mid warn" x="378" y="310" style="font-size:20px">1.2e-5</text>
+
+  <rect class="box" x="508" y="252" width="228" height="82" rx="8"/>
+  <text class="tick mid zh" x="622" y="278">2x PV（二重）</text>
+  <text class="anno mono bold mid ok" x="622" y="310" style="font-size:20px">8.0e-7</text>
+
+  <rect class="box" x="752" y="252" width="228" height="82" rx="8"/>
+  <text class="tick mid zh" x="866" y="278">3x PV（三重）</text>
+  <text class="anno mono bold mid ok" x="866" y="310" style="font-size:20px">3.4e-8</text>
+
+  <!-- 下：ONT 的優勢與未驗證前提 -->
+  <rect class="box" x="20" y="350" width="480" height="80" rx="8"/>
+  <text class="anno bold ok zh" x="44" y="378">ONT 的結構優勢</text>
+  <text class="tick zh" x="44" y="402">Illumina 150bp → 只有 48% 的 PV 間距 &lt;80bp 能捕捉</text>
+  <text class="tick zh" x="44" y="422">ONT 數 kb read → 理論上任意間距都能捕捉</text>
+
+  <rect class="box" x="520" y="350" width="460" height="80" rx="8"/>
+  <text class="anno bold warn zh" x="544" y="378">⚠️ 未驗證的前提</text>
+  <text class="tick zh" x="544" y="402">相乘假設「錯誤彼此獨立」。ONT 的 homopolymer 與</text>
+  <text class="tick zh" x="544" y="422">甲基化 context 錯誤可能在同一 read 上相關 → 須實測</text>
+</svg>

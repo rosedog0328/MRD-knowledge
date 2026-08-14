@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+<!--
+  ==========================================================================
+  _defs.svg — 共用 <symbol> / <marker> / <pattern> 庫
+  --------------------------------------------------------------------------
+  這是全專案唯一允許出現字面色碼的檔案（且僅限 pattern 的 stroke，
+  因為 pattern 內容無法繼承 currentColor 以外的 CSS variable）。
+
+  ★★ 色相不撞規則 —— 第 22 張圖時你會忘記，所以寫在這裡 ★★
+
+    色相依「標記形狀」分工，不依語意混用：
+
+      read 本體（長圓角矩形） → haplotype 色   .read.hp1 / .hp2 / .hp0
+      鹼基字母（文字）        → base 色         .base.a / .c / .g / .t
+      read 上方小圓           → variant class   .mark.somatic / .germline / .artifact
+      read 下方小點           → methylation     .cpg.met / .unmet
+
+    任何一張圖都不把兩種編碼放在同一種形狀上。
+    違反這條規則的圖，讀者會把「紅色 read」誤讀成「somatic read」。
+
+  ★ 幾何規範（全部 35 張圖共用，直接複製貼上不用重算）★
+
+    viewBox 一律 "0 0 1000 H"，寬度永遠 1000 user unit。
+    不要在 <svg> 上寫 width/height，交給 CSS。
+
+    字級： 標題 30 / 標籤 22 / 註解 18 / 刻度 15
+    線寬： 細線 1.5 / 一般 2.5 / 強調 4
+    圓角： 6
+    格線間距： 20
+    read 高度： 14，垂直間距 20
+  ==========================================================================
+-->
+
+  <!-- ── 箭頭 ────────────────────────────────────────────────────────── -->
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5"
+          markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/>
+  </marker>
+
+  <marker id="arrow-sm" viewBox="0 0 10 10" refX="9" refY="5"
+          markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/>
+  </marker>
+
+  <!-- ── artifact 用斜線：色相之外的第二個通道，灰階列印也分得出來 ──── -->
+  <pattern id="pat-hatch" width="7" height="7" patternUnits="userSpaceOnUse"
+           patternTransform="rotate(45)">
+    <line x1="0" y1="0" x2="0" y2="7" stroke="currentColor" stroke-width="2.5"/>
+  </pattern>
+
+  <!-- LOH 區域用的稀疏斜線 -->
+  <pattern id="pat-loh" width="12" height="12" patternUnits="userSpaceOnUse"
+           patternTransform="rotate(-45)">
+    <line x1="0" y1="0" x2="0" y2="12" stroke="currentColor" stroke-width="1.5"/>
+  </pattern>
+
+  <!-- ── read：長圓角矩形，寬度由 <use> 的 width 控制 ─────────────────── -->
+  <symbol id="sym-read" viewBox="0 0 100 14" preserveAspectRatio="none">
+    <rect class="read" x="0.75" y="0.75" width="98.5" height="12.5" rx="6.25"/>
+  </symbol>
+
+  <!-- 帶 soft-clip 的 read（比對不上被截斷，CIGAR 上是 S） -->
+  <symbol id="sym-read-clip" viewBox="0 0 100 14" preserveAspectRatio="none">
+    <rect class="read" x="0.75" y="0.75" width="80" height="12.5" rx="6.25"/>
+    <rect class="read clip" x="80" y="0.75" width="19.25" height="12.5" rx="6.25"/>
+  </symbol>
+
+  <!-- ── 細胞：圓形 + 細胞核 ─────────────────────────────────────────── -->
+  <symbol id="sym-cell" viewBox="0 0 40 40">
+    <circle class="cell" cx="20" cy="20" r="18"/>
+    <circle class="nucleus" cx="20" cy="20" r="8"/>
+  </symbol>
+
+  <!-- ── 染色體：兩條臂 + 著絲點 ─────────────────────────────────────── -->
+  <symbol id="sym-chr" viewBox="0 0 20 80">
+    <path class="chr" d="M10,2 C4,2 3,10 3,18 L3,34 C3,38 6,39 10,40
+                         C14,39 17,38 17,34 L17,18 C17,10 16,2 10,2 Z"/>
+    <path class="chr" d="M10,78 C4,78 3,70 3,62 L3,46 C3,42 6,41 10,40
+                         C14,41 17,42 17,46 L17,62 C17,70 16,78 10,78 Z"/>
+  </symbol>
+
+  <!-- ── CpG 位點 ────────────────────────────────────────────────────── -->
+  <symbol id="sym-cpg" viewBox="0 0 12 12">
+    <circle class="cpg" cx="6" cy="6" r="4.5"/>
+  </symbol>
+
+  <!-- ── 定序儀 / 流程節點用的圓角框 ─────────────────────────────────── -->
+  <symbol id="sym-node" viewBox="0 0 200 60" preserveAspectRatio="none">
+    <rect class="box" x="1.5" y="1.5" width="197" height="57" rx="8"/>
+  </symbol>
+
+  <!-- ── 檔案圖示（BAM / VCF / FASTA） ───────────────────────────────── -->
+  <symbol id="sym-file" viewBox="0 0 40 50">
+    <path class="box plain" d="M2,2 h24 l12,12 v34 a2,2 0 0 1 -2,2 h-34
+                               a2,2 0 0 1 -2,-2 v-44 a2,2 0 0 1 2,-2 z"/>
+    <path class="conn" d="M26,2 v12 h12" fill="none"/>
+  </symbol>
+</svg>

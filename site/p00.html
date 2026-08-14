@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="zh-Hant-TW" data-gloss="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>這份知識庫在回答什麼 · 長讀癌症基因體學入門</title>
+<meta name="description" content="說明六步共同骨架的組織原則、收錄範圍與三個閱讀警告。">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/layout.css">
+<link rel="stylesheet" href="assets/css/components.css">
+<link rel="stylesheet" href="assets/css/diagram.css">
+<link rel="stylesheet" href="assets/css/matrix.css">
+<link rel="stylesheet" href="assets/css/print.css">
+<script>
+/* 主題 / 字級 / 詞彙語言：必須在第一次繪製前套用，否則會閃一下白底。
+   刻意寫成同步的 inline script，不可移到外部檔案。 */
+(function () {
+  try {
+    var s = JSON.parse(localStorage.getItem('ccu.mrd.knowledge.v1') || '{}');
+    var ui = s.ui || {};
+    var d = document.documentElement;
+    if (ui.theme === 'dark' || ui.theme === 'light') d.setAttribute('data-theme', ui.theme);
+    if (ui.fontScale && ui.fontScale !== 'm') d.setAttribute('data-fs', ui.fontScale);
+    if (ui.glossLang) d.setAttribute('data-gloss', ui.glossLang);
+  } catch (e) { /* Safari 私密瀏覽會丟 QuotaExceededError，忽略即可 */ }
+})();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main">跳到主要內容</a>
+
+<header class="site-header">
+  <div class="site-header__in">
+    <a class="brand" href="index.html">
+      MRD 偵測方法知識庫
+      <small>中正大學資工系 · 黃耀廷實驗室</small>
+    </a>
+    <span class="site-header__spacer"></span>
+
+    <span class="hgroup gloss-toggle" role="group" aria-label="術語定義語言">
+      <button type="button" class="hbtn" data-gloss-btn="zh"   aria-pressed="true">繁中</button>
+      <button type="button" class="hbtn" data-gloss-btn="en"   aria-pressed="false">English</button>
+      <button type="button" class="hbtn" data-gloss-btn="both" aria-pressed="false">雙語</button>
+    </span>
+
+    <button type="button" class="hbtn theme-toggle" data-theme-btn
+            aria-label="切換深色／淺色主題">◐</button>
+    <button type="button" class="hbtn" data-fs-btn aria-label="調整字級">A</button>
+    <a class="hbtn" href="glossary.html">完整術語表</a>
+  </div>
+</header>
+
+<div class="wrap ">
+  <main class="main" id="main">
+    <header class="mhead"><p class="mhead__kicker">模組 0 · Orientation</p><h1>這份知識庫在回答什麼</h1><p class="mhead__sub">說明六步共同骨架的組織原則、收錄範圍與三個閱讀警告。</p><p class="mhead__meta"><span class="chip">約 15 分鐘</span></p></header><section class="objectives"><h2>本模組學習目標</h2><ul><li>說明本知識庫收錄哪 11 篇方法論文，以及選擇它們的判準</li><li>解讀六步共同骨架，並說明為何以此作為組織原則</li><li>區分本知識庫中「取自論文」與「本專案判斷」兩類內容</li><li>依讀者身分（人／AI agent）選擇對應的資料層</li></ul></section>
+
+<section data-part="why" class="part" id="part-why">
+<h2 data-num="①" id="為什麼重要">為什麼重要</h2>
+
+<p class="prose"><span class="term" data-term="MRD" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-mrd-0">MRD<span class="term__pop" id="gd-mrd-0" role="tooltip"><b class="term__hd">MRD <i>分子殘存疾病</i></b><span class="term__def" data-lang="zh">治療（多為手術）後體內殘存、但影像看不到的極少量癌細胞。偵測 MRD 的目的是在臨床復發之前就發現它，據以決定要不要追加治療。</span><span class="term__def" data-lang="en" lang="en">The small amount of cancer remaining after treatment, below the detection limit of imaging. Detecting it before clinical relapse guides whether further therapy is needed.</span><a class="term__more" href="glossary.html#mrd">完整條目 →</a></span></span> 偵測的方法文獻分散在十餘年、數個實驗室與數種定序平台上。
+各篇的用詞、量測單位與報告方式互不一致：有的報 <span class="term" data-term="LLOD" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-llod-1">偵測極限<span class="term__pop" id="gd-llod-1" role="tooltip"><b class="term__hd">LLOD <i>偵測極限</i></b><span class="term__def" data-lang="zh">能被可靠偵測到的最低 TF。**報告時必須附條件**：定序深度、位點數、以及對應的 specificity。不同方法的 LLOD 若深度與位點數不同，不可直接比較。</span><span class="term__def" data-lang="en" lang="en">The lowest tumour fraction reliably detectable. Reporting it requires stating the conditions: sequencing depth, number of tracked sites, and the corresponding specificity. LLODs from methods with different depths or site counts are not directly comparable.</span><a class="term__more" href="glossary.html#llod">完整條目 →</a></span></span>，有的報分期敏感度；
+有的以 <span class="term" data-term="cVAF" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-cvaf-2">cVAF<span class="term__pop" id="gd-cvaf-2" role="tooltip"><b class="term__hd">cVAF <i>循環變異等位基因分率</i></b><span class="term__def" data-lang="zh">血漿中某變異的等位基因分率。與一般 VAF 的差別在量級：germline VAF 約 0.5，而 MRD 情境的 cVAF 常在 10⁻⁵–10⁻⁶ 之間，與定序錯誤率同一個數量級。</span><span class="term__def" data-lang="en" lang="en">The variant allele frequency of a mutation in plasma. It differs from ordinary VAF in magnitude: germline VAF is about 0.5, whereas cVAF in MRD settings is typically 1e-5 to 1e-6, the same order as the sequencing error rate.</span><a class="term__more" href="glossary.html#cvaf">完整條目 →</a></span></span> 表述，有的以 <span class="term" data-term="tumor fraction" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-tumor-fraction-3">腫瘤分數<span class="term__pop" id="gd-tumor-fraction-3" role="tooltip"><b class="term__hd">tumor fraction <i>腫瘤分數</i></b><span class="term__def" data-lang="zh">樣本中源自腫瘤的 DNA 佔全部 DNA 的比例。MRD 情境常低至 10⁻⁵ 甚至 10⁻⁶。本專案因使用純細胞株（purity≈1），混合時的 tumor read 比例即等同 TF。</span><span class="term__def" data-lang="en" lang="en">The proportion of DNA in a sample that derives from tumour. In MRD settings it can be as low as 1e-5 to 1e-6. In this project, because pure cell lines are used (purity approximately 1), the tumour read ratio during admixture equals TF directly.</span><a class="term__more" href="glossary.html#tumor-fraction">完整條目 →</a></span></span>。
+直接並排閱讀，難以判斷兩個方法究竟是在解同一個問題，還是在解不同的問題。</p>
+
+<p class="prose">本知識庫的作法是：把 11 篇方法論文拆進<b>同一組欄位</b>，
+使「大家都怎麼做」與「同一步有幾種做法」得以直接對照。
+這組欄位即下方的六步骨架。</p>
+
+<div class="guardrail guardrail--info">
+<p class="guardrail__hd">本知識庫的三個定位</p>
+<ol class="prose">
+<li><b>不是文獻綜述。</b>目標不是覆蓋全領域，而是找出各方法的共同骨架與分歧點。</li>
+<li><b>不是教材。</b>前置知識假設讀者已具備，見下方「前置知識」一節。</li>
+<li><b>是設計選單。</b>最終產出是「每一步有哪些選項、各自的代價是什麼」，供本專案據以設計 ONT 版本。</li>
+</ol>
+</div>
+</section>
+
+
+<section data-part="concept" class="part" id="part-concept">
+<h2 data-num="②" id="概念與結構">概念與結構</h2>
+
+<h3 id="六步共同骨架">六步共同骨架</h3>
+
+<p class="prose">不論訊號來自體細胞突變、片段長度還是甲基化，
+不論定序策略是全基因體還是 <span class="term" data-term="patient-specific panel" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-patient-specific-panel-4">客製 panel<span class="term__pop" id="gd-patient-specific-panel-4" role="tooltip"><b class="term__hd">patient-specific panel <i>個人化探針組</i></b><span class="term__def" data-lang="zh">為單一病人客製的捕捉探針組，只針對該病人腫瘤的變異設計。INVAR、Signatera、PhasED-seq 皆屬此類。位點數少但每位點深度極高，與 WGS 路線形成對照。</span><span class="term__def" data-lang="en" lang="en">A capture panel customised for one patient, targeting only that patient's tumour variants. INVAR, Signatera and PhasED-seq all follow this design: few sites but very high per-site depth, in contrast to the WGS route.</span><a class="term__more" href="glossary.html#patient-specific-panel">完整條目 →</a></span></span>，
+所有 MRD 偵測方法都必須回答同樣六個問題。差別僅在每一步選擇了哪個做法。</p>
+
+<figure class="dia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 400" class="dia-svg" role="img" aria-labelledby="six-step-skeleton__title" aria-describedby="six-step-skeleton__desc">
+  <title id="six-step-skeleton__title">所有 MRD 偵測方法都要回答的六個問題</title>
+  <desc id="six-step-skeleton__desc">由左至右六個步驟，構成本知識庫的組織骨架。
+        第一步是追蹤標的：要追蹤哪些位點或特徵，這份清單怎麼得到。
+        第二步是驗證資料：用什麼資料證明方法有效，通常是稀釋序列。
+        第三步是 read 層去噪：怎麼分辨真訊號與定序錯誤。
+        第四步是樣本層分數：把成千上萬個位點的觀測合成一個數字。
+        第五步是門檻：判定有癌的線畫在哪裡，由誰決定。
+        第六步是評估：怎麼證明結果沒有過度擬合。
+        圖下方標出第三步與第四步之間是本領域的分水嶺：
+        有些方法把力氣放在壓低錯誤率，有些放在更好的整合統計或分類器。
+        不論用突變、片段長度還是甲基化，不論全基因體還是標的定序，
+        都要回答同樣這六個問題，差別只在每一步選了哪個做法。</desc>
+
+  <text class="ttl bold zh" x="20" y="34">所有 MRD 偵測方法的六步共同骨架</text>
+  <text class="tick zh" x="20" y="60">不論用突變、片段長度還是甲基化，不論全基因體還是 panel，都要回答同樣六個問題</text>
+
+  <!-- 六個步驟方塊 -->
+  <g>
+    <rect class="box plain" x="20" y="88" width="148" height="118" rx="10"/>
+    <text class="lbl bold mid accent" x="94" y="120">①</text>
+    <text class="anno bold mid zh" x="94" y="150">追蹤標的</text>
+    <text class="tick mid zh" x="94" y="176">追蹤哪些位點？</text>
+    <text class="tick mid zh" x="94" y="194">清單怎麼來？</text>
+  </g>
+  <g>
+    <rect class="box plain" x="184" y="88" width="148" height="118" rx="10"/>
+    <text class="lbl bold mid accent" x="258" y="120">②</text>
+    <text class="anno bold mid zh" x="258" y="150">驗證資料</text>
+    <text class="tick mid zh" x="258" y="176">用什麼資料</text>
+    <text class="tick mid zh" x="258" y="194">證明它有效？</text>
+  </g>
+  <g>
+    <rect class="box" x="348" y="88" width="148" height="118" rx="10"/>
+    <text class="lbl bold mid accent" x="422" y="120">③</text>
+    <text class="anno bold mid zh" x="422" y="150">read 層去噪</text>
+    <text class="tick mid zh" x="422" y="176">怎麼分辨真訊號</text>
+    <text class="tick mid zh" x="422" y="194">與定序錯誤？</text>
+  </g>
+  <g>
+    <rect class="box" x="512" y="88" width="148" height="118" rx="10"/>
+    <text class="lbl bold mid accent" x="586" y="120">④</text>
+    <text class="anno bold mid zh" x="586" y="150">樣本層分數</text>
+    <text class="tick mid zh" x="586" y="176">幾千個位點</text>
+    <text class="tick mid zh" x="586" y="194">怎麼變一個數字？</text>
+  </g>
+  <g>
+    <rect class="box plain" x="676" y="88" width="148" height="118" rx="10"/>
+    <text class="lbl bold mid accent" x="750" y="120">⑤</text>
+    <text class="anno bold mid zh" x="750" y="150">門檻</text>
+    <text class="tick mid zh" x="750" y="176">線畫在哪？</text>
+    <text class="tick mid zh" x="750" y="194">誰決定的？</text>
+  </g>
+  <g>
+    <rect class="box plain" x="840" y="88" width="140" height="118" rx="10"/>
+    <text class="lbl bold mid accent" x="910" y="120">⑥</text>
+    <text class="anno bold mid zh" x="910" y="150">評估</text>
+    <text class="tick mid zh" x="910" y="176">怎麼證明沒有</text>
+    <text class="tick mid zh" x="910" y="194">過度擬合？</text>
+  </g>
+
+  <!-- 箭頭 -->
+  <path class="conn" d="M168 147 L184 147" marker-end="url(#six-step-skeleton__a1)"/>
+  <path class="conn" d="M332 147 L348 147" marker-end="url(#six-step-skeleton__a1)"/>
+  <path class="conn thick" d="M496 147 L512 147" marker-end="url(#six-step-skeleton__a1)"/>
+  <path class="conn" d="M660 147 L676 147" marker-end="url(#six-step-skeleton__a1)"/>
+  <path class="conn" d="M824 147 L840 147" marker-end="url(#six-step-skeleton__a1)"/>
+  <defs>
+    <marker id="six-step-skeleton__a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path class="conn" d="M0 0 L10 5 L0 10 z"/>
+    </marker>
+  </defs>
+
+  <!-- 分水嶺標註 -->
+  <path class="guide" d="M504 76 L504 218"/>
+  <text class="anno bold accent zh" x="504" y="248" text-anchor="middle">↑ 本領域的分水嶺</text>
+
+  <rect class="box plain" x="140" y="266" width="330" height="104" rx="10"/>
+  <text class="anno bold zh" x="164" y="296">力氣放在 ③ 壓低錯誤率</text>
+  <text class="tick zh" x="164" y="322">iDES 的背景拋光、duplex 定序、</text>
+  <text class="tick zh" x="164" y="342">RCA 共識（AccuScan、NanoRCS）</text>
+
+  <rect class="box plain" x="530" y="266" width="330" height="104" rx="10"/>
+  <text class="anno bold zh" x="554" y="296">力氣放在 ④ 更好的整合</text>
+  <text class="tick zh" x="554" y="322">INVAR 的概似比、Lung-CLiP 的</text>
+  <text class="tick zh" x="554" y="342">樣本層分類器、Monte Carlo 估 TF</text>
+</svg><figcaption>六步共同骨架。第三步與第四步之間是本領域的分水嶺：部分方法把力氣放在壓低錯誤率，部分放在更好的整合統計。</figcaption></figure>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th scope="col">步驟</th><th scope="col">要回答的問題</th><th scope="col">本知識庫的對應頁</th></tr></thead>
+<tbody>
+<tr><td><b>① 追蹤標的</b></td><td>追蹤哪些位點或特徵？這份清單怎麼得到？</td><td><a href="p02.html">p02</a></td></tr>
+<tr><td><b>② 驗證資料</b></td><td>用什麼資料證明方法有效？</td><td><a href="p02.html">p02</a></td></tr>
+<tr><td><b>③ read 層去噪</b></td><td>怎麼分辨真訊號與定序錯誤？</td><td><a href="p03.html">p03</a></td></tr>
+<tr><td><b>④ 樣本層分數</b></td><td>成千上萬個位點怎麼合成一個數字？</td><td><a href="p04.html">p04</a></td></tr>
+<tr><td><b>⑤ 門檻</b></td><td>判定「有癌」的線畫在哪？由誰決定？</td><td><a href="p04.html">p04</a></td></tr>
+<tr><td><b>⑥ 評估</b></td><td>怎麼證明結果並非過度擬合？</td><td><a href="p05.html">p05</a></td></tr>
+</tbody>
+</table>
+</div>
+
+<h3 id="收錄範圍">收錄範圍</h3>
+
+<p class="prose">共蒐集 28 篇 MRD 方法論文，依「可信度／可驗證性」與「與建立本專案方法的相關性」
+兩軸分為三級。<b>本知識庫的主體是完成完整拆解的 11 篇</b>。</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th scope="col">方法</th><th scope="col">年</th><th scope="col">期刊</th><th scope="col">在骨架中的位置</th><th scope="col">開源碼</th></tr></thead>
+<tbody>
+<tr><td><b><span class="term" data-term="MRDetect" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-mrdetect-5">MRDetect<span class="term__pop" id="gd-mrdetect-5" role="tooltip"><b class="term__hd">MRDetect <i>MRDetect（第一代）</i></b><span class="term__def" data-lang="zh">Landau lab 2020 年的方法（Nat Med），本專案的基準。核心是「廣度取代深度」：35X WGS + 全基因體數千個 SNV 累加，用線性 SVM 對單條 read 去噪（5 特徵）。LLOD 約 1e-5。⚠️ 程式碼未開源。</span><span class="term__def" data-lang="en" lang="en">The 2020 method from the Landau lab (Nat Med) and the baseline for this project. Its core is breadth supplanting depth: 35X WGS integrating thousands of genome-wide SNVs, with a linear SVM denoising individual reads on five features. LLOD about 1e-5. Code is not open source.</span><a class="term__more" href="glossary.html#mrdetect">完整條目 →</a></span></span></b></td><td>2020</td><td>Nat Med</td><td>全基因體突變整合（本專案基準）</td><td>—</td></tr>
+<tr><td><b><span class="term" data-term="MRD-EDGE" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-mrd-edge-6">MRD-EDGE<span class="term__pop" id="gd-mrd-edge-6" role="tooltip"><b class="term__hd">MRD-EDGE <i>MRD-EDGE（第二代）</i></b><span class="term__def" data-lang="zh">Landau lab 2024 年的續作（Nat Med）。把 SVM 換成 CNN + MLP ensemble，並加入 ctDNA 專屬生物特徵（SBS context、fragment length、regional epigenomics），訊噪比從 8.3× 提升到 118×。</span><span class="term__def" data-lang="en" lang="en">The Landau lab's 2024 successor (Nat Med), replacing the SVM with a CNN and MLP ensemble and adding ctDNA-specific biological features such as SBS context, fragment length and regional epigenomics, raising signal-to-noise enrichment from 8.3-fold to 118-fold.</span><a class="term__more" href="glossary.html#mrd-edge">完整條目 →</a></span></span></b></td><td>2024</td><td>Nat Med</td><td>第二代：深度學習去噪</td><td>—</td></tr>
+<tr><td><b><span class="term" data-term="Landau gen3" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-landau-gen3-7">Landau 第三代<span class="term__pop" id="gd-landau-gen3-7" role="tooltip"><b class="term__hd">Landau gen3 <i>Landau 第三代</i></b><span class="term__def" data-lang="zh">Landau lab 2025 年的第三代（Nat Methods）。改從**定序化學**解決：低成本 Ultima 平台做 ~120X 深度，加上全基因體 duplex 錯誤校正，錯誤率達 7.7e-7。**三代中唯一開源。** ⚠️ 作者自承 tumor-informed 情境下標準 WGS + 高輸入量可能更好。</span><span class="term__def" data-lang="en" lang="en">The Landau lab's 2025 third generation (Nat Methods), solving the problem through sequencing chemistry: about 120X depth on the low-cost Ultima platform plus genome-wide duplex error correction, reaching an error rate of 7.7e-7. The only open-source generation. The authors note that in the tumour-informed setting, standard WGS with higher input may achieve lower detection limits than duplex.</span><a class="term__more" href="glossary.html#landau-gen3">完整條目 →</a></span></span></b></td><td>2025</td><td>Nat Methods</td><td>第三代：<span class="term" data-term="duplex sequencing" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-duplex-sequencing-8">duplex<span class="term__pop" id="gd-duplex-sequencing-8" role="tooltip"><b class="term__hd">duplex sequencing <i>雙股定序</i></b><span class="term__def" data-lang="zh">同時定序同一 DNA 分子的**正反兩股**，只有兩股一致的變異才算真。能校正單股損傷（如氧化造成的 G>T），錯誤率可壓到 1e-7 級。⚠️ 代價極高：**只回收約 19% 的獨立分子**。</span><span class="term__def" data-lang="en" lang="en">Sequencing both strands of the same DNA molecule and accepting a variant only when both agree. This corrects single-strand damage such as oxidative G-to-T, reaching error rates around 1e-7. The cost is severe: only about 19% of unique molecules are recovered.</span><a class="term__more" href="glossary.html#duplex-sequencing">完整條目 →</a></span></span> 錯誤校正</td><td>✅</td></tr>
+<tr><td><b><span class="term" data-term="CAPP-Seq" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-capp-seq-9">CAPP-Seq<span class="term__pop" id="gd-capp-seq-9" role="tooltip"><b class="term__hd">CAPP-Seq <i>CAPP-Seq</i></b><span class="term__def" data-lang="zh">Stanford 2014 年的方法（Nat Med），整個 patient-specific panel 家族的共同祖先。用演算法設計 selector 使每位病人都被覆蓋到多個突變。LLOD 約 0.02%。⚠️ stage I 敏感度僅 50% —— 這個限制催生了後續十年的方法演進。</span><span class="term__def" data-lang="en" lang="en">The 2014 Stanford method (Nat Med) and common ancestor of the patient-specific panel family, using an algorithmically designed selector so that most patients are covered at several mutations. LLOD about 0.02%. Its stage I sensitivity of only 50% motivated a decade of subsequent method development.</span><a class="term__more" href="glossary.html#capp-seq">完整條目 →</a></span></span></b></td><td>2014</td><td>Nat Med</td><td>領域奠基：<span class="term" data-term="selector" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-selector-10">selector<span class="term__pop" id="gd-selector-10" role="tooltip"><b class="term__hd">selector <i>選擇子</i></b><span class="term__def" data-lang="zh">CAPP-Seq 用演算法設計出的生物素化探針集，覆蓋反覆突變的區域，使多數病人都能被覆蓋到數個突變。NSCLC 版覆蓋 521 個 exon、約 125 kb（人類基因體的 0.004%）。</span><span class="term__def" data-lang="en" lang="en">The algorithmically designed set of biotinylated probes in CAPP-Seq, covering recurrently mutated regions so that most patients are covered at several mutations. The NSCLC version spans 521 exons, about 125 kb, or 0.004% of the human genome.</span><a class="term__more" href="glossary.html#selector">完整條目 →</a></span></span> 設計</td><td>—</td></tr>
+<tr><td><b><span class="term" data-term="iDES" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-ides-11">iDES<span class="term__pop" id="gd-ides-11" role="tooltip"><b class="term__hd">iDES <i>iDES</i></b><span class="term__def" data-lang="zh">Stanford 2016 年的 CAPP-Seq 改良（Nat Biotechnol）。整合分子條碼與 **background polishing**（逐位置逐取代類型建背景分布），兩者各約 3× 改善、合併達 ~15×，偵測極限降到 0.0025%。**其 background polishing 是本專案最可直接移植的降噪法。**</span><span class="term__def" data-lang="en" lang="en">The 2016 Stanford refinement of CAPP-Seq (Nat Biotechnol), integrating molecular barcoding with background polishing that models background per position and substitution type. Each contributes about threefold, combining to roughly fifteenfold, lowering the detection limit to 0.0025%. Its background polishing is the most directly transferable denoising method for this project.</span><a class="term__more" href="glossary.html#ides">完整條目 →</a></span></span></b></td><td>2016</td><td>Nat Biotechnol</td><td><span class="term" data-term="background polishing" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-background-polishing-12">背景拋光<span class="term__pop" id="gd-background-polishing-12" role="tooltip"><b class="term__hd">background polishing <i>背景拋光</i></b><span class="term__def" data-lang="zh">iDES 提出的**純計算**去噪法：用陰性對照世代為每個位置、每種取代類型各建一個背景分布（非零 AF <5 個用 Gaussian，否則擬合 Weibull，另存零值比例），新樣本的候選變異若與該分布無法區分就移除。</span><span class="term__def" data-lang="en" lang="en">A purely computational denoising method from iDES: using a cohort of negative controls, a background distribution is fitted for every position and substitution type (Gaussian if fewer than five non-zero AFs, otherwise a Weibull fit, plus the zero fraction). Candidate variants in a new sample are removed if indistinguishable from that null.</span><a class="term__more" href="glossary.html#background-polishing">完整條目 →</a></span></span></td><td>—</td></tr>
+<tr><td><b><span class="term" data-term="INVAR" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-invar-13">INVAR<span class="term__pop" id="gd-invar-13" role="tooltip"><b class="term__hd">INVAR <i>INVAR</i></b><span class="term__def" data-lang="zh">劍橋 Rosenfeld lab 2020 年的方法（Sci Transl Med）。與 MRDetect 同期同目標但**走純統計路線不用 ML**：四層誤差抑制疊加（背景降 131×），以 likelihood ratio 判定，並**用其他病人的樣本當陰性對照定門檻**。有開源碼（INVAR2）。</span><span class="term__def" data-lang="en" lang="en">The 2020 method from Rosenfeld's lab in Cambridge (Sci Transl Med). Contemporaneous with MRDetect and sharing its goal but taking a purely statistical route without machine learning: four stacked layers of error suppression (131-fold background reduction), decisions by likelihood ratio, and thresholds set using other patients' samples as negative controls. Open source as INVAR2.</span><a class="term__more" href="glossary.html#invar">完整條目 →</a></span></span></b></td><td>2020</td><td>Sci Transl Med</td><td>多位點統計整合</td><td>✅</td></tr>
+<tr><td><b><span class="term" data-term="PhasED-seq" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-phased-seq-14">PhasED-seq<span class="term__pop" id="gd-phased-seq-14" role="tooltip"><b class="term__hd">PhasED-seq <i>PhasED-seq</i></b><span class="term__def" data-lang="zh">Stanford 2021 年的方法（Nat Biotechnol）。**改變偵測單元**：不看單鹼基而看同一分子上的多個突變（phased variants），背景率降至 8.0e-7（2x）與 3.4e-8（3x），且不需分子條碼、不犧牲分子回收率。**其限制正好是 ONT 的優勢。**</span><span class="term__def" data-lang="en" lang="en">The 2021 Stanford method (Nat Biotechnol) that changes the unit of detection: instead of single bases it tracks multiple mutations on the same molecule (phased variants), lowering background to 8.0e-7 for doublets and 3.4e-8 for triplets without molecular barcodes and without sacrificing molecule recovery. Its key limitation is precisely where ONT holds an advantage.</span><a class="term__more" href="glossary.html#phased-seq">完整條目 →</a></span></span></b></td><td>2021</td><td>Nat Biotechnol</td><td><span class="term" data-term="phased variant" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-phased-variant-15">同分子多突變<span class="term__pop" id="gd-phased-variant-15" role="tooltip"><b class="term__hd">phased variant <i>同相變異</i></b><span class="term__def" data-lang="zh">位於**同一條 DNA 分子上**的兩個以上體細胞突變。因為兩個特定位置同時出錯的機率是相乘的，PV 的背景率遠低於單鹼基：2x PV 為 8.0e-7、3x 為 3.4e-8，**且不需要分子條碼**。</span><span class="term__def" data-lang="en" lang="en">Two or more somatic mutations located on the same DNA molecule. Because the probability of two specific positions erring simultaneously is multiplicative, PV background rates are far lower than single-base rates: 8.0e-7 for doublets and 3.4e-8 for triplets, without requiring molecular barcodes.</span><a class="term__more" href="glossary.html#phased-variant">完整條目 →</a></span></span></td><td>—</td></tr>
+<tr><td><b><span class="term" data-term="Lung-CLiP" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-lung-clip-16">Lung-CLiP<span class="term__pop" id="gd-lung-clip-16" role="tooltip"><b class="term__hd">Lung-CLiP <i>Lung-CLiP</i></b><span class="term__def" data-lang="zh">Stanford 2020 年的 tumor-naive 早期肺癌偵測（Nature）。**多層級 ML**：先估每個變異是腫瘤來源的機率，再與全基因體 CNA 整合成**病人層級分類器**。**切分紀律最嚴謹的一篇** —— 用不同機構前瞻收案的獨立驗證世代，並明文批評同世代交叉驗證。</span><span class="term__def" data-lang="en" lang="en">The 2020 Stanford tumour-naive early lung cancer detector (Nature). A multi-tiered machine learning design first estimates the probability that each variant is tumour-derived, then integrates this with genome-wide CNA into a patient-level classifier. It has the strictest split discipline of the set, using an independent validation cohort prospectively enrolled at a different institution and explicitly criticising within-cohort cross-validation.</span><a class="term__more" href="glossary.html#lung-clip">完整條目 →</a></span></span></b></td><td>2020</td><td>Nature</td><td>樣本層級 ML 分類器</td><td>—</td></tr>
+<tr><td><b><span class="term" data-term="ichorCNA" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-ichorcna-17">ichorCNA<span class="term__pop" id="gd-ichorcna-17" role="tooltip"><b class="term__hd">ichorCNA <i>ichorCNA</i></b><span class="term__def" data-lang="zh">Broad Institute 2017 年的工具（Nat Commun）。從 **0.1× 超低深度 WGS** 估 tumor fraction，不需事先知道腫瘤變異。用 HMM 同時預測 CNA 片段與估 TF。**MRDetect 三代都在用它。** ⚠️ 偵測下限 TF 3%，遠高於 MRD 目標區間。</span><span class="term__def" data-lang="en" lang="en">The 2017 Broad Institute tool (Nat Commun) estimating tumour fraction from 0.1x ultra-low-pass WGS without prior knowledge of tumour variants, using an HMM to jointly predict CNA segments and TF. All three MRDetect generations use it. Its detection floor of TF 3% is far above the MRD target range.</span><a class="term__more" href="glossary.html#ichorcna">完整條目 →</a></span></span></b></td><td>2017</td><td>Nat Commun</td><td><span class="term" data-term="CNA" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-cna-18">CNA<span class="term__pop" id="gd-cna-18" role="tooltip"><b class="term__hd">CNA <i>拷貝數變異</i></b><span class="term__def" data-lang="zh">染色體片段的擴增或缺失。作為 MRD 訊號的優勢是片段大、即使極低覆蓋也看得到；**劣勢是靈敏度天花板低** —— ichorCNA 的偵測下限為 TF 3%，NanoRCS 亦報告 TF <3% 時 CNA 失效。</span><span class="term__def" data-lang="en" lang="en">Amplification or deletion of chromosomal segments. As an MRD signal its advantage is large segment size, visible even at very low coverage; its weakness is a low sensitivity ceiling — ichorCNA's detection floor is TF 3%, and NanoRCS likewise reports CNA failing below TF 3%.</span><a class="term__more" href="glossary.html#cna">完整條目 →</a></span></span> ／ 腫瘤分數估計</td><td>✅</td></tr>
+<tr><td><b><span class="term" data-term="AccuScan" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-accuscan-19">AccuScan<span class="term__pop" id="gd-accuscan-19" role="tooltip"><b class="term__hd">AccuScan <i>AccuScan</i></b><span class="term__def" data-lang="zh">2024 年的 WGS MRD 方法（EMBO Mol Med）。用 **RCA concatemer** 讓錯誤校正在單一 read 內完成，錯誤率 4.2e-7、LOD 達 cVAF 1e-6。**背景錯誤率由樣本自身量測、門檻由統計模型反推，皆不需 control 世代。**</span><span class="term__def" data-lang="en" lang="en">A 2024 WGS MRD method (EMBO Mol Med) using RCA concatemers so that error correction happens within a single read, reaching an error rate of 4.2e-7 and an LOD of cVAF 1e-6. Its background error rate is measured from the sample itself and its threshold derived from the statistical model, neither requiring a control cohort.</span><a class="term__more" href="glossary.html#accuscan">完整條目 →</a></span></span></b></td><td>2024</td><td>EMBO Mol Med</td><td>單讀取錯誤校正</td><td>—</td></tr>
+<tr><td><b><span class="term" data-term="NanoRCS" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-nanorcs-20">NanoRCS<span class="term__pop" id="gd-nanorcs-20" role="tooltip"><b class="term__hd">NanoRCS <i>NanoRCS</i></b><span class="term__def" data-lang="zh">UMC Utrecht 2025 年的方法（Genome Research）。**唯一一篇在 ONT 平台上做 cfDNA 腫瘤偵測的方法論文。** RCA + 長讀共識把 ONT 錯誤率從 Q21 降到 Q31（改善 9.4×），LOD 為 TF 0.24%。同時取 SNV、CNA、fragmentomics 三種訊號。</span><span class="term__def" data-lang="en" lang="en">The 2025 method from UMC Utrecht (Genome Research) and the only methods paper performing cfDNA tumour detection on the ONT platform. RCA plus long-read consensus lowers ONT error from Q21 to Q31, a 9.4-fold improvement, achieving an LOD of TF 0.24% while extracting SNV, CNA and fragmentomics signals simultaneously.</span><a class="term__more" href="glossary.html#nanorcs">完整條目 →</a></span></span></b></td><td>2025</td><td>Genome Research</td><td><span class="term" data-term="ONT simplex" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-ont-simplex-21">ONT<span class="term__pop" id="gd-ont-simplex-21" role="tooltip"><b class="term__hd">ONT simplex <i>ONT 單股定序</i></b><span class="term__def" data-lang="zh">Oxford Nanopore 的標準單分子定序，一個分子讀一次。本專案的資料即為此類。實測錯誤率約 6.7e-3（Q21）—— 比 NanoRCS 的 RCA 共識（Q31）差 9.4 倍，比 Illumina duplex（7.7e-7）高約四個數量級。</span><span class="term__def" data-lang="en" lang="en">Oxford Nanopore's standard single-molecule sequencing, reading each molecule once. This is the data type used in this project, with a measured error rate of about 6.7e-3 (Q21) — 9.4-fold worse than NanoRCS's RCA consensus (Q31) and roughly four orders of magnitude above Illumina duplex (7.7e-7).</span><a class="term__more" href="glossary.html#ont-simplex">完整條目 →</a></span></span> 共識定序</td><td>—</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="prose">選擇這 11 篇的判準有四項：期刊層級、年均引用數、有無開源程式碼、
+以及作者是否與該方法的商業利益綁定。
+<b>判準並非引用數優先</b> —— 年均引用最高的兩篇（GRAIL-CCGA 220／年、TRACERx 2017 195／年）
+均未列入，前者做的是癌症篩檢而非 MRD，後者為腫瘤演化生物學論文。
+完整分級與未收錄清單見專案的 <code>docs/paper/related/PAPER_TIERS.md</code>。</p>
+
+<h3 id="前置知識">前置知識</h3>
+
+<p class="prose">本知識庫假設讀者已具備長讀長癌症基因體學的基礎，不重複說明。
+所需概念在實驗室既有教材中已完整涵蓋：</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th scope="col">模組</th><th scope="col">已涵蓋</th></tr></thead>
+<tbody>
+<tr><td>M2</td><td>locus／allele／variant／genotype／haplotype 的區分；germline 與 somatic 的差異</td></tr>
+<tr><td>M3</td><td>ONT 的錯誤特性、homopolymer、長讀長的優勢與限制</td></tr>
+<tr><td>M7</td><td>somatic variant calling、PON、tumor-normal 與 tumor-only 的差別</td></tr>
+<tr><td>M8</td><td><b>VAF／purity／copy number 的關係式、tumor DNA fraction</b></td></tr>
+<tr><td>M9</td><td>5mC、MM/ML tag 的保留與遺失</td></tr>
+<tr><td>M10</td><td>precision／recall／F1、效能圖的批判性解讀</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="prose">MRD 專屬的術語則於本知識庫定義，共 91 條，
+可於內文以滑鼠停留查看，或見<a href="glossary.html">完整術語表</a>。</p>
+</section>
+
+
+<section data-part="evidence" class="part" id="part-evidence">
+<h2 data-num="③" id="資料層與使用方式">資料層與使用方式</h2>
+
+<p class="prose">同一批拆解結果以兩種形式提供，來源相同，不會分歧。</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th scope="col">讀者</th><th scope="col">用哪一層</th><th scope="col">位置</th></tr></thead>
+<tbody>
+<tr><td>人（學習、查找）</td><td>本網站</td><td><code>site/</code></td></tr>
+<tr><td><b>AI agent</b>（當規格讀）</td><td><b>結構化 JSON</b></td><td><code>docs/paper/dissection/</code></td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="prose">AI agent 應讀 <code>docs/paper/dissection/README.md</code> 作為入口，
+再依需要讀 <code>_TABLES.json</code>（跨論文扁平表，含 68 項效能數字）
+或個別論文的 JSON。<b>不應讀本網站的 HTML</b> —— 內容相同但有標記雜訊且切散在多頁。</p>
+
+<h3 id="內容的四種來源-必須區分">內容的四種來源，必須區分</h3>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th scope="col">類型</th><th scope="col">來源</th><th scope="col">可信度</th></tr></thead>
+<tbody>
+<tr><td>問題設定、方法規格、效能數字、作者自承限制</td><td>論文原文</td><td>忠實轉述</td></tr>
+<tr><td><b>實作細節</b>（3 篇）</td><td><b>開源程式碼</b></td><td><b>高於論文文字</b></td></tr>
+<tr><td>ONT 可移植性判斷</td><td>本專案推論</td><td>非論文說法</td></tr>
+<tr><td>跨論文的綜合</td><td>本知識庫</td><td>可回溯至上述來源</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+
+<section data-part="predict" class="part" id="part-predict">
+<h2 data-num="④" id="閱讀前的三個警告">閱讀前的三個警告</h2>
+
+<aside class="guardrail" id="guard-1"><p class="guardrail__hd">重要區分 #1：偵測極限不可跨方法直接比較</p><p class="prose">各方法的 <span class="term" data-term="LLOD" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-llod-22">LLOD<span class="term__pop" id="gd-llod-22" role="tooltip"><b class="term__hd">LLOD <i>偵測極限</i></b><span class="term__def" data-lang="zh">能被可靠偵測到的最低 TF。**報告時必須附條件**：定序深度、位點數、以及對應的 specificity。不同方法的 LLOD 若深度與位點數不同，不可直接比較。</span><span class="term__def" data-lang="en" lang="en">The lowest tumour fraction reliably detectable. Reporting it requires stating the conditions: sequencing depth, number of tracked sites, and the corresponding specificity. LLODs from methods with different depths or site counts are not directly comparable.</span><a class="term__more" href="glossary.html#llod">完整條目 →</a></span></span> 是在不同條件下量得的。
+<span class="term" data-term="patient-specific panel" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-patient-specific-panel-23">panel-based<span class="term__pop" id="gd-patient-specific-panel-23" role="tooltip"><b class="term__hd">patient-specific panel <i>個人化探針組</i></b><span class="term__def" data-lang="zh">為單一病人客製的捕捉探針組，只針對該病人腫瘤的變異設計。INVAR、Signatera、PhasED-seq 皆屬此類。位點數少但每位點深度極高，與 WGS 路線形成對照。</span><span class="term__def" data-lang="en" lang="en">A capture panel customised for one patient, targeting only that patient's tumour variants. INVAR, Signatera and PhasED-seq all follow this design: few sites but very high per-site depth, in contrast to the WGS route.</span><a class="term__more" href="glossary.html#patient-specific-panel">完整條目 →</a></span></span> 方法（CAPP-Seq、iDES、INVAR、PhasED-seq）
+每個位點的深度達 10³–10⁴ 倍；
+<span class="term" data-term="breadth supplants depth" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-breadth-supplants-depth-24">WGS-based<span class="term__pop" id="gd-breadth-supplants-depth-24" role="tooltip"><b class="term__hd">breadth supplants depth <i>廣度取代深度</i></b><span class="term__def" data-lang="zh">MRDetect 的核心論證：因為 GE 有物理上限，加深定序在低 TF 時毫無幫助；改為在全基因體上累加數千個位點的微弱訊號，才能突破偵測極限。</span><span class="term__def" data-lang="en" lang="en">The core argument of MRDetect: because genomic equivalents are physically limited, increasing sequencing depth does not help at low TF. Integrating weak signal across thousands of genome-wide sites is what breaks the detection barrier instead.</span><a class="term__more" href="glossary.html#breadth-supplants-depth">完整條目 →</a></span></span> 方法（MRDetect 世系、AccuScan、NanoRCS）只有 20–120 倍。
+兩者以完全不同的方式換取靈敏度。</p>
+<p class="prose"><b>引用任何 LLOD 數值時，必須連同深度、追蹤位點數與對應的 <span class="term" data-term="specificity" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-specificity-25">特異度<span class="term__pop" id="gd-specificity-25" role="tooltip"><b class="term__hd">specificity <i>特異度</i></b><span class="term__def" data-lang="zh">陰性樣本被正確判為陰性的比例：TN/(TN+FP)。**因為只由陰性樣本算出，不受陽性/陰性樣本組成比例影響**，是跨研究比較的主指標（Precision 與 F1 則會被 prevalence 綁架）。</span><span class="term__def" data-lang="en" lang="en">The proportion of negative samples correctly classified as negative: TN/(TN+FP). Because it is computed only from negatives, it is unaffected by the positive-to-negative composition and is the main metric for cross-study comparison, unlike precision and F1 which depend on prevalence.</span><a class="term__more" href="glossary.html#specificity">完整條目 →</a></span></span> 一併陳述。</b></p></aside>
+
+<aside class="guardrail" id="guard-2"><p class="guardrail__hd">重要區分 #2：「可移植性」是本專案的判斷，不是論文的說法</p><p class="prose">本知識庫在每一步標註該做法能否移植至 <span class="term" data-term="ONT simplex" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-ont-simplex-26">ONT 平台<span class="term__pop" id="gd-ont-simplex-26" role="tooltip"><b class="term__hd">ONT simplex <i>ONT 單股定序</i></b><span class="term__def" data-lang="zh">Oxford Nanopore 的標準單分子定序，一個分子讀一次。本專案的資料即為此類。實測錯誤率約 6.7e-3（Q21）—— 比 NanoRCS 的 RCA 共識（Q31）差 9.4 倍，比 Illumina duplex（7.7e-7）高約四個數量級。</span><span class="term__def" data-lang="en" lang="en">Oxford Nanopore's standard single-molecule sequencing, reading each molecule once. This is the data type used in this project, with a measured error rate of about 6.7e-3 (Q21) — 9.4-fold worse than NanoRCS's RCA consensus (Q31) and roughly four orders of magnitude above Illumina duplex (7.7e-7).</span><a class="term__more" href="glossary.html#ont-simplex">完整條目 →</a></span></span>，
+分為可移植、需調整、不可移植三級。66 格的分布為 45／15／6。</p>
+<p class="prose">此判斷<b>由本專案作出</b>，論文本身並未討論 ONT 的可行性。
+引用時必須與論文原文區分。</p></aside>
+
+<aside class="guardrail" id="guard-3"><p class="guardrail__hd">重要區分 #3：只有 11 篇有完整規格</p><p class="prose">蒐集的 28 篇中，僅 11 篇完成六步拆解，
+其餘 17 篇只有書目與一句話定位。</p>
+<p class="prose">若需要未拆解論文的方法細節，<b>必須先行拆解，不可從書目臆測</b>。
+另有少數格子因論文將細節置於未取得的補充資料而拆不出來，
+這些格子明確標示為「未公開」，不應解讀為該方法沒有這一步。</p></aside>
+</section>
+
+
+<section data-part="practice" class="part" id="part-practice">
+<h2 data-num="⑤" id="怎麼往下讀">怎麼往下讀</h2>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th scope="col">目的</th><th scope="col">讀哪一頁</th></tr></thead>
+<tbody>
+<tr><td>理解為什麼這個問題困難</td><td><a href="p01.html">p01 · 為什麼 MRD 偵測是個難題</a></td></tr>
+<tr><td>查某一步有哪些做法</td><td><a href="p02.html">p02</a> – <a href="p05.html">p05</a>（依骨架順序）</td></tr>
+<tr><td>查某一篇在某一步怎麼做</td><td><a href="p06.html">p06 · 逐篇完整規格矩陣</a></td></tr>
+<tr><td>了解 11 篇合起來說了什麼</td><td><a href="p07.html">p07 · 三條主線</a></td></tr>
+<tr><td>決定本專案該怎麼做</td><td><a href="p08.html">p08 · 本專案的位置與設計選單</a></td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="prose">依骨架順序閱讀（p01 → p05）可建立完整脈絡；
+若僅需查詢特定做法，可直接跳至 <a href="p06.html">p06</a> 的矩陣。</p>
+</section>
+
+    <nav class="pager" aria-label="模組導覽"><span></span><a class="next" href="p01.html"><small>下一模組 →</small>為什麼 MRD 偵測是個難題</a></nav>
+    <section class="glossary-appendix"><h2>本模組術語</h2><dl><dt>AccuScan（AccuScan）</dt><dd>2024 年的 WGS MRD 方法（EMBO Mol Med）。用 **RCA concatemer** 讓錯誤校正在單一 read 內完成，錯誤率 4.2e-7、LOD 達 cVAF 1e-6。**背景錯誤率由樣本自身量測、門檻由統計模型反推，皆不需 control 世代。**</dd><dt>CAPP-Seq（CAPP-Seq）</dt><dd>Stanford 2014 年的方法（Nat Med），整個 patient-specific panel 家族的共同祖先。用演算法設計 selector 使每位病人都被覆蓋到多個突變。LLOD 約 0.02%。⚠️ stage I 敏感度僅 50% —— 這個限制催生了後續十年的方法演進。</dd><dt>CNA（拷貝數變異）</dt><dd>染色體片段的擴增或缺失。作為 MRD 訊號的優勢是片段大、即使極低覆蓋也看得到；**劣勢是靈敏度天花板低** —— ichorCNA 的偵測下限為 TF 3%，NanoRCS 亦報告 TF <3% 時 CNA 失效。</dd><dt>INVAR（INVAR）</dt><dd>劍橋 Rosenfeld lab 2020 年的方法（Sci Transl Med）。與 MRDetect 同期同目標但**走純統計路線不用 ML**：四層誤差抑制疊加（背景降 131×），以 likelihood ratio 判定，並**用其他病人的樣本當陰性對照定門檻**。有開源碼（INVAR2）。</dd><dt>LLOD（偵測極限）</dt><dd>能被可靠偵測到的最低 TF。**報告時必須附條件**：定序深度、位點數、以及對應的 specificity。不同方法的 LLOD 若深度與位點數不同，不可直接比較。</dd><dt>Landau gen3（Landau 第三代）</dt><dd>Landau lab 2025 年的第三代（Nat Methods）。改從**定序化學**解決：低成本 Ultima 平台做 ~120X 深度，加上全基因體 duplex 錯誤校正，錯誤率達 7.7e-7。**三代中唯一開源。** ⚠️ 作者自承 tumor-informed 情境下標準 WGS + 高輸入量可能更好。</dd><dt>Lung-CLiP（Lung-CLiP）</dt><dd>Stanford 2020 年的 tumor-naive 早期肺癌偵測（Nature）。**多層級 ML**：先估每個變異是腫瘤來源的機率，再與全基因體 CNA 整合成**病人層級分類器**。**切分紀律最嚴謹的一篇** —— 用不同機構前瞻收案的獨立驗證世代，並明文批評同世代交叉驗證。</dd><dt>MRD（分子殘存疾病）</dt><dd>治療（多為手術）後體內殘存、但影像看不到的極少量癌細胞。偵測 MRD 的目的是在臨床復發之前就發現它，據以決定要不要追加治療。</dd><dt>MRD-EDGE（MRD-EDGE（第二代））</dt><dd>Landau lab 2024 年的續作（Nat Med）。把 SVM 換成 CNN + MLP ensemble，並加入 ctDNA 專屬生物特徵（SBS context、fragment length、regional epigenomics），訊噪比從 8.3× 提升到 118×。</dd><dt>MRDetect（MRDetect（第一代））</dt><dd>Landau lab 2020 年的方法（Nat Med），本專案的基準。核心是「廣度取代深度」：35X WGS + 全基因體數千個 SNV 累加，用線性 SVM 對單條 read 去噪（5 特徵）。LLOD 約 1e-5。⚠️ 程式碼未開源。</dd><dt>NanoRCS（NanoRCS）</dt><dd>UMC Utrecht 2025 年的方法（Genome Research）。**唯一一篇在 ONT 平台上做 cfDNA 腫瘤偵測的方法論文。** RCA + 長讀共識把 ONT 錯誤率從 Q21 降到 Q31（改善 9.4×），LOD 為 TF 0.24%。同時取 SNV、CNA、fragmentomics 三種訊號。</dd><dt>ONT simplex（ONT 單股定序）</dt><dd>Oxford Nanopore 的標準單分子定序，一個分子讀一次。本專案的資料即為此類。實測錯誤率約 6.7e-3（Q21）—— 比 NanoRCS 的 RCA 共識（Q31）差 9.4 倍，比 Illumina duplex（7.7e-7）高約四個數量級。</dd><dt>PhasED-seq（PhasED-seq）</dt><dd>Stanford 2021 年的方法（Nat Biotechnol）。**改變偵測單元**：不看單鹼基而看同一分子上的多個突變（phased variants），背景率降至 8.0e-7（2x）與 3.4e-8（3x），且不需分子條碼、不犧牲分子回收率。**其限制正好是 ONT 的優勢。**</dd><dt>background polishing（背景拋光）</dt><dd>iDES 提出的**純計算**去噪法：用陰性對照世代為每個位置、每種取代類型各建一個背景分布（非零 AF <5 個用 Gaussian，否則擬合 Weibull，另存零值比例），新樣本的候選變異若與該分布無法區分就移除。</dd><dt>breadth supplants depth（廣度取代深度）</dt><dd>MRDetect 的核心論證：因為 GE 有物理上限，加深定序在低 TF 時毫無幫助；改為在全基因體上累加數千個位點的微弱訊號，才能突破偵測極限。</dd><dt>cVAF（循環變異等位基因分率）</dt><dd>血漿中某變異的等位基因分率。與一般 VAF 的差別在量級：germline VAF 約 0.5，而 MRD 情境的 cVAF 常在 10⁻⁵–10⁻⁶ 之間，與定序錯誤率同一個數量級。</dd><dt>duplex sequencing（雙股定序）</dt><dd>同時定序同一 DNA 分子的**正反兩股**，只有兩股一致的變異才算真。能校正單股損傷（如氧化造成的 G>T），錯誤率可壓到 1e-7 級。⚠️ 代價極高：**只回收約 19% 的獨立分子**。</dd><dt>iDES（iDES）</dt><dd>Stanford 2016 年的 CAPP-Seq 改良（Nat Biotechnol）。整合分子條碼與 **background polishing**（逐位置逐取代類型建背景分布），兩者各約 3× 改善、合併達 ~15×，偵測極限降到 0.0025%。**其 background polishing 是本專案最可直接移植的降噪法。**</dd><dt>ichorCNA（ichorCNA）</dt><dd>Broad Institute 2017 年的工具（Nat Commun）。從 **0.1× 超低深度 WGS** 估 tumor fraction，不需事先知道腫瘤變異。用 HMM 同時預測 CNA 片段與估 TF。**MRDetect 三代都在用它。** ⚠️ 偵測下限 TF 3%，遠高於 MRD 目標區間。</dd><dt>patient-specific panel（個人化探針組）</dt><dd>為單一病人客製的捕捉探針組，只針對該病人腫瘤的變異設計。INVAR、Signatera、PhasED-seq 皆屬此類。位點數少但每位點深度極高，與 WGS 路線形成對照。</dd><dt>phased variant（同相變異）</dt><dd>位於**同一條 DNA 分子上**的兩個以上體細胞突變。因為兩個特定位置同時出錯的機率是相乘的，PV 的背景率遠低於單鹼基：2x PV 為 8.0e-7、3x 為 3.4e-8，**且不需要分子條碼**。</dd><dt>selector（選擇子）</dt><dd>CAPP-Seq 用演算法設計出的生物素化探針集，覆蓋反覆突變的區域，使多數病人都能被覆蓋到數個突變。NSCLC 版覆蓋 521 個 exon、約 125 kb（人類基因體的 0.004%）。</dd><dt>specificity（特異度）</dt><dd>陰性樣本被正確判為陰性的比例：TN/(TN+FP)。**因為只由陰性樣本算出，不受陽性/陰性樣本組成比例影響**，是跨研究比較的主指標（Precision 與 F1 則會被 prevalence 綁架）。</dd><dt>tumor fraction（腫瘤分數）</dt><dd>樣本中源自腫瘤的 DNA 佔全部 DNA 的比例。MRD 情境常低至 10⁻⁵ 甚至 10⁻⁶。本專案因使用純細胞株（purity≈1），混合時的 tumor read 比例即等同 TF。</dd></dl></section>
+  </main>
+  <nav class="toc--sticky" aria-label="本頁目錄"><h2>本頁目錄</h2><ol><li class="lv2"><a href="#為什麼重要">為什麼重要</a></li><li class="lv2"><a href="#概念與結構">概念與結構</a></li><li class="lv3"><a href="#六步共同骨架">六步共同骨架</a></li><li class="lv3"><a href="#收錄範圍">收錄範圍</a></li><li class="lv3"><a href="#前置知識">前置知識</a></li><li class="lv2"><a href="#資料層與使用方式">資料層與使用方式</a></li><li class="lv3"><a href="#內容的四種來源-必須區分">內容的四種來源，必須區分</a></li><li class="lv2"><a href="#閱讀前的三個警告">閱讀前的三個警告</a></li><li class="lv2"><a href="#怎麼往下讀">怎麼往下讀</a></li></ol></nav>
+</div>
+
+<footer class="site-footer">
+  本教材供中正大學資工系黃耀廷實驗室新進成員自學，聚焦
+  <code>LongPhase-S</code> 與 <code>LongPhase-TO</code> 的概念、證據與限制。
+</footer>
+
+
+<script src="assets/js/progress.js"></script>
+<script src="assets/js/core.js"></script>
+<script src="assets/js/glossary.js"></script>
+<script src="assets/js/quiz.js"></script>
+
+</body>
+</html>

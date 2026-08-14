@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="zh-Hant-TW" data-gloss="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>長讀癌症基因體學 · 入門教材</title>
+<meta name="description" content="供中正大學資工系黃耀廷實驗室新進成員自學的教材">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/layout.css">
+<link rel="stylesheet" href="assets/css/components.css">
+<link rel="stylesheet" href="assets/css/diagram.css">
+<link rel="stylesheet" href="assets/css/matrix.css">
+<link rel="stylesheet" href="assets/css/print.css">
+<script>
+/* 主題 / 字級 / 詞彙語言：必須在第一次繪製前套用，否則會閃一下白底。
+   刻意寫成同步的 inline script，不可移到外部檔案。 */
+(function () {
+  try {
+    var s = JSON.parse(localStorage.getItem('ccu.mrd.knowledge.v1') || '{}');
+    var ui = s.ui || {};
+    var d = document.documentElement;
+    if (ui.theme === 'dark' || ui.theme === 'light') d.setAttribute('data-theme', ui.theme);
+    if (ui.fontScale && ui.fontScale !== 'm') d.setAttribute('data-fs', ui.fontScale);
+    if (ui.glossLang) d.setAttribute('data-gloss', ui.glossLang);
+  } catch (e) { /* Safari 私密瀏覽會丟 QuotaExceededError，忽略即可 */ }
+})();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main">跳到主要內容</a>
+
+<header class="site-header">
+  <div class="site-header__in">
+    <a class="brand" href="index.html">
+      MRD 偵測方法知識庫
+      <small>中正大學資工系 · 黃耀廷實驗室</small>
+    </a>
+    <span class="site-header__spacer"></span>
+
+    <span class="hgroup gloss-toggle" role="group" aria-label="術語定義語言">
+      <button type="button" class="hbtn" data-gloss-btn="zh"   aria-pressed="true">繁中</button>
+      <button type="button" class="hbtn" data-gloss-btn="en"   aria-pressed="false">English</button>
+      <button type="button" class="hbtn" data-gloss-btn="both" aria-pressed="false">雙語</button>
+    </span>
+
+    <button type="button" class="hbtn theme-toggle" data-theme-btn
+            aria-label="切換深色／淺色主題">◐</button>
+    <button type="button" class="hbtn" data-fs-btn aria-label="調整字級">A</button>
+    <a class="hbtn" href="glossary.html">完整術語表</a>
+  </div>
+</header>
+
+<div class="wrap wrap--plain">
+  <main class="main" id="main">
+    <header class="mhead"><p class="mhead__kicker">自學課程</p><h1>長讀癌症基因體學 · 入門教材</h1></header><div class="home-hook"><p class="home-hook__q">這個實驗室做的事，是寫程式分析 DNA 定序資料。</p><p>定序機把一管檢體裡的 DNA 打斷成片段、逐條讀出，產出幾百萬條帶著錯誤的字串。麻煩的是：這管檢體裡同時有正常細胞和癌細胞，而字串上沒有標記誰是誰。把它還原回來，就是我們寫的軟體要做的事。</p></div><figure class="dia dia--wide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" class="dia-svg" role="img" aria-labelledby="index-what-we-do__title" aria-describedby="index-what-we-do__desc">
+  <title id="index-what-we-do__title">這份知識庫在做什麼</title>
+  <desc id="index-what-we-do__desc">由上而下三層。第一層是輸入：十一篇 MRD 偵測方法論文，
+        各自來自不同實驗室、不同年份、不同定序平台，
+        用詞、量測單位與報告方式互不一致，直接並排閱讀難以比較。
+        第二層是處理方式：把每一篇拆進同一組欄位，也就是六步共同骨架，
+        每一步記錄該方法的可實作規格、達到的數字、作者自承的限制，
+        以及本專案對能否移植到 ONT 平台的判斷。
+        第三層是輸出：一張十一篇乘以六步的矩陣，共六十六格規格。
+        由此可以直接看出每一步有哪些做法可選、各自的代價是什麼，
+        成為本專案設計自己方法時的選單。
+        同一批拆解結果同時以網頁提供給人閱讀，以結構化 JSON 提供給 AI agent 讀取。</desc>
+
+  <!-- ── 第一層：輸入 ── -->
+  <text class="lbl bold zh" x="20" y="34">① 輸入：11 篇 MRD 偵測方法論文</text>
+  <text class="tick zh" x="20" y="58">不同實驗室、不同年份、不同平台 —— 用詞與報告方式互不一致</text>
+
+  <g>
+    <rect class="box plain" x="24" y="76" width="126" height="62" rx="8"/>
+    <text class="anno bold mid zh" x="87" y="103">MRDetect</text>
+    <text class="tick mid zh" x="87" y="124">2020 · WGS</text>
+
+    <rect class="box plain" x="164" y="76" width="126" height="62" rx="8"/>
+    <text class="anno bold mid zh" x="227" y="103">CAPP-Seq</text>
+    <text class="tick mid zh" x="227" y="124">2014 · panel</text>
+
+    <rect class="box plain" x="304" y="76" width="126" height="62" rx="8"/>
+    <text class="anno bold mid zh" x="367" y="103">iDES</text>
+    <text class="tick mid zh" x="367" y="124">2016 · 背景拋光</text>
+
+    <rect class="box plain" x="444" y="76" width="126" height="62" rx="8"/>
+    <text class="anno bold mid zh" x="507" y="103">INVAR</text>
+    <text class="tick mid zh" x="507" y="124">2020 · 統計整合</text>
+
+    <rect class="box plain" x="584" y="76" width="126" height="62" rx="8"/>
+    <text class="anno bold mid zh" x="647" y="103">PhasED-seq</text>
+    <text class="tick mid zh" x="647" y="124">2021 · 同分子</text>
+
+    <rect class="box plain" x="724" y="76" width="126" height="62" rx="8"/>
+    <text class="anno bold mid zh" x="787" y="103">NanoRCS</text>
+    <text class="tick mid zh" x="787" y="124">2025 · ONT</text>
+
+    <rect class="box plain" x="864" y="76" width="112" height="62" rx="8"/>
+    <text class="anno bold mid zh" x="920" y="103">⋯</text>
+    <text class="tick mid zh" x="920" y="124">另 5 篇</text>
+  </g>
+
+  <path class="conn thick" d="M500 152 L500 176" marker-end="url(#index-what-we-do__kb-arrow)"/>
+  <defs>
+    <marker id="index-what-we-do__kb-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path class="conn" d="M0 0 L10 5 L0 10 z"/>
+    </marker>
+  </defs>
+
+  <!-- ── 第二層：處理 ── -->
+  <rect class="box" x="24" y="188" width="952" height="196" rx="10"/>
+  <text class="lbl bold zh" x="48" y="220">② 拆進同一組欄位：六步共同骨架</text>
+  <text class="tick zh" x="48" y="244">每一篇的每一步，都記錄下面四件事</text>
+
+  <g>
+    <rect class="box plain" x="48" y="262" width="216" height="100" rx="8"/>
+    <text class="anno bold mid zh" x="156" y="290">可實作規格</text>
+    <text class="tick mid zh" x="156" y="314">超參數、訓練資料</text>
+    <text class="tick mid zh" x="156" y="334">怎麼來、演算法</text>
+    <text class="tick mid zh" x="156" y="354">← 取自論文</text>
+
+    <rect class="box plain" x="280" y="262" width="216" height="100" rx="8"/>
+    <text class="anno bold mid zh" x="388" y="290">達到的數字</text>
+    <text class="tick mid zh" x="388" y="314">錯誤率、偵測極限</text>
+    <text class="tick mid zh" x="388" y="334">敏感度、特異度</text>
+    <text class="tick mid zh" x="388" y="354">← 取自論文</text>
+
+    <rect class="box plain" x="512" y="262" width="216" height="100" rx="8"/>
+    <text class="anno bold mid zh" x="620" y="290">作者自承的限制</text>
+    <text class="tick mid zh" x="620" y="314">他們自己說</text>
+    <text class="tick mid zh" x="620" y="334">哪裡不行</text>
+    <text class="tick mid zh" x="620" y="354">← 取自論文</text>
+
+    <rect class="box plain" x="744" y="262" width="208" height="100" rx="8"/>
+    <text class="anno bold mid accent zh" x="848" y="290">能否移植到 ONT</text>
+    <text class="tick mid zh" x="848" y="314">可移植／需調整／</text>
+    <text class="tick mid zh" x="848" y="334">不可移植</text>
+    <text class="tick mid warn zh" x="848" y="354">← 本專案的判斷</text>
+  </g>
+
+  <path class="conn thick" d="M500 396 L500 420" marker-end="url(#index-what-we-do__kb-arrow)"/>
+
+  <!-- ── 第三層：輸出 ── -->
+  <text class="lbl bold zh" x="20" y="452">③ 輸出：11 篇 × 6 步 ＝ 66 格規格</text>
+
+  <rect class="box" x="24" y="470" width="608" height="130" rx="10"/>
+  <text class="anno bold zh" x="48" y="500">一張可比較的矩陣</text>
+  <text class="tick zh" x="48" y="526">每一步有哪些做法可選、各自的代價是什麼 ——</text>
+  <text class="tick zh" x="48" y="548">這就是本專案設計自己方法時的選單。</text>
+  <text class="tick zh" x="48" y="578">同一步的做法數：③ 去噪有 7 種、④ 分數有 8 種、⑤ 門檻有 6 種</text>
+
+  <rect class="box plain" x="652" y="470" width="324" height="130" rx="10"/>
+  <text class="anno bold zh" x="676" y="500">兩種讀法，同一份來源</text>
+  <text class="tick zh" x="676" y="526">人 → 本網站（含圖與術語 tooltip）</text>
+  <text class="tick zh" x="676" y="548">AI agent → 結構化 JSON</text>
+  <text class="tick zh" x="676" y="578">內容相同，不會分歧</text>
+</svg><figcaption>定序機給的是一堆看不出來源的字串；把每一條判回它從哪來，就是這個實驗室寫的軟體在做的事。</figcaption></figure><figure class="dia dia--wide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 300" class="dia-svg" role="img" aria-labelledby="index-path__title" aria-describedby="index-path__desc">
+  <title id="index-path__title">本知識庫的閱讀路徑</title>
+  <desc id="index-path__desc">由左至右分成三段。第一段是導覽，包含第零頁與第一頁，
+        說明六步骨架的組織原則，並建立為何加深定序無效這個核心直覺，
+        約需四十分鐘。
+        第二段是方法細節，包含第二頁到第六頁，
+        逐步驟橫向比較十一篇論文在每一步的做法，是本知識庫的主體，
+        約需三小時。
+        第三段是統整，包含第七頁與第八頁，
+        給出跨論文的三條主線，以及本專案的位置與設計選單，
+        約需一小時。
+        圖下方標出兩種讀法：依序讀完可建立完整脈絡；
+        若只需查詢特定做法，可直接跳到第六頁的完整矩陣。</desc>
+
+  <!-- 三段 -->
+  <rect class="box plain" x="24" y="52" width="256" height="150" rx="10"/>
+  <text class="anno bold mid zh" x="152" y="84">導覽</text>
+  <text class="tick mid zh" x="152" y="108">p00 – p01</text>
+  <path class="guide" d="M48 122 L256 122"/>
+  <text class="tick mid zh" x="152" y="148">六步骨架是什麼</text>
+  <text class="tick mid zh" x="152" y="170">為什麼加深定序無效</text>
+  <text class="anno bold mid accent" x="152" y="194">約 40 分鐘</text>
+
+  <path class="conn thick" d="M288 127 L312 127" marker-end="url(#index-path__ip-a)"/>
+  <defs>
+    <marker id="index-path__ip-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path class="conn" d="M0 0 L10 5 L0 10 z"/>
+    </marker>
+  </defs>
+
+  <rect class="box" x="320" y="52" width="356" height="150" rx="10"/>
+  <text class="anno bold mid zh" x="498" y="84">方法細節 —— 主體</text>
+  <text class="tick mid zh" x="498" y="108">p02 – p06</text>
+  <path class="guide" d="M344 122 L652 122"/>
+  <text class="tick mid zh" x="498" y="148">逐步驟橫向比較 11 篇的做法</text>
+  <text class="tick mid zh" x="498" y="170">含 66 格可展開的完整規格</text>
+  <text class="anno bold mid accent" x="498" y="194">約 3 小時</text>
+
+  <path class="conn thick" d="M684 127 L708 127" marker-end="url(#index-path__ip-a)"/>
+
+  <rect class="box plain" x="716" y="52" width="260" height="150" rx="10"/>
+  <text class="anno bold mid zh" x="846" y="84">統整</text>
+  <text class="tick mid zh" x="846" y="108">p07 – p08</text>
+  <path class="guide" d="M740 122 L952 122"/>
+  <text class="tick mid zh" x="846" y="148">跨論文的三條主線</text>
+  <text class="tick mid zh" x="846" y="170">本專案的設計選單</text>
+  <text class="anno bold mid accent" x="846" y="194">約 1 小時</text>
+
+  <!-- 兩種讀法 -->
+  <rect class="box plain" x="24" y="228" width="468" height="56" rx="8"/>
+  <text class="anno bold zh" x="48" y="252">依序讀完</text>
+  <text class="tick zh" x="48" y="274">建立完整脈絡，理解每個設計選擇背後的取捨</text>
+
+  <rect class="box plain" x="508" y="228" width="468" height="56" rx="8"/>
+  <text class="anno bold zh" x="532" y="252">只查特定做法</text>
+  <text class="tick zh" x="532" y="274">直接跳到 p06 的完整矩陣，點開該格看規格</text>
+</svg></figure><p class="home-cta"><a class="btn btn--big" href="p00.html">開始第一個模組 →</a><a class="chip chip--accent" href="#resume" data-resume hidden>繼續上次</a><span class="chip" data-progress-summary>—</span></p><details class="reveal"><summary>這份教材適合誰？需要什麼基礎？要花多久？</summary><div class="reveal__a"><dl class="home-facts"><div><dt>適合對象</dt><dd>資訊工程背景、沒有受過癌症生物學與定序訓練的自學者</dd></div><div><dt>先備能力</dt><dd>不要求生物學背景。M0–M3 只需閱讀與操作互動元件；M4 起需要能在終端機執行基本指令</dd></div><div><dt>預計時間</dt><dd>9 個單元合計約 5 小時，建議分 6 週完成</dd></div><div><dt>完成後能做什麼</dt><dd>獨立判讀一個位點的證據，並寫出明確標示不確定性的結論</dd></div></dl></div></details><section class="mgroup"><h2>導覽</h2><ol class="mgrid"><li class="mcard" data-mod="p00"><a href="p00.html"><span class="mcard__num">0</span><span class="mcard__body"><b>這份知識庫在回答什麼</b><small class="mcard__q">11 篇 MRD 偵測論文，要怎麼比較才看得出共同點？</small><span class="mcard__time">約 15 分鐘</span></span><span class="mcard__state" data-state aria-hidden="true"></span></a></li><li class="mcard" data-mod="p01"><a href="p01.html"><span class="mcard__num">1</span><span class="mcard__body"><b>為什麼 MRD 偵測是個難題</b><small class="mcard__q">既然測不到，為什麼不把定序做得更深？</small><span class="mcard__time">約 25 分鐘</span></span><span class="mcard__state" data-state aria-hidden="true"></span></a></li></ol></section><section class="mgroup"><h2>方法細節</h2><ol class="mgrid"><li class="mcard" data-mod="p02"><a href="p02.html"><span class="mcard__num">2</span><span class="mcard__body"><b>① 追蹤標的 與 ② 驗證資料</b><small class="mcard__q">要追蹤哪些位點？用什麼資料才能宣稱偵測極限？</small><span class="mcard__time">約 30 分鐘</span></span><span class="mcard__state" data-state aria-hidden="true"></span></a></li><li class="mcard" data-mod="p03"><a href="p03.html"><span class="mcard__num">3</span><span class="mcard__body"><b>③ 怎麼壓噪音：四類七種做法</b><small class="mcard__q">錯誤率降兩個數量級，要付出什麼代價？</small><span class="mcard__time">約 45 分鐘</span></span><span class="mcard__state" data-state aria-hidden="true"></span></a></li><li class="mcard" data-mod="p04"><a href="p04.html"><span class="mcard__num">4</span><span class="mcard__body"><b>④ 樣本層分數 與 ⑤ 門檻</b><small class="mcard__q">幾萬個位點怎麼變成一個「有癌／沒癌」的判定？</small><span class="mcard__time">約 40 分鐘</span></span><span class="mcard__state" data-state aria-hidden="true"></span></a></li><li class="mcard" data-mod="p05"><a href="p05.html"><span class="mcard__num">5</span><span class="mcard__body"><b>⑥ 評估與切分紀律</b><small class="mcard__q">怎麼證明報出來的數字不是過度擬合？</small><span class="mcard__time">約 35 分鐘</span></span><span class="mcard__state" data-state aria-hidden="true"></span></a></li><li class="mcard" data-mod="p06"><a href="p06.html"><span class="mcard__num">6</span><span class="mcard__body"><b>逐篇完整規格矩陣</b><small class="mcard__q">某一篇在某一步到底怎麼做？</small><span class="mcard__time">約 20 分鐘</span></span><span class="mcard__state" data-state aria-hidden="true"></span></a></li></ol></section><section class="mgroup"><h2>統整</h2><ol class="mgrid"><li class="mcard" data-mod="p07"><a href="p07.html"><span class="mcard__num">7</span><span class="mcard__body"><b>跨論文統整：三條主線</b><small class="mcard__q">這 11 篇合起來說了什麼？</small><span class="mcard__time">約 30 分鐘</span></span><span class="mcard__state" data-state aria-hidden="true"></span></a></li><li class="mcard" data-mod="p08"><a href="p08.html"><span class="mcard__num">8</span><span class="mcard__body"><b>本專案的位置與設計選單</b><small class="mcard__q">這些方法裡，哪些我們能用、哪些用不了？</small><span class="mcard__time">約 30 分鐘</span></span><span class="mcard__state" data-state aria-hidden="true"></span></a></li></ol></section><section class="mgroup"><h2>工具與資源</h2><p class="mhead__meta"><a class="chip" href="glossary.html">完整術語表</a><a class="chip" href="print-all.html">完整手冊（可列印）</a><button type="button" class="chip" data-export-progress>匯出進度</button><button type="button" class="chip" data-import-progress>匯入進度</button></p><details class="reveal"><summary>換電腦或共用帳號時，進度如何保存？</summary><div class="reveal__a"><p class="prose">進度存在<b>目前這台電腦的這個瀏覽器</b>裡，不會隨教材檔案移轉；瀏覽器無法把本機檔案的進度與檔案本身綁定。</p><p class="prose">所以換電腦、換瀏覽器、或多人共用同一個帳號時，請用上面的「匯出進度」存成檔案，再到另一台「匯入進度」。</p></div></details></section>
+    
+    
+  </main>
+  
+</div>
+
+<footer class="site-footer">
+  本教材供中正大學資工系黃耀廷實驗室新進成員自學，聚焦
+  <code>LongPhase-S</code> 與 <code>LongPhase-TO</code> 的概念、證據與限制。
+</footer>
+
+
+<script src="assets/js/progress.js"></script>
+<script src="assets/js/core.js"></script>
+<script src="assets/js/glossary.js"></script>
+<script src="assets/js/quiz.js"></script>
+<script src="assets/data/modules.data.js"></script>
+<script src="assets/js/index-page.js"></script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 300">
+  <title>本知識庫的閱讀路徑</title>
+  <desc>由左至右分成三段。第一段是導覽，包含第零頁與第一頁，
+        說明六步骨架的組織原則，並建立為何加深定序無效這個核心直覺，
+        約需四十分鐘。
+        第二段是方法細節，包含第二頁到第六頁，
+        逐步驟橫向比較十一篇論文在每一步的做法，是本知識庫的主體，
+        約需三小時。
+        第三段是統整，包含第七頁與第八頁，
+        給出跨論文的三條主線，以及本專案的位置與設計選單，
+        約需一小時。
+        圖下方標出兩種讀法：依序讀完可建立完整脈絡；
+        若只需查詢特定做法，可直接跳到第六頁的完整矩陣。</desc>
+
+  <!-- 三段 -->
+  <rect class="box plain" x="24" y="52" width="256" height="150" rx="10"/>
+  <text class="anno bold mid zh" x="152" y="84">導覽</text>
+  <text class="tick mid zh" x="152" y="108">p00 – p01</text>
+  <path class="guide" d="M48 122 L256 122"/>
+  <text class="tick mid zh" x="152" y="148">六步骨架是什麼</text>
+  <text class="tick mid zh" x="152" y="170">為什麼加深定序無效</text>
+  <text class="anno bold mid accent" x="152" y="194">約 40 分鐘</text>
+
+  <path class="conn thick" d="M288 127 L312 127" marker-end="url(#ip-a)"/>
+  <defs>
+    <marker id="ip-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path class="conn" d="M0 0 L10 5 L0 10 z"/>
+    </marker>
+  </defs>
+
+  <rect class="box" x="320" y="52" width="356" height="150" rx="10"/>
+  <text class="anno bold mid zh" x="498" y="84">方法細節 —— 主體</text>
+  <text class="tick mid zh" x="498" y="108">p02 – p06</text>
+  <path class="guide" d="M344 122 L652 122"/>
+  <text class="tick mid zh" x="498" y="148">逐步驟橫向比較 11 篇的做法</text>
+  <text class="tick mid zh" x="498" y="170">含 66 格可展開的完整規格</text>
+  <text class="anno bold mid accent" x="498" y="194">約 3 小時</text>
+
+  <path class="conn thick" d="M684 127 L708 127" marker-end="url(#ip-a)"/>
+
+  <rect class="box plain" x="716" y="52" width="260" height="150" rx="10"/>
+  <text class="anno bold mid zh" x="846" y="84">統整</text>
+  <text class="tick mid zh" x="846" y="108">p07 – p08</text>
+  <path class="guide" d="M740 122 L952 122"/>
+  <text class="tick mid zh" x="846" y="148">跨論文的三條主線</text>
+  <text class="tick mid zh" x="846" y="170">本專案的設計選單</text>
+  <text class="anno bold mid accent" x="846" y="194">約 1 小時</text>
+
+  <!-- 兩種讀法 -->
+  <rect class="box plain" x="24" y="228" width="468" height="56" rx="8"/>
+  <text class="anno bold zh" x="48" y="252">依序讀完</text>
+  <text class="tick zh" x="48" y="274">建立完整脈絡，理解每個設計選擇背後的取捨</text>
+
+  <rect class="box plain" x="508" y="228" width="468" height="56" rx="8"/>
+  <text class="anno bold zh" x="532" y="252">只查特定做法</text>
+  <text class="tick zh" x="532" y="274">直接跳到 p06 的完整矩陣，點開該格看規格</text>
+</svg>

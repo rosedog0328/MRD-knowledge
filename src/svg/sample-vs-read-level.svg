@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 420">
+  <title>樣本層級與 read 層級的判定單元不同，兩者的指標不可互相取代</title>
+  <desc>上半部是 read 層級：判斷單元是一條支持 read 究竟是真變異還是定序錯誤。
+        這一層的分類器會算出自己的精確率、召回率與 F1 分數，
+        但那是去噪器的內部品質指標，不是偵測效能。
+        一份檢體裡有成千上萬條 read，因此這一層的樣本數很大。
+        下半部是樣本層級：判斷單元是一個檢體，也就是一個比對檔。
+        真值標籤是該檢體含不含腫瘤，模型輸出是有癌或沒癌的二元判定。
+        由此得到的混淆矩陣才是偵測效能：
+        含腫瘤且判有癌為真陽性，含腫瘤卻判沒癌為偽陰性，
+        不含腫瘤卻判有癌為偽陽性，不含腫瘤且判沒癌為真陰性。
+        這一層的樣本數等於檢體數，通常只有個位數到數十個。
+        圖右側標明兩層的關係：read 層的輸出是樣本層的輸入之一，
+        但兩層的指標絕不可互相取代或混報。</desc>
+
+  <text class="ttl bold zh" x="20" y="34">兩個判定層級：指標不可互相取代</text>
+
+  <!-- ══ 上：read 層級 ══ -->
+  <rect class="box plain" x="20" y="58" width="700" height="150" rx="10"/>
+  <text class="anno bold zh" x="44" y="88">read 層級（第一層去噪器）</text>
+  <text class="tick zh" x="44" y="112">判斷單元：一條支持 read 是真變異，還是定序錯誤？</text>
+
+  <rect class="read" x="60" y="132" width="150" height="10" rx="4"/>
+  <circle class="mark somatic" cx="135" cy="137" r="5"/>
+  <text class="tick zh" x="224" y="141">→ 真變異？</text>
+
+  <rect class="read" x="60" y="154" width="150" height="10" rx="4"/>
+  <circle class="mark bad" cx="135" cy="159" r="5"/>
+  <text class="tick zh" x="224" y="163">→ 定序錯誤？</text>
+
+  <text class="tick zh" x="360" y="141">樣本數 ＝ read 數</text>
+  <text class="tick zh" x="360" y="163">一份檢體有成千上萬條</text>
+
+  <text class="anno bold warn zh" x="44" y="192">此層算出的 precision／recall／F1 是「去噪器的內部品質」，不是偵測效能</text>
+
+  <path class="conn thick" d="M370 216 L370 240" marker-end="url(#lv-a)"/>
+  <defs>
+    <marker id="lv-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path class="conn" d="M0 0 L10 5 L0 10 z"/>
+    </marker>
+  </defs>
+  <text class="tick zh" x="386" y="234">彙總為樣本層的特徵之一</text>
+
+  <!-- ══ 下：樣本層級 ══ -->
+  <rect class="box" x="20" y="250" width="700" height="152" rx="10"/>
+  <text class="anno bold zh" x="44" y="280">樣本層級（偵測效能）</text>
+  <text class="tick zh" x="44" y="304">判斷單元：一個檢體（一個 BAM）含不含腫瘤？</text>
+
+  <rect class="box plain" x="60" y="322" width="118" height="62" rx="8"/>
+  <text class="anno bold mid zh" x="119" y="348">TF = 1e-2</text>
+  <text class="tick mid ok zh" x="119" y="370">判有癌 → TP</text>
+
+  <rect class="box plain" x="192" y="322" width="118" height="62" rx="8"/>
+  <text class="anno bold mid zh" x="251" y="348">TF = 1e-4</text>
+  <text class="tick mid bad zh" x="251" y="370">判沒癌 → FN</text>
+
+  <rect class="box plain" x="324" y="322" width="118" height="62" rx="8"/>
+  <text class="anno bold mid zh" x="383" y="348">normal-only</text>
+  <text class="tick mid bad zh" x="383" y="370">判有癌 → FP</text>
+
+  <rect class="box plain" x="456" y="322" width="118" height="62" rx="8"/>
+  <text class="anno bold mid zh" x="515" y="348">normal-only</text>
+  <text class="tick mid ok zh" x="515" y="370">判沒癌 → TN</text>
+
+  <text class="tick zh" x="596" y="348">樣本數 ＝ 檢體數</text>
+  <text class="tick zh" x="596" y="370">通常個位數到數十</text>
+
+  <!-- 右側規則 -->
+  <rect class="box" x="740" y="58" width="240" height="344" rx="10"/>
+  <text class="anno bold zh" x="764" y="88">報告紀律</text>
+  <path class="guide" d="M764 100 L956 100"/>
+
+  <text class="tick zh" x="764" y="130">① 偵測結果的 TP／FP／FN</text>
+  <text class="tick zh" x="764" y="152">　一律指樣本層級</text>
+
+  <text class="tick zh" x="764" y="186">② read 層去噪器的 F1／AUC</text>
+  <text class="anno bold bad zh" x="764" y="208">　不得當偵測效能報告</text>
+
+  <text class="tick zh" x="764" y="242">③ 切分單位是樣本，</text>
+  <text class="anno bold accent zh" x="764" y="264">　不是 read</text>
+
+  <text class="tick zh" x="764" y="298">④ Recall 分 TF 分層報，</text>
+  <text class="tick zh" x="764" y="320">　混算會藏起「TF 越低</text>
+  <text class="tick zh" x="764" y="342">　越難」這件事</text>
+
+  <text class="tick zh" x="764" y="376">⑤ Specificity 只由陰性</text>
+  <text class="tick zh" x="764" y="392">　樣本算，不受組成影響</text>
+</svg>

@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 430">
+  <title>低腫瘤分數下每個位點最多只有一條支持 read，因此判斷單元是單條 read</title>
+  <desc>上半部是傳統的以位點為單位的想法：在高變異等位基因分率的情境下，
+        同一個位點會有多條 read 帶有突變，因此可以用「至少三條支持 read 才算數」
+        這類門檻來過濾定序錯誤，因為錯誤不太可能在同一位點重複發生三次。
+        下半部是極低腫瘤分數下的真實情況：腫瘤分數遠小於覆蓋深度的倒數，
+        因此每個位點最多只期待一條支持 read。
+        此時「多條支持才算數」的門檻會把所有真訊號都濾掉，完全不能用。
+        判斷單元必須改成單一條 read 究竟是真突變還是定序錯誤，
+        這就是 read-centric 的意思。
+        圖右下方補充其推論：既然真訊號應該散布在許多位點且每點只有一條，
+        那麼支持 read 數大於一的位點反而可疑，
+        這正是 INVAR 的離群抑制與 AccuScan 的單分子準則背後的共同洞見。</desc>
+
+  <text class="ttl bold zh" x="20" y="34">read-centric：為什麼不能用「多條支持才算數」</text>
+
+  <!-- ══ 上：傳統 locus-centric ══ -->
+  <rect class="box plain" x="20" y="58" width="960" height="150" rx="10"/>
+  <text class="anno bold zh" x="44" y="88">傳統想法（locus-centric）— 適用於高 VAF</text>
+  <text class="tick zh" x="44" y="112">同一位點有多條 read 帶突變 → 可用「≥3 條支持」濾掉定序錯誤</text>
+
+  <text class="tick mid zh" x="150" y="140">位點 A</text>
+  <rect class="read" x="90" y="150" width="120" height="9" rx="4"/>
+  <rect class="read" x="90" y="164" width="120" height="9" rx="4"/>
+  <rect class="read" x="90" y="178" width="120" height="9" rx="4"/>
+  <rect class="read" x="90" y="192" width="120" height="9" rx="4"/>
+  <circle class="mark somatic" cx="150" cy="154" r="5"/>
+  <circle class="mark somatic" cx="150" cy="168" r="5"/>
+  <circle class="mark somatic" cx="150" cy="182" r="5"/>
+  <circle class="mark ref" cx="150" cy="196" r="5"/>
+  <text class="anno bold ok zh" x="230" y="176">3 條支持 → 判為真突變</text>
+
+  <text class="tick zh" x="560" y="176">錯誤不太可能在同一位點重複三次，所以這個門檻有效。</text>
+
+  <!-- ══ 下：低 TF 的真實情況 ══ -->
+  <rect class="box" x="20" y="228" width="960" height="192" rx="10"/>
+  <text class="anno bold zh" x="44" y="258">極低 TF 的真實情況（TF ≪ 1／深度）</text>
+  <text class="tick zh" x="44" y="282">每個位點最多只期待 1 條支持 read → 「≥3 條」的門檻會把真訊號全部濾掉</text>
+
+  <text class="tick mid zh" x="120" y="312">位點 1</text>
+  <rect class="read" x="70" y="322" width="100" height="9" rx="4"/>
+  <rect class="read" x="70" y="336" width="100" height="9" rx="4"/>
+  <rect class="read" x="70" y="350" width="100" height="9" rx="4"/>
+  <circle class="mark ref" cx="120" cy="326" r="5"/>
+  <circle class="mark ref" cx="120" cy="340" r="5"/>
+  <circle class="mark ref" cx="120" cy="354" r="5"/>
+
+  <text class="tick mid zh" x="290" y="312">位點 2</text>
+  <rect class="read" x="240" y="322" width="100" height="9" rx="4"/>
+  <rect class="read" x="240" y="336" width="100" height="9" rx="4"/>
+  <rect class="read" x="240" y="350" width="100" height="9" rx="4"/>
+  <circle class="mark ref" cx="290" cy="326" r="5"/>
+  <circle class="mark somatic" cx="290" cy="340" r="5"/>
+  <circle class="mark ref" cx="290" cy="354" r="5"/>
+  <text class="anno bold somatic mid zh" x="290" y="382">1 條</text>
+
+  <text class="tick mid zh" x="460" y="312">位點 3</text>
+  <rect class="read" x="410" y="322" width="100" height="9" rx="4"/>
+  <rect class="read" x="410" y="336" width="100" height="9" rx="4"/>
+  <rect class="read" x="410" y="350" width="100" height="9" rx="4"/>
+  <circle class="mark ref" cx="460" cy="326" r="5"/>
+  <circle class="mark ref" cx="460" cy="340" r="5"/>
+  <circle class="mark ref" cx="460" cy="354" r="5"/>
+
+  <text class="tick mid zh" x="565" y="340">⋯ 數千個位點 ⋯</text>
+
+  <path class="guide" d="M640 296 L640 404"/>
+
+  <text class="anno bold zh" x="664" y="318">判斷單元必須改成：</text>
+  <text class="anno bold accent zh" x="664" y="344">「這條 read 是真突變還是錯誤？」</text>
+  <text class="tick zh" x="664" y="372">推論：支持 read 數 &gt;1 反而可疑 →</text>
+  <text class="tick zh" x="664" y="394">INVAR 離群抑制、AccuScan 單分子準則</text>
+</svg>

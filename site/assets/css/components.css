@@ -1,0 +1,328 @@
+/* ============================================================================
+   components.css — term tooltip / guardrail / reveal / source / quiz / figure
+   ============================================================================ */
+
+/* --- Glossary term -----------------------------------------------------
+   關鍵：整個 tooltip 用純 CSS 就能運作（:hover / :focus-within），
+   關掉 JS 也完全可用。JS 只負責語言切換、觸控 tap-to-pin、邊緣翻轉。   */
+.term {
+  position: relative;
+  border-bottom: 1px dotted var(--rule-strong);
+  cursor: help;
+  color: var(--ink);              /* 刻意不是連結色 —— 它不是導覽 */
+  text-decoration: none;
+}
+.term:hover,
+.term:focus-visible,
+.term[data-pinned="true"] {
+  border-bottom-style: solid;
+  border-bottom-color: var(--accent);
+  background: var(--term-bg);
+  border-radius: 2px;
+}
+
+.term__pop {
+  position: absolute;
+  left: 0; top: calc(100% + .5em);
+  z-index: 40;
+  width: min(28em, 78vw);
+  padding: .75em .9em;
+  background: var(--paper-raised);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  box-shadow: 0 6px 24px var(--shadow);
+  font-size: .9rem;
+  line-height: 1.72;
+  font-family: var(--font-latin), var(--font-zh);
+  text-align: left;
+  font-weight: 400;
+  letter-spacing: normal;
+  white-space: normal;
+  cursor: auto;
+  /* 用 visibility 而非 display:none —— aria-describedby 需要它留在無障礙樹裡 */
+  visibility: hidden; opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity .12s ease, transform .12s ease, visibility .12s;
+}
+.term:hover > .term__pop,
+.term:focus-within > .term__pop,
+.term[data-pinned="true"] > .term__pop {
+  visibility: visible; opacity: 1; transform: none;
+}
+
+.term__hd {
+  display: block;
+  font-weight: 700;
+  margin-bottom: .35em;
+  padding-bottom: .35em;
+  border-bottom: 1px solid var(--rule);
+}
+.term__hd i { font-style: normal; font-weight: 400; color: var(--muted); }
+.term__def { display: block; }
+.term__more {
+  display: inline-block; margin-top: .5em;
+  font-size: .88em; text-decoration: none;
+}
+
+/* 語言切換：純屬性選擇器，預設值由 generator 靜態寫進 <html>，
+   所以在任何 JS 跑之前就已經是正確的。 */
+html[data-gloss="zh"] .term__def[data-lang="en"] { display: none; }
+html[data-gloss="en"] .term__def[data-lang="zh"] { display: none; }
+html[data-gloss="both"] .term__def[data-lang="en"] {
+  margin-top: .5em; padding-top: .5em;
+  border-top: 1px dashed var(--rule);
+  color: var(--muted);
+}
+
+/* --- Guardrail：本教材相對原始投影片最大的增值 ------------------------ */
+.guardrail {
+  --gr: var(--warn);
+  --gr-fill: var(--warn-fill);
+  position: relative;
+  background: var(--gr-fill);
+  border: 1px solid color-mix(in srgb, var(--gr) 35%, transparent);
+  border-left: 4px solid var(--gr);
+  border-radius: var(--radius);
+  padding: var(--sp-4) var(--sp-5);
+  margin: var(--sp-5) 0;
+  font-size: .95rem;
+}
+.guardrail__hd {
+  display: flex; align-items: baseline; gap: .5em;
+  font-weight: 700;
+  color: var(--gr);
+  margin-bottom: .5em;
+  font-size: .95rem;
+}
+.guardrail__hd::before { content: "⚠"; font-size: 1.1em; }
+.guardrail > :last-child { margin-bottom: 0; }
+.guardrail--info { --gr: var(--accent); --gr-fill: var(--term-bg); }
+.guardrail--info .guardrail__hd::before { content: "ℹ"; }
+
+/* 摺疊版警告框：<details class="guardrail"> ＋ <summary class="guardrail__hd">。
+   可以收起來的是「為什麼」，不是警告本身 —— 標題那一句就是警告，恆常可見。
+   論述密度高的研究指引頁用它，讓主線不被六個展開的方框切斷。 */
+details.guardrail > summary { cursor: pointer; list-style: none; margin-bottom: 0; }
+details.guardrail[open] > summary { margin-bottom: .5em; }
+details.guardrail > summary::-webkit-details-marker { display: none; }
+details.guardrail > summary::after {
+  content: "▸";
+  margin-inline-start: auto;
+  font-weight: 400;
+  opacity: .7;
+}
+details.guardrail[open] > summary::after { content: "▾"; }
+
+/* --- Predict → reveal --------------------------------------------------
+   用原生 <details>，關掉 JS 仍可展開；列印時強制展開。 */
+.reveal {
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: var(--sp-4) var(--sp-5);
+  margin: var(--sp-5) 0;
+  background: var(--paper-sunken);
+}
+.reveal > summary {
+  cursor: pointer;
+  font-weight: 600;
+  list-style: none;
+  color: var(--accent);
+  font-size: .93rem;
+}
+.reveal > summary::-webkit-details-marker { display: none; }
+.reveal > summary::before { content: "▸ "; display: inline-block; transition: transform .15s; }
+.reveal[open] > summary::before { content: "▾ "; }
+.reveal__q { font-weight: 500; margin-bottom: .8em; }
+.reveal__a { margin-top: var(--sp-4); padding-top: var(--sp-4); border-top: 1px dashed var(--rule); }
+.reveal__a > :last-child { margin-bottom: 0; }
+
+/* 補充說明：比練習答案更低調，讓主論述可連續閱讀。 */
+.reveal--aside {
+  background: transparent;
+  border-style: dashed;
+  padding-block: var(--sp-3);
+  margin-block: var(--sp-4);
+}
+.reveal--aside > summary {
+  color: var(--muted);
+  font-weight: 600;
+}
+.reveal--aside[open] > summary { color: var(--accent); }
+
+/* --- 「這出現在哪」來源卡 ---------------------------------------------- */
+.source-card {
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin: var(--sp-4) 0;
+}
+.source-card__hd {
+  background: var(--paper-sunken);
+  border-bottom: 1px solid var(--rule);
+  padding: .45em var(--sp-4);
+  font-size: .82rem;
+  color: var(--muted);
+  display: flex; flex-wrap: wrap; gap: .5em 1em; align-items: center;
+}
+.source-card__hd b { color: var(--ink); font-weight: 600; }
+.source-card__body { padding: var(--sp-4); }
+.source-card__body > :last-child { margin-bottom: 0; }
+.source-card pre { margin: 0; border: 0; background: transparent; padding: 0; }
+
+.cli-note {
+  font-size: .82rem; color: var(--muted);
+  margin-top: .6em; padding-top: .6em;
+  border-top: 1px dashed var(--rule);
+}
+
+/* --- 圖 ---------------------------------------------------------------- */
+.dia, .fig {
+  margin: var(--sp-5) 0;
+  max-width: 100%;
+}
+.dia > svg { width: 100%; height: auto; display: block; }
+.dia--wide { overflow-x: auto; }
+.dia--wide > svg { min-width: 680px; }
+.dia--narrow { max-width: 32rem; margin-inline: auto; }
+
+figcaption {
+  font-size: .84rem;
+  color: var(--muted);
+  line-height: 1.65;
+  margin-top: .6em;
+  padding-left: .1em;
+}
+figcaption b { color: var(--ink); font-weight: 600; }
+
+/* 圖說裡沿用了圖內的 <tspan class="mono"> 寫法（sr2c、sr5 共 20 處）。
+   在 HTML 裡 <tspan> 是未知元素 —— 文字照樣顯示，但 .mono 只定義在
+   .dia-svg 之下，所以那些欄位名一直是以正文字型渲染的。
+   這種壞法完全無聲：畫面上看不出來，四支 linter 也都不管樣式。
+   一行補上，比把圖說改成 <code>（與圖內寫法不一致）好。 */
+figcaption .mono { font-family: var(--font-mono); font-size: .95em; }
+
+.fig img {
+  display: block; width: 100%; height: auto;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--paper-sunken);
+}
+.fig__prov { font-size: .76rem; color: var(--muted); margin-top: .35em; }
+
+/* --- Quiz -------------------------------------------------------------- */
+.quiz {
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-5);
+  margin: var(--sp-6) 0;
+  background: var(--paper-raised);
+}
+.quiz > h2 { margin-top: 0; }
+.quiz__item + .quiz__item { margin-top: var(--sp-5); padding-top: var(--sp-5); border-top: 1px solid var(--rule); }
+.quiz__stem { font-weight: 500; margin-bottom: var(--sp-3); }
+.quiz__choices { list-style: none; margin: 0; padding: 0; display: grid; gap: .4em; }
+.quiz__choice {
+  display: flex; gap: .6em; align-items: flex-start;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: .55em .75em;
+  cursor: pointer;
+  font-size: .95rem;
+  background: var(--paper);
+}
+.quiz__choice:hover { border-color: var(--accent); background: var(--paper-sunken); }
+.quiz__choice input { margin: .35em 0 0; flex: none; accent-color: var(--accent); }
+.quiz__choice[data-state="correct"]   { border-color: var(--ok);  background: var(--ok-fill); }
+.quiz__choice[data-state="incorrect"] { border-color: var(--bad); background: var(--bad-fill); }
+.quiz__why {
+  display: none;
+  font-size: .87rem; line-height: 1.65;
+  margin-top: .45em; padding-top: .45em;
+  border-top: 1px dashed currentColor;
+  color: var(--muted);
+}
+.quiz__choice[data-state] .quiz__why { display: block; }
+.quiz__actions { margin-top: var(--sp-3); display: flex; gap: var(--sp-2); align-items: center; flex-wrap: wrap; }
+.quiz__msg { font-size: .88rem; font-weight: 600; }
+.quiz__msg[data-ok="true"]  { color: var(--ok); }
+.quiz__msg[data-ok="false"] { color: var(--bad); }
+.quiz__explain {
+  display: none;
+  margin-top: var(--sp-3); padding: var(--sp-3) var(--sp-4);
+  background: var(--paper-sunken); border-radius: var(--radius);
+  font-size: .9rem;
+}
+.quiz__item[data-answered="1"] .quiz__explain { display: block; }
+.quiz__hint { font-size: .85rem; color: var(--muted); }
+
+/* --- 按鈕 -------------------------------------------------------------- */
+.btn {
+  font: inherit; font-size: .88rem; font-weight: 500;
+  background: var(--accent); color: var(--accent-ink);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  padding: .38em 1em;
+  cursor: pointer;
+}
+.btn:hover { filter: brightness(1.08); }
+.btn--ghost { background: transparent; color: var(--muted); border-color: var(--rule); }
+.btn--ghost:hover { background: var(--paper-sunken); color: var(--ink); filter: none; }
+.btn:disabled { opacity: .45; cursor: not-allowed; filter: none; }
+
+/* --- 註記 -------------------------------------------------------------- */
+.note {
+  font-size: .88rem; color: var(--muted);
+  border-left: 3px solid var(--rule);
+  padding-left: var(--sp-4);
+  margin: var(--sp-4) 0;
+}
+
+.banner {
+  background: var(--warn-fill); color: var(--warn);
+  border: 1px solid var(--warn);
+  border-radius: var(--radius);
+  padding: .5em .9em; margin: var(--sp-4) 0;
+  font-size: .87rem;
+  display: flex; gap: .7em; align-items: center;
+}
+.banner button { margin-left: auto; }
+
+/* --- 列印用詞彙附錄：螢幕隱藏 ------------------------------------------ */
+.glossary-appendix { display: none; }
+
+/* --- 數學式 -------------------------------------------------------------
+   ★ 為什麼是 MathML，不是 KaTeX / MathJax ★
+
+   這個專案的交付物是 file://（見 CLAUDE.md §5），而那兩個都過不了：
+     · CDN 載入被 verify.mjs 第 2 項擋掉，離線也會壞
+     · KaTeX 自帶數學字型，而字型是用相對路徑載入的，在 file:// 載不起來
+       （這正是第 6 項擋的那件事）
+     · MathJax 現在是 ESM，file:// 直接載不動
+
+   MathML 是瀏覽器內建的排版：零資源、零 JS、可選取、螢幕閱讀器唸得出來，
+   而且會跟著頁面字級一起縮放（<pre> 裡的 ASCII 公式做不到這幾件事）。
+
+   分數、上下標、求和符號這些，ASCII 只能用空白對齊硬湊 ——
+   一旦讀者改了字級或用等寬以外的字型，那個對齊就散掉，而且不會有任何錯誤。 */
+.eq {
+  background: var(--paper-sunken);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: var(--sp-4);
+  margin: 0 0 1.2em;
+  overflow-x: auto;          /* 寬式子自己捲，不要把整頁撐寬 */
+  overflow-y: hidden;
+}
+.eq math { font-size: 1.15em; color: var(--ink); }
+
+/* 式子後面接一句話說明它在算什麼 —— 符號表不該是讀者唯一的線索 */
+.eq__note {
+  margin: .6em 0 0;
+  font-size: .85rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+/* 行內小式子：不要讓它撐開行距 */
+.prose math { font-size: 1.05em; }

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 400">
+  <title>錯誤率與定序深度之間存在可換算的匯率</title>
+  <desc>本圖說明 AccuScan 量測到的一組對照：
+        在腫瘤變異等位基因分率為二點五乘以十的負五次方、
+        並使用一萬個標的位點的條件下，兩種組合達到相同的百分之九十六偵測率。
+        第一種組合是錯誤率四點二乘以十的負七次方，搭配二十倍定序深度。
+        第二種組合是錯誤率二點八乘以十的負五次方，搭配一百倍定序深度。
+        換算後的意義是：錯誤率每降低兩個數量級，大約相當於把定序深度提高五倍。
+        圖右側把本專案的位置標出來：使用標準 ONT 單股定序，
+        錯誤率約六點七乘以十的負三次方，比表中最差的一列還高兩個數量級以上。
+        依此匯率外推，所需深度將遠超過實務可行範圍，
+        因此本專案必須從其他方向補償，例如更大的位點數與同分子多突變。</desc>
+
+  <text class="ttl bold zh" x="20" y="34">錯誤率與深度可以互換 —— 而且有匯率</text>
+  <text class="tick zh" x="20" y="60">AccuScan 實測：以下兩種組合達到相同的 96% 偵測率（cVAF 2.5e-5，10,000 個 marker）</text>
+
+  <!-- 兩種組合 -->
+  <rect class="box" x="40" y="86" width="400" height="128" rx="10"/>
+  <text class="anno bold mid zh" x="240" y="116">組合 A</text>
+  <text class="anno mono bold mid ok" x="240" y="152" style="font-size:22px">錯誤率 4.2e-7</text>
+  <text class="anno mono bold mid" x="240" y="184" style="font-size:22px">深度 20X</text>
+
+  <text class="lbl bold mid accent" x="500" y="158" style="font-size:26px">≈</text>
+
+  <rect class="box" x="560" y="86" width="400" height="128" rx="10"/>
+  <text class="anno bold mid zh" x="760" y="116">組合 B</text>
+  <text class="anno mono bold mid warn" x="760" y="152" style="font-size:22px">錯誤率 2.8e-5</text>
+  <text class="anno mono bold mid" x="760" y="184" style="font-size:22px">深度 100X</text>
+
+  <!-- 匯率 -->
+  <rect class="box plain" x="40" y="234" width="920" height="56" rx="8"/>
+  <text class="anno bold mid accent zh" x="500" y="270">匯率：錯誤率每降 2 個數量級　≈　深度提高 5 倍</text>
+
+  <!-- 本專案位置 -->
+  <rect class="box" x="40" y="310" width="920" height="76" rx="10"/>
+  <text class="anno bold zh" x="64" y="340">本專案的位置</text>
+  <text class="tick zh" x="64" y="366">標準 ONT simplex，錯誤率約 6.7e-3（Q21）—— 比組合 B 還高</text>
+  <text class="anno bold bad zh" x="560" y="340">兩個數量級以上</text>
+  <text class="tick zh" x="560" y="366">依此匯率外推，所需深度遠超實務範圍 → 必須從別處補償</text>
+</svg>

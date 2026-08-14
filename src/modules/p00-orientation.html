@@ -1,0 +1,196 @@
+<!--tw
+{
+  "objectives": [
+    "說明本知識庫收錄哪 11 篇方法論文，以及選擇它們的判準",
+    "解讀六步共同骨架，並說明為何以此作為組織原則",
+    "區分本知識庫中「取自論文」與「本專案判斷」兩類內容",
+    "依讀者身分（人／AI agent）選擇對應的資料層"
+  ]
+}
+-->
+
+<section data-part="why">
+<h2>為什麼重要</h2>
+
+<p class="prose">[[MRD]] 偵測的方法文獻分散在十餘年、數個實驗室與數種定序平台上。
+各篇的用詞、量測單位與報告方式互不一致：有的報 [[LLOD|偵測極限]]，有的報分期敏感度；
+有的以 [[cVAF]] 表述，有的以 [[tumor fraction|腫瘤分數]]。
+直接並排閱讀，難以判斷兩個方法究竟是在解同一個問題，還是在解不同的問題。</p>
+
+<p class="prose">本知識庫的作法是：把 11 篇方法論文拆進<b>同一組欄位</b>，
+使「大家都怎麼做」與「同一步有幾種做法」得以直接對照。
+這組欄位即下方的六步骨架。</p>
+
+<div class="guardrail guardrail--info">
+<p class="guardrail__hd">本知識庫的三個定位</p>
+<ol class="prose">
+<li><b>不是文獻綜述。</b>目標不是覆蓋全領域，而是找出各方法的共同骨架與分歧點。</li>
+<li><b>不是教材。</b>前置知識假設讀者已具備，見下方「前置知識」一節。</li>
+<li><b>是設計選單。</b>最終產出是「每一步有哪些選項、各自的代價是什麼」，供本專案據以設計 ONT 版本。</li>
+</ol>
+</div>
+</section>
+
+
+<section data-part="concept">
+<h2>概念與結構</h2>
+
+<h3>六步共同骨架</h3>
+
+<p class="prose">不論訊號來自體細胞突變、片段長度還是甲基化，
+不論定序策略是全基因體還是 [[patient-specific panel|客製 panel]]，
+所有 MRD 偵測方法都必須回答同樣六個問題。差別僅在每一步選擇了哪個做法。</p>
+
+{{svg:six-step-skeleton | 六步共同骨架。第三步與第四步之間是本領域的分水嶺：部分方法把力氣放在壓低錯誤率，部分放在更好的整合統計。}}
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>步驟</th><th>要回答的問題</th><th>本知識庫的對應頁</th></tr></thead>
+<tbody>
+<tr><td><b>① 追蹤標的</b></td><td>追蹤哪些位點或特徵？這份清單怎麼得到？</td><td><a href="p02.html">p02</a></td></tr>
+<tr><td><b>② 驗證資料</b></td><td>用什麼資料證明方法有效？</td><td><a href="p02.html">p02</a></td></tr>
+<tr><td><b>③ read 層去噪</b></td><td>怎麼分辨真訊號與定序錯誤？</td><td><a href="p03.html">p03</a></td></tr>
+<tr><td><b>④ 樣本層分數</b></td><td>成千上萬個位點怎麼合成一個數字？</td><td><a href="p04.html">p04</a></td></tr>
+<tr><td><b>⑤ 門檻</b></td><td>判定「有癌」的線畫在哪？由誰決定？</td><td><a href="p04.html">p04</a></td></tr>
+<tr><td><b>⑥ 評估</b></td><td>怎麼證明結果並非過度擬合？</td><td><a href="p05.html">p05</a></td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>收錄範圍</h3>
+
+<p class="prose">共蒐集 28 篇 MRD 方法論文，依「可信度／可驗證性」與「與建立本專案方法的相關性」
+兩軸分為三級。<b>本知識庫的主體是完成完整拆解的 11 篇</b>。</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>方法</th><th>年</th><th>期刊</th><th>在骨架中的位置</th><th>開源碼</th></tr></thead>
+<tbody>
+<tr><td><b>[[MRDetect]]</b></td><td>2020</td><td>Nat Med</td><td>全基因體突變整合（本專案基準）</td><td>—</td></tr>
+<tr><td><b>[[MRD-EDGE]]</b></td><td>2024</td><td>Nat Med</td><td>第二代：深度學習去噪</td><td>—</td></tr>
+<tr><td><b>[[Landau gen3|Landau 第三代]]</b></td><td>2025</td><td>Nat Methods</td><td>第三代：[[duplex sequencing|duplex]] 錯誤校正</td><td>✅</td></tr>
+<tr><td><b>[[CAPP-Seq]]</b></td><td>2014</td><td>Nat Med</td><td>領域奠基：[[selector]] 設計</td><td>—</td></tr>
+<tr><td><b>[[iDES]]</b></td><td>2016</td><td>Nat Biotechnol</td><td>[[background polishing|背景拋光]]</td><td>—</td></tr>
+<tr><td><b>[[INVAR]]</b></td><td>2020</td><td>Sci Transl Med</td><td>多位點統計整合</td><td>✅</td></tr>
+<tr><td><b>[[PhasED-seq]]</b></td><td>2021</td><td>Nat Biotechnol</td><td>[[phased variant|同分子多突變]]</td><td>—</td></tr>
+<tr><td><b>[[Lung-CLiP]]</b></td><td>2020</td><td>Nature</td><td>樣本層級 ML 分類器</td><td>—</td></tr>
+<tr><td><b>[[ichorCNA]]</b></td><td>2017</td><td>Nat Commun</td><td>[[CNA]] ／ 腫瘤分數估計</td><td>✅</td></tr>
+<tr><td><b>[[AccuScan]]</b></td><td>2024</td><td>EMBO Mol Med</td><td>單讀取錯誤校正</td><td>—</td></tr>
+<tr><td><b>[[NanoRCS]]</b></td><td>2025</td><td>Genome Research</td><td>[[ONT simplex|ONT]] 共識定序</td><td>—</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="prose">選擇這 11 篇的判準有四項：期刊層級、年均引用數、有無開源程式碼、
+以及作者是否與該方法的商業利益綁定。
+<b>判準並非引用數優先</b> —— 年均引用最高的兩篇（GRAIL-CCGA 220／年、TRACERx 2017 195／年）
+均未列入，前者做的是癌症篩檢而非 MRD，後者為腫瘤演化生物學論文。
+完整分級與未收錄清單見專案的 <code>docs/paper/related/PAPER_TIERS.md</code>。</p>
+
+<h3>前置知識</h3>
+
+<p class="prose">本知識庫假設讀者已具備長讀長癌症基因體學的基礎，不重複說明。
+所需概念在實驗室既有教材中已完整涵蓋：</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>模組</th><th>已涵蓋</th></tr></thead>
+<tbody>
+<tr><td>M2</td><td>locus／allele／variant／genotype／haplotype 的區分；germline 與 somatic 的差異</td></tr>
+<tr><td>M3</td><td>ONT 的錯誤特性、homopolymer、長讀長的優勢與限制</td></tr>
+<tr><td>M7</td><td>somatic variant calling、PON、tumor-normal 與 tumor-only 的差別</td></tr>
+<tr><td>M8</td><td><b>VAF／purity／copy number 的關係式、tumor DNA fraction</b></td></tr>
+<tr><td>M9</td><td>5mC、MM/ML tag 的保留與遺失</td></tr>
+<tr><td>M10</td><td>precision／recall／F1、效能圖的批判性解讀</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="prose">MRD 專屬的術語則於本知識庫定義，共 91 條，
+可於內文以滑鼠停留查看，或見<a href="glossary.html">完整術語表</a>。</p>
+</section>
+
+
+<section data-part="evidence">
+<h2>資料層與使用方式</h2>
+
+<p class="prose">同一批拆解結果以兩種形式提供，來源相同，不會分歧。</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>讀者</th><th>用哪一層</th><th>位置</th></tr></thead>
+<tbody>
+<tr><td>人（學習、查找）</td><td>本網站</td><td><code>site/</code></td></tr>
+<tr><td><b>AI agent</b>（當規格讀）</td><td><b>結構化 JSON</b></td><td><code>docs/paper/dissection/</code></td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="prose">AI agent 應讀 <code>docs/paper/dissection/README.md</code> 作為入口，
+再依需要讀 <code>_TABLES.json</code>（跨論文扁平表，含 68 項效能數字）
+或個別論文的 JSON。<b>不應讀本網站的 HTML</b> —— 內容相同但有標記雜訊且切散在多頁。</p>
+
+<h3>內容的四種來源，必須區分</h3>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>類型</th><th>來源</th><th>可信度</th></tr></thead>
+<tbody>
+<tr><td>問題設定、方法規格、效能數字、作者自承限制</td><td>論文原文</td><td>忠實轉述</td></tr>
+<tr><td><b>實作細節</b>（3 篇）</td><td><b>開源程式碼</b></td><td><b>高於論文文字</b></td></tr>
+<tr><td>ONT 可移植性判斷</td><td>本專案推論</td><td>非論文說法</td></tr>
+<tr><td>跨論文的綜合</td><td>本知識庫</td><td>可回溯至上述來源</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+
+<section data-part="predict">
+<h2>閱讀前的三個警告</h2>
+
+{{guard:1 | 偵測極限不可跨方法直接比較}}
+<p class="prose">各方法的 [[LLOD]] 是在不同條件下量得的。
+[[patient-specific panel|panel-based]] 方法（CAPP-Seq、iDES、INVAR、PhasED-seq）
+每個位點的深度達 10³–10⁴ 倍；
+[[breadth supplants depth|WGS-based]] 方法（MRDetect 世系、AccuScan、NanoRCS）只有 20–120 倍。
+兩者以完全不同的方式換取靈敏度。</p>
+<p class="prose"><b>引用任何 LLOD 數值時，必須連同深度、追蹤位點數與對應的 [[specificity|特異度]] 一併陳述。</b></p>
+{{/guard}}
+
+{{guard:2 | 「可移植性」是本專案的判斷，不是論文的說法}}
+<p class="prose">本知識庫在每一步標註該做法能否移植至 [[ONT simplex|ONT 平台]]，
+分為可移植、需調整、不可移植三級。66 格的分布為 45／15／6。</p>
+<p class="prose">此判斷<b>由本專案作出</b>，論文本身並未討論 ONT 的可行性。
+引用時必須與論文原文區分。</p>
+{{/guard}}
+
+{{guard:3 | 只有 11 篇有完整規格}}
+<p class="prose">蒐集的 28 篇中，僅 11 篇完成六步拆解，
+其餘 17 篇只有書目與一句話定位。</p>
+<p class="prose">若需要未拆解論文的方法細節，<b>必須先行拆解，不可從書目臆測</b>。
+另有少數格子因論文將細節置於未取得的補充資料而拆不出來，
+這些格子明確標示為「未公開」，不應解讀為該方法沒有這一步。</p>
+{{/guard}}
+</section>
+
+
+<section data-part="practice">
+<h2>怎麼往下讀</h2>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>目的</th><th>讀哪一頁</th></tr></thead>
+<tbody>
+<tr><td>理解為什麼這個問題困難</td><td><a href="p01.html">p01 · 為什麼 MRD 偵測是個難題</a></td></tr>
+<tr><td>查某一步有哪些做法</td><td><a href="p02.html">p02</a> – <a href="p05.html">p05</a>（依骨架順序）</td></tr>
+<tr><td>查某一篇在某一步怎麼做</td><td><a href="p06.html">p06 · 逐篇完整規格矩陣</a></td></tr>
+<tr><td>了解 11 篇合起來說了什麼</td><td><a href="p07.html">p07 · 三條主線</a></td></tr>
+<tr><td>決定本專案該怎麼做</td><td><a href="p08.html">p08 · 本專案的位置與設計選單</a></td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="prose">依骨架順序閱讀（p01 → p05）可建立完整脈絡；
+若僅需查詢特定做法，可直接跳至 <a href="p06.html">p06</a> 的矩陣。</p>
+</section>

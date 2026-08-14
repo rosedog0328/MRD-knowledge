@@ -1,0 +1,97 @@
+# ============================================================================
+# 建置檢查與發布
+# ----------------------------------------------------------------------------
+# 在這之前，發布是「兩次 push」：push main 之後還要另外把 site/ 推到
+# gh-pages。忘了第二步的話，線上版本就悄悄落後 —— 沒有錯誤、沒有警告。
+# 這個 workflow 就是為了讓那一步不可能被忘記。
+#
+# 順帶擋掉另一種同樣安靜的落後：site/ 是 committed 的交付物
+# （讀者直接用 file:// 打開，見 README），所以改了 src/ 卻忘記
+# 重新建置時，repo 裡的 site/ 就會跟 src/ 不一致。下面第 3 步會比對。
+# ============================================================================
+
+name: 建置檢查與發布
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 發布不要互相打斷；排隊執行即可
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: 四支工具＋site/ 同步檢查
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # 本專案零依賴：只需要 node 與 python，沒有 npm install
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: 保存 commit 進來的 site/
+        run: cp -a site /tmp/site-committed
+
+      - name: 1／建置（會擋掉未定義詞彙、寫死顏色的 SVG…）
+        run: node tools/build.mjs
+
+      - name: site/ 必須跟 src/ 同步
+        run: |
+          if ! diff -r /tmp/site-committed site > /tmp/drift.txt 2>&1; then
+            echo "::error::commit 進來的 site/ 跟 src/ 重建出來的不一樣。"
+            echo "::error::請在本機跑 node tools/build.mjs，再把 site/ 一起 commit。"
+            echo '--- 差異 ---'
+            head -60 /tmp/drift.txt
+            exit 1
+          fi
+          echo "site/ 與 src/ 一致"
+
+      - name: 2／file:// 安全 ＋ 內容檢查
+        run: node tools/verify.mjs
+
+      - name: 3／閱讀順序稽核
+        run: node tools/audit_order.mjs
+
+      - name: 4／SVG 文字重疊／超出畫布
+        run: python3 tools/check_svg_layout.py
+
+      # modules.json 標了 "draft": true 的頁面不發布到 Pages。
+      # 一定要放在上面的「site/ 必須跟 src/ 同步」之後 —— 那一步比對的是完整的
+      # site/，先刪就會判定不同步。刪掉之後 site/ 只剩要發布的內容，才上傳。
+      #
+      # 這是「未列出」而不是「私密」：repo 是公開的，src/ 與 site/ 裡的
+      # 原始檔照樣讀得到。要真的不公開就不能 commit 進來。
+      - name: 從 Pages artifact 移除 draft 頁面
+        run: node tools/strip_drafts.mjs
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+  deploy:
+    name: 發布到 GitHub Pages
+    needs: check
+    # PR 只跑檢查，不發布
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

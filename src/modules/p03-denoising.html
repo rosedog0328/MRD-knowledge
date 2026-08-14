@@ -1,0 +1,253 @@
+<!--tw
+{
+  "objectives": [
+    "區分四類壓低錯誤率的做法，並說明各自依賴什麼條件",
+    "以量化方式陳述錯誤率與定序深度之間的換算關係",
+    "說明每一種降噪手段的隱藏成本，並指出哪一種宣稱可避開該成本",
+    "判斷哪些做法可移植至標準 ONT 資料，並說明無法移植者的具體原因"
+  ]
+}
+-->
+
+<section data-part="why">
+<h2>為什麼重要</h2>
+
+<p class="prose">這是本領域設計空間最寬的一步，也是本專案處境最嚴峻的一步。</p>
+
+<p class="prose">在 [[read-centric]] 的判斷單元下，問題化約為：
+一條 read 在 [[compendium]] 位點上出現非參考鹼基，
+它是真的 [[ctDNA]]，還是定序錯誤？
+兩者在極低 [[tumor fraction|腫瘤分數]]下出現的頻率同一個數量級，
+若不做任何處理即無從區分。</p>
+
+<p class="prose">11 篇論文提出了七種做法，可歸為四類。
+其中三類依賴 [[ONT simplex|標準 ONT 資料]]所缺乏的條件。</p>
+</section>
+
+
+<section data-part="concept">
+<h2>四類七種做法</h2>
+
+<h3>A 類：靠濕實驗化學</h3>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>做法</th><th>方法</th><th>達到的錯誤率</th><th>依賴什麼</th></tr></thead>
+<tbody>
+<tr><td>[[UMI]] [[read family|read family]]</td><td>[[INVAR]]</td><td>—（四層之一）</td><td>分子條碼</td></tr>
+<tr><td><b>[[duplex sequencing|duplex 定序]]</b></td><td>[[Landau gen3|Landau 第三代]]</td><td><b>7.7e-7</b></td><td>正反兩股都被讀到</td></tr>
+<tr><td><b>[[RCA]] concatemer</b>（Illumina）</td><td>[[AccuScan]]</td><td><b>4.2e-7</b></td><td>滾環擴增建庫</td></tr>
+<tr><td><b>[[RCA]] concatemer</b>（ONT）</td><td>[[NanoRCS]]</td><td><b>7.2e-4（Q31）</b></td><td>滾環擴增建庫</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="prose">四者的共同原理是<b>讓同一個原始分子被觀測多次</b>，再取共識。
+差別只在「多次」從哪裡來：UMI 靠 PCR 重複、duplex 靠正反兩股、
+[[RCA]] 靠 [[concatemer|串聯體]]內的多份拷貝。</p>
+
+<p class="prose">[[AccuScan]] 與 [[NanoRCS]] 是<b>同一個想法在兩個平台上的實現</b>：
+把「多份拷貝」從 read 之間搬到 read 之內。
+[[read length advantage|ONT 的長讀長]]在此有結構優勢 ——
+read 越長，一條 read 內能容納的 [[subread|子讀取]]越多（NanoRCS 中位 6 個）。</p>
+
+<h3>B 類：靠統計建模 —— 純計算，不需特殊化學</h3>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>做法</th><th>方法</th><th>效果</th><th>需要什麼</th></tr></thead>
+<tbody>
+<tr>
+  <td><b>[[background polishing|背景拋光]]</b></td><td>[[iDES]]</td>
+  <td>約 3 倍（與條碼合併達 ~15 倍）</td>
+  <td><b>n=12 陰性訓練樣本</b></td>
+</tr>
+<tr>
+  <td><b>[[trinucleotide context|三核苷酸脈絡]]分層</b></td><td>[[INVAR]]</td>
+  <td>最吵與最靜的 context 差 <b>逾 2 個數量級</b></td><td>無特殊需求</td>
+</tr>
+<tr>
+  <td><b>[[outlier suppression|離群抑制]]</b></td><td>[[INVAR]]</td>
+  <td>對照訊號 ↓3 倍，病人保留 <b>96.1%</b></td><td>無特殊需求</td>
+</tr>
+<tr>
+  <td><b>[[single-molecule rule|單分子準則]]</b></td><td>[[AccuScan]]</td>
+  <td>—</td><td>無特殊需求</td>
+</tr>
+<tr>
+  <td><b>依 variant type 分層估自身錯誤率</b></td><td>[[AccuScan]]</td>
+  <td>—</td><td><b>不需 [[control cohort|對照世代]]</b></td>
+</tr>
+<tr>
+  <td>位點層級 [[blacklist|黑名單]]</td><td>全部</td>
+  <td>INVAR 排除 0.5% 位點</td><td>陰性樣本</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="guardrail guardrail--info">
+<p class="guardrail__hd">B 類是本專案唯一完整可用的一類，而目前一項都還沒做</p>
+<p class="prose">這六個做法皆不依賴分子條碼、不依賴雙端定序、不依賴特殊建庫 ——
+在標準 ONT 資料上全部可以執行。</p>
+<p class="prose">其中 [[iDES]] 的[[background polishing|背景拋光]]受限於陰性樣本數
+（需 12 個，本專案僅有 5 個獨立陰性個體），
+其餘五項無此限制。</p>
+</div>
+
+<h3>C 類：靠機器學習</h3>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>做法</th><th>方法</th><th>特徵</th><th>訊噪比提升</th></tr></thead>
+<tbody>
+<tr><td>線性 SVM</td><td>[[MRDetect]]</td>
+    <td>VBQ、MRBQ、PIR、<b>[[R1/R2 concordance|R1/R2 一致性]]</b>、MQ</td><td>8.3 倍</td></tr>
+<tr><td>CNN + MLP 集成</td><td>[[MRD-EDGE]]</td>
+    <td>SBS context、片段長度、edit distance、區域表觀基因體</td><td><b>118 倍</b></td></tr>
+<tr><td>變異層級機率模型</td><td>[[Lung-CLiP]]</td>
+    <td>背景頻率、片段大小、基因、[[clonal hematopoiesis|CH]] 可能性</td><td>—</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>D 類：換偵測單元</h3>
+
+<p class="prose">[[PhasED-seq]] 沒有增加任何過濾層，而是改變了被計數的對象：
+不看單一鹼基，改看<b>同一條分子上的多個突變</b>。</p>
+
+{{svg:phased-variant | 同相變異的原理與實測背景率。因兩個特定位置同時出錯的機率相乘，背景可降至單鹼基的數十至數百分之一。}}
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>偵測單元</th><th>背景率</th><th>需要分子條碼？</th></tr></thead>
+<tbody>
+<tr><td>單鹼基（[[iDES]]）</td><td>3.3e-5</td><td>是</td></tr>
+<tr><td>單鹼基（[[duplex sequencing|duplex]]）</td><td>1.2e-5</td><td>是</td></tr>
+<tr><td><b>2× [[phased variant|PV]]（二重）</b></td><td><b>8.0e-7</b></td><td><b>否</b></td></tr>
+<tr><td><b>3× PV（三重）</b></td><td><b>3.4e-8</b></td><td><b>否</b></td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+
+<section data-part="evidence">
+<h2>兩個可量化的取捨</h2>
+
+<h3>錯誤率與深度之間有匯率</h3>
+
+<p class="prose">[[AccuScan]] 給出了直接對照：在 [[cVAF]] 2.5e-5、
+使用 10,000 個 [[marker|標的]]的條件下，兩種組合達到相同的 96% 偵測率。</p>
+
+{{svg:error-vs-depth | 錯誤率與深度的換算關係，以及本專案在此尺度上的位置。}}
+
+{{eq}}
+\text{錯誤率降 2 個數量級} ≈ \text{深度提高 5 倍}
+{{note}}
+由 4.2e-7 @ 20× 與 2.8e-5 @ 100× 兩點推得。
+此匯率使「本專案的高錯誤率要付多少深度代價」成為可估算的量。
+{{/eq}}
+
+<h3>壓低錯誤率從來不是免費的</h3>
+
+<p class="prose">三個獨立來源指向同一件事：降噪的代價是<b>可用分子數的損失</b>。</p>
+
+{{svg:duplex-cost | 三種降噪手段的錯誤率與分子回收率對照。前兩者以更少的分子換準確度，同相變異則以同分子上的巧合換準確度。}}
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>手段</th><th>代價</th><th>來源</th></tr></thead>
+<tbody>
+<tr><td>[[duplex sequencing|duplex]]</td><td><b>只回收 19% 的獨立 cfDNA 片段</b></td><td>PhasED-seq 量測</td></tr>
+<tr><td>[[duplex sequencing|duplex]]</td><td>捕獲的獨立分子數少一個數量級</td><td><b>Landau 第三代作者自承</b></td></tr>
+<tr><td>[[RCA]] 共識</td><td>去重後僅 35–51% 的原始 read 能貢獻共識</td><td>NanoRCS</td></tr>
+<tr><td><b>[[phased variant|PV]]</b></td><td><b>幾乎不損失</b>（間距 &lt;20 bp 者深度等同全樣本）</td><td>PhasED-seq</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="prose">在有限的 [[genomic equivalents|基因組當量]]下，丟掉的分子無法補回。
+因此「錯誤率更低」與「效能更好」並非同一件事 ——
+[[Landau gen3|Landau 第三代]]的作者即明確指出，
+在 <b>[[tumor-informed]] 情境下，加大輸入量的標準 WGS 預期可達到比 duplex 更低的偵測極限</b>。</p>
+
+<h3>ONT 在同相變異上的結構優勢</h3>
+
+{{svg:pv-distance-readlength | 同相變異的間距分布與兩個平台的涵蓋範圍。}}
+
+<p class="prose">[[PhasED-seq]] 自身的數據顯示，
+Illumina 因 read 與 insert 長度限制，
+只有 <b>48% 的 PV 間距小於 80 bp</b> 而能被有效捕捉。
+[[read length advantage|ONT 的數 kb read]]理論上不受此限。</p>
+</section>
+
+
+<section data-part="predict">
+<h2>對本專案的可移植性</h2>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>做法</th><th>可移植性</th><th>原因</th></tr></thead>
+<tbody>
+<tr><td>[[MRDetect]] 的 5 特徵 SVM</td><td><b>不可移植</b></td>
+    <td>[[R1/R2 concordance|R1/R2 一致性]]特徵不存在；PIR 的 Illumina cycle-error 假設不成立；R1/R2 concordance 過濾亦無法執行</td></tr>
+<tr><td>[[MRD-EDGE]] 的 CNN</td><td><b>不可移植</b></td>
+    <td>18×240 tensor 設計假設雙端讀取；insert size 過濾對細胞株 gDNA 無意義</td></tr>
+<tr><td>[[duplex sequencing|duplex]]／[[RCA]]</td><td><b>不可移植</b></td>
+    <td>皆需特殊建庫；本專案為標準 simplex，read 內無同分子重複拷貝</td></tr>
+<tr><td><b>[[background polishing|背景拋光]]</b></td><td>需調整</td>
+    <td>純計算，但需 12 個陰性訓練樣本；本專案僅 5 個獨立陰性個體</td></tr>
+<tr><td><b>[[trinucleotide context|context 分層]]</b></td><td><b>可移植</b></td>
+    <td>不依賴任何平台特性。ONT 的錯誤同樣有強烈 context 依賴</td></tr>
+<tr><td><b>[[outlier suppression|離群抑制]]</b></td><td><b>可移植</b></td>
+    <td>不依賴任何平台特性；INVAR2 開源碼提供完整演算法</td></tr>
+<tr><td><b>[[single-molecule rule|單分子準則]]</b></td><td><b>可移植</b></td>
+    <td>同上</td></tr>
+<tr><td><b>[[phased variant|PV]]</b></td><td><b>可移植（且 ONT 佔優）</b></td>
+    <td>ONT 讀長可捕捉任意間距的組合，且不損失分子</td></tr>
+</tbody>
+</table>
+</div>
+
+{{guard:8 | ONT 的錯誤是否獨立，決定 PV 這條路能不能走}}
+<p class="prose">[[phased variant|PV]] 的優勢來自「兩個位置同時出錯的機率<b>相乘</b>」，
+而相乘成立的前提是<b>錯誤彼此獨立</b>。</p>
+<p class="prose">若錯誤獨立，以 ONT 單鹼基錯誤率 6.7e-3 推算，
+2× PV 背景約 4.5e-5、3× 約 3e-7 ——
+仍高於 Illumina 的 8.0e-7 與 3.4e-8，
+但相對 ONT 自身的單鹼基錯誤率已是<b>三個數量級的改善</b>。</p>
+<p class="prose">但 ONT 的 homopolymer 與甲基化 [[trinucleotide context|context]] 造成的
+系統性錯誤，<b>可能在同一條 read 上相關聯</b>，使相乘假設失效。
+此點<b>必須實測，不可假設</b>。</p>
+<p class="prose">第一步的盤點在現有資料上即可進行：
+統計有多少條 read 同時命中兩個以上的 compendium 位點。</p>
+{{/guard}}
+
+{{guard:9 | 「錯誤率更低」不等於「偵測效能更好」}}
+<p class="prose">比較兩個方法的錯誤率時，必須同時看它們各自損失了多少分子。</p>
+<p class="prose">[[duplex sequencing|duplex]] 的錯誤率比單股共識低約 75 倍，
+但只回收 19% 的分子。在 [[genomic equivalents|基因組當量]]有限時，
+兩者相抵之後的淨效益<b>取決於情境</b> ——
+[[Landau gen3|Landau 第三代]]的作者用的措辭是「may offset ... depending on
+the specific application or context」，並未斷言 duplex 較佳。</p>
+{{/guard}}
+</section>
+
+
+<section data-part="practice">
+<h2>小結</h2>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>觀察</th><th>依據</th></tr></thead>
+<tbody>
+<tr><td>七種做法中，四種依賴 ONT 缺乏的條件</td><td>各篇 s3</td></tr>
+<tr><td><b>B 類統計建模全部可用，而本專案一項都還沒做</b></td><td>iDES、INVAR、AccuScan s3</td></tr>
+<tr><td>錯誤率降 2 個數量級 ≈ 深度增 5 倍</td><td>AccuScan：4.2e-7@20× ≈ 2.8e-5@100×</td></tr>
+<tr><td>降噪的代價一律是分子數；PV 是唯一宣稱可避開者</td><td>PhasED-seq（duplex 僅回收 19%）</td></tr>
+<tr><td>ONT 在 PV 上有結構優勢，但錯誤獨立性未經驗證</td><td>PhasED-seq（48% 間距 &lt;80bp）</td></tr>
+</tbody>
+</table>
+</div>
+</section>

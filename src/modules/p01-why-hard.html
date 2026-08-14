@@ -1,0 +1,209 @@
+<!--tw
+{
+  "objectives": [
+    "由血漿分子數的物理上限，說明加深定序在低腫瘤分數時為何無效",
+    "以偵測機率式說明「廣度取代深度」的數學基礎，並能就三個參數討論取捨",
+    "說明 read-centric 判斷單元的由來，以及它與傳統支持數門檻的衝突",
+    "由 read-centric 推導出兩個獨立團隊各自得到的同一個過濾設計"
+  ]
+}
+-->
+
+<section data-part="why">
+<h2>為什麼重要</h2>
+
+<p class="prose">[[MRD]] 的定義是治療後殘存、但影像看不到的極少量癌細胞。
+在此情境下，血漿中的 [[ctDNA]] 只佔 [[cfDNA]] 的極小比例 ——
+[[tumor fraction|腫瘤分數]]常低至 10⁻⁵，甚至 10⁻⁶。</p>
+
+<p class="prose">面對「訊號太弱」，最直覺的反應是提高定序深度。
+本領域十年來的方法演進，起點正是<b>這個直覺被證明是錯的</b>。
+理解錯在哪裡，是理解其後所有方法設計的前提。</p>
+
+{{ask}}
+<p class="prose">若某個位點的腫瘤分數為 10⁻⁵，把該位點定序到 40,000 倍深度，
+能否可靠地偵測到那個突變？</p>
+{{reveal}}
+<p class="prose">不能，而且再深也沒有用。</p>
+<p class="prose">[[MRDetect]] 的作者重新分析了一項使用約 40,000 倍深度標的定序的早期癌症偵測研究，
+發現偵測仍卡在 [[cVAF|變異等位基因分率]] 約 10⁻³，
+且許多影像上可見疾病的病人，在深度定序下仍測不到 ctDNA。</p>
+<p class="prose">原因不在定序，而在<b>抽樣</b>：那條帶突變的分子，很可能根本沒有被抽進樣本裡。</p>
+{{/ask}}
+</section>
+
+
+<section data-part="concept">
+<h2>概念</h2>
+
+<h3>分子數的物理上限</h3>
+
+<p class="prose">一毫升血漿約含 1,000 至 10,000 個 [[genomic equivalents|基因組當量]]，
+亦即完整基因組的份數。這個數字構成一道物理上限。</p>
+
+<p class="prose">設腫瘤分數為 {{m: TF}}、樣本含 {{m: n}} 個基因組當量，
+則某個特定位點上帶有突變的分子期望數為：</p>
+
+{{eq}}
+E[\text{帶突變的分子數}] = n × TF
+{{note}}
+以 {{m: n = 10^4}}、{{m: TF = 10^{-5}}} 代入，期望值為 0.1 條 ——
+即十次抽樣中約有九次，那條分子不存在於樣本內。
+{{/eq}}
+
+<p class="prose">分子既不在樣本中，定序深度便無從發揮。
+深度只能決定「已被抽到的分子能否被正確讀出」，無法讓未被抽到的分子出現。</p>
+
+{{svg:breadth-vs-depth | 左側為問題：基因組當量有物理上限，低腫瘤分數下目標分子多半未被抽入樣本。右側為解法：改為同時觀察全基因體上數千個位點，累積獨立機會。}}
+
+<h3>廣度取代深度</h3>
+
+<p class="prose">既然單一位點的偵測機率無法藉深度提升，
+解法是<b>增加位點數</b>：每個位點各自的機率仍極低，
+但只要任一位點命中即算偵測到該檢體含有腫瘤。</p>
+
+<p class="prose">[[iDES]] 給出了此關係的簡潔形式。
+設 {{m: n}} 為定序到的基因組當量數、{{m: d}} 為偵測極限、{{m: k}} 為追蹤的
+[[reporter|位點]]數，則偵測到至少一個 ctDNA 分子的機率為：</p>
+
+{{eq}}
+p = 1 − e^{−n·d·k}
+{{note}}
+三個參數皆可反解。此式即 [[breadth supplants depth|廣度取代深度]]的數學基礎 ——
+{{m: n}} 受生物學限制、{{m: d}} 受化學與演算法限制，而 {{m: k}} 是唯一可由設計自由決定的量。
+{{/eq}}
+
+<p class="prose">MRDetect 據此推算：整合超過 10,000 個 [[SNV]] 時，即使腫瘤分數為 10⁻⁵，
+20 倍深度即有超過 85% 的偵測機率，50 倍深度可達 99% 以上。
+這正是該方法選擇中等深度全基因體定序、而非超深標的定序的理由。</p>
+
+<div class="guardrail guardrail--info">
+<p class="guardrail__hd">位點數的效果是可量測的</p>
+<p class="prose">[[AccuScan]] 以健康人 cfDNA 互相稀釋做過直接量測：
+在 [[cVAF]] 為 10⁻⁵、60 倍深度的條件下，
+使用 2,000／5,000／10,000／20,000 個 [[marker|標的]]時，
+偵測率分別為 <b>38%／77%／96%／100%</b>。</p>
+<p class="prose">位點數從兩千增至兩萬，偵測率由不及四成升至完全偵測 —— 深度並未改變。</p>
+</div>
+
+<h3>read-centric：判斷單元必須改變</h3>
+
+<p class="prose">增加位點數解決了「能不能抽到」，卻帶來第二個問題：<b>怎麼確認抽到的是真訊號</b>。</p>
+
+<p class="prose">傳統的變異判定依賴支持數門檻 —— 例如要求至少三條 read 支持同一個變異，
+因為定序錯誤不太可能在同一位點重複三次。
+但在極低腫瘤分數下，{{m: TF}} 遠小於覆蓋深度的倒數，
+<b>每個位點最多只期待一條支持 read</b>。此時支持數門檻會把所有真訊號一併濾除。</p>
+
+{{svg:read-centric | 上半為傳統以位點為單位的判定，適用於高變異等位基因分率；下半為極低腫瘤分數下的真實情況，此時判斷單元必須改為單一條 read。}}
+
+<p class="prose">因此 MRDetect 把判斷單元改為<b>單一條 read 究竟是真突變還是定序錯誤</b>，
+稱為 [[read-centric]]。此後所有 [[error suppression|誤差抑制]]方法，
+不論用機器學習或統計建模，都是在回答這個問題。</p>
+</section>
+
+
+<section data-part="evidence">
+<h2>由此推出的兩個設計</h2>
+
+<p class="prose">read-centric 有一個容易被忽略的推論：
+既然低腫瘤分數下真訊號應該<b>隨機散布</b>在許多位點、且每個位點最多一條支持 read，
+那麼<b>支持 read 數明顯偏多的位點反而可疑</b> —— 那更可能是該位點的系統性錯誤或殘留的
+[[germline filtering ladder|germline]] 訊號。</p>
+
+<p class="prose">兩個獨立團隊各自得到了這個結論，並實作為兩個不同名稱的過濾步驟。</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>方法</th><th>名稱</th><th>作法</th><th>效果</th></tr></thead>
+<tbody>
+<tr>
+  <td>[[INVAR]]</td>
+  <td>[[outlier suppression|離群抑制]]</td>
+  <td>對「訊號應隨機散布」的分布找離群值，剔除不一致的單一位點訊號（校正多重檢定）</td>
+  <td>對照樣本訊號降約 <b>3 倍</b>，病人樣本保留 <b>96.1%</b></td>
+</tr>
+<tr>
+  <td>[[AccuScan]]</td>
+  <td>[[single-molecule rule|單分子準則]]</td>
+  <td>低腫瘤負荷時，排除支持分子數大於 1 的位點</td>
+  <td>—（與二項式對數概似合併使用）</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<p class="prose">INVAR 的實作細節可由其開源程式碼取得，比論文文字精確得多。
+論文僅稱「找出離群值（校正多重檢定）」，程式碼則給出完整規則：</p>
+
+{{cli}}
+# R/3_outlier_suppression/outlierSuppression.R，函式 repolish
+# ① 估計樣本 ctDNA 水準 p 時，先排除這些位點
+filter(AF <= 0.01 & MUTATED_READS_PER_LOCI <= 10 & TUMOUR_AF > 0)
+# 程式註解：「as we are trying to detect MRD」
+
+# ② Bonferroni 校正 —— 除以位點數
+P_THRESHOLD = 0.05 / n_distinct(UNIQUE_POS)
+
+# ③ 逐位點二項檢定
+binom.test(x = MUTATED_READS_PER_LOCI, n = DP, p = P_ESTIMATE,
+           alternative = "greater")$p.value
+
+# ④ 判定（pass 表示「不是離群」，予以保留）
+OUTLIER.PASS = BINOMIAL_PROB > P_THRESHOLD
+{{/cli}}
+
+<p class="prose">此步驟不依賴分子條碼、不依賴雙端定序，
+亦不依賴任何 [[ONT simplex|ONT]] 所缺乏的平台特性 ——
+是本專案可直接移植的少數降噪手段之一。詳見 <a href="p03.html">p03</a>。</p>
+</section>
+
+
+<section data-part="predict">
+<h2>不要搞混</h2>
+
+{{guard:4 | 「加深定序」與「增加位點數」解的不是同一個問題}}
+<p class="prose">兩者常被混為一談，但在偵測機率式 {{m: p = 1 − e^{−n·d·k}}} 中位置不同：</p>
+<ul class="prose">
+<li><b>加深定序</b>改善的是 {{m: d}}（該位點被正確讀出的能力）。
+當目標分子未被抽入樣本時，{{m: d}} 再小也無濟於事。</li>
+<li><b>增加位點數</b>改善的是 {{m: k}}（獨立機會的次數）。
+這是唯一能繞開 [[genomic equivalents|基因組當量]]上限的參數。</li>
+</ul>
+<p class="prose">深度並非無用 —— 它決定每個位點能否被檢查到。
+但在低腫瘤分數下，<b>提高 {{m: k}} 的邊際效益遠高於提高深度</b>。</p>
+{{/guard}}
+
+{{guard:5 | 支持 read 數多，在低腫瘤分數下是可疑而非可信}}
+<p class="prose">這與一般變異判定的直覺完全相反，是本領域最容易誤判的一點。</p>
+<p class="prose">在 [[cVAF]] 約 10⁻⁵ 的情境下，同一位點出現多條支持 read 的機率極低。
+若確實出現，較可能的解釋是該位點的系統性錯誤、殘留的 germline 變異，
+或 [[compendium|變異圖譜]]中混入的偽陽性 —— 而非強烈的腫瘤訊號。</p>
+<p class="prose">本專案的 [[germline filtering ladder|C0→C5 過濾階梯]]處理的正是這類汙染。</p>
+{{/guard}}
+</section>
+
+
+<section data-part="practice">
+<h2>本頁與本專案的關聯</h2>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>本頁的概念</th><th>本專案的對應</th></tr></thead>
+<tbody>
+<tr><td>[[genomic equivalents|基因組當量]]上限</td>
+    <td><b>本專案不受此限</b> —— 使用 [[in silico admixture|電腦模擬混合]]的細胞株，非真實血漿</td></tr>
+<tr><td>位點數 {{m: k}} 是可自由設計的參數</td>
+    <td>現行 [[compendium]] 為 <b>35,603 個位點</b>，比 [[NanoRCS]] 的 10–582 個多兩個數量級</td></tr>
+<tr><td>[[read-centric]] 判斷單元</td>
+    <td>本專案的 [[detection rate|偵測率]]定義即建立於此</td></tr>
+<tr><td>[[outlier suppression|離群抑制]]／[[single-molecule rule|單分子準則]]</td>
+    <td><b>尚未實作</b> —— 兩者皆為純計算方法，屬可立即進行的改進</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="prose">下一頁起進入方法細節：
+<a href="p02.html">p02</a> 比較 11 篇如何定義追蹤標的與驗證資料，
+<a href="p03.html">p03</a> 比較七種壓低錯誤率的做法及其代價。</p>
+</section>

@@ -1,0 +1,198 @@
+/* ============================================================================
+   diagram.css — SVG class → token 映射層
+   ----------------------------------------------------------------------------
+   所有 SVG 圖只寫 class，不寫顏色。改一次 token，35 張圖同步更新。
+   build.mjs 會拒絕 _defs.svg 以外任何字面色碼。
+
+   ★ presentation attribute 一律輸給 class（踩過才知道）★
+     <line class="conn" stroke="var(--bad)"> 畫出來是灰的，不是紅的 ——
+     樣式表裡的宣告比 presentation attribute 優先，跟 specificity 無關。
+     所以凡是這裡有宣告的 property，SVG 就不能用同名的 attribute 去改：
+       · 有語意的（某個狀態色）→ 在這裡開一個 class
+       · 一次性的數值（stroke-width / stroke-dasharray）→ 寫在 style="" 裡
+     verify.mjs 第 12 項會擋住寫成 attribute 的情況。
+
+   ★ 色相不撞規則（第 22 張圖時你會忘記，所以寫在這裡）★
+     read 本體  → haplotype 色 (.read.hp1 / .hp2 / .hp0)
+     鹼基字母    → base 色      (.base.a / .c / .g / .t)
+     read 上方圓 → variant class(.mark.somatic / .germline / .artifact)
+     read 下方點 → methylation  (.cpg.met / .unmet)
+   任何一張圖都不把兩種編碼放在同一種形狀上。
+   ============================================================================ */
+
+.dia-svg {
+  display: block;
+  overflow: visible;
+  font-family: var(--font-latin);
+}
+
+/* --- reads --------------------------------------------------------------- */
+.dia-svg .read {
+  fill: var(--hp0-fill);
+  stroke: var(--hp0);
+  stroke-width: 1.5;
+}
+.dia-svg .read.hp1 { fill: var(--hp1-fill); stroke: var(--hp1); }
+.dia-svg .read.hp2 { fill: var(--hp2-fill); stroke: var(--hp2); }
+.dia-svg .read.hp0 { fill: var(--hp0-fill); stroke: var(--hp0); stroke-dasharray: 5 3; }
+.dia-svg .read.tumor  { stroke-width: 2.5; }
+.dia-svg .read.ghost  { opacity: .35; }
+.dia-svg .read.clip   { stroke-dasharray: 3 3; opacity: .7; }
+
+/* 可點選的 read（互動元件用） */
+.dia-svg .read.pick { cursor: pointer; }
+.dia-svg .read.pick:hover { stroke-width: 3.5; }
+.dia-svg .read.sel  { stroke-width: 3.5; }
+
+/* --- 變異標記（read 上方的圓） ------------------------------------------ */
+.dia-svg .mark { stroke-width: 1.5; }
+.dia-svg .mark.germline { fill: var(--germline); stroke: var(--germline); }
+.dia-svg .mark.somatic  { fill: var(--somatic);  stroke: var(--somatic); }
+.dia-svg .mark.artifact { fill: var(--artifact-fill); stroke: var(--artifact); stroke-width: 2; }
+.dia-svg .mark.ref      { fill: var(--paper); stroke: var(--rule-strong); }
+.dia-svg .mark.hp1      { fill: var(--hp1); stroke: var(--hp1); }
+.dia-svg .mark.hp2      { fill: var(--hp2); stroke: var(--hp2); }
+
+/* --- 甲基化（read 下方的點）：實心 vs 空心，灰階列印也分得出來 -------- */
+.dia-svg .cpg { stroke: var(--met); stroke-width: 2; }
+.dia-svg .cpg.met   { fill: var(--met); }
+.dia-svg .cpg.unmet { fill: var(--paper); }
+.dia-svg .cpg.na    { fill: var(--paper); stroke: var(--rule); stroke-dasharray: 2 2; }
+
+/* --- 鹼基字母 ------------------------------------------------------------ */
+.dia-svg .base { font-family: var(--font-mono); font-weight: 700; text-anchor: middle; }
+.dia-svg .base.a { fill: var(--base-a); }
+.dia-svg .base.c { fill: var(--base-c); }
+.dia-svg .base.g { fill: var(--base-g); }
+.dia-svg .base.t { fill: var(--base-t); }
+.dia-svg .base.n { fill: var(--muted); }
+
+/* --- 檢體來源：人體剪影與試管 -------------------------------------------- */
+.dia-svg .body    { fill: var(--muted-fill); stroke: var(--rule-strong); stroke-width: 2;
+                    stroke-linejoin: round; }
+.dia-svg .organ   { fill: var(--paper); stroke: var(--rule-strong); stroke-width: 1.5; }
+.dia-svg .organ.somatic { fill: var(--somatic-fill); stroke: var(--somatic); stroke-width: 2; }
+.dia-svg .vial    { fill: var(--paper); stroke: var(--rule-strong); stroke-width: 2.5;
+                    stroke-linejoin: round; stroke-linecap: round; }
+
+/* --- 細胞 ---------------------------------------------------------------- */
+.dia-svg .cell { stroke-width: 2; }
+.dia-svg .cell.normal { fill: var(--muted-fill); stroke: var(--rule-strong); }
+.dia-svg .cell.tumor  { fill: var(--somatic-fill); stroke: var(--somatic); }
+.dia-svg .cell.clone1 { fill: var(--hp1-fill); stroke: var(--hp1); }
+.dia-svg .cell.clone2 { fill: var(--hp2-fill); stroke: var(--hp2); }
+.dia-svg .nucleus { fill: var(--paper); stroke: var(--rule-strong); stroke-width: 1.5; }
+
+/* --- 染色體 -------------------------------------------------------------- */
+.dia-svg .chr { stroke-width: 2; }
+.dia-svg .chr.hp1 { fill: var(--hp1-fill); stroke: var(--hp1); }
+.dia-svg .chr.hp2 { fill: var(--hp2-fill); stroke: var(--hp2); }
+.dia-svg .chr.lost { fill: none; stroke: var(--rule); stroke-dasharray: 6 4; }
+
+/* --- 文字 ---------------------------------------------------------------- */
+.dia-svg .ttl  { font-size: 30px; font-weight: 650; fill: var(--ink); }
+.dia-svg .lbl  { font-size: 22px; fill: var(--ink); }
+.dia-svg .anno { font-size: 18px; fill: var(--muted); }
+.dia-svg .tick { font-size: 15px; fill: var(--muted); }
+.dia-svg .zh   { font-family: var(--font-zh); }
+.dia-svg .mono { font-family: var(--font-mono); }
+.dia-svg .bold { font-weight: 650; }
+.dia-svg .mid  { text-anchor: middle; }
+.dia-svg .end  { text-anchor: end; }
+
+/* 文字的語意色。
+   ★ 四個尺寸 class 都要列出來，不能只寫 .lbl 與 .anno ★
+   曾經只有 .lbl / .anno 有規則，於是全專案 285 處 .tick.somatic、.anno.ok…
+   統統被 .tick / .anno 的 var(--muted) 吃掉，安安靜靜地印成灰色。
+   沒有錯誤訊息，而且灰字看起來也「像是本來就這樣」，所以三十張圖都沒人發現。
+   新增語意色時，四個尺寸一起加。
+
+   ★ .base 刻意不列入 ★
+   鹼基字母的色相屬於 base-a/c/g/t 那一套。給它 .somatic / .artifact 的色相
+   會讓兩套編碼撞在同一種形狀上（見本檔開頭的色相不撞規則）——
+   要強調某個字母，用框線或底色，不要換字的顏色。 */
+.dia-svg .ttl.hp1, .dia-svg .lbl.hp1, .dia-svg .anno.hp1, .dia-svg .tick.hp1 { fill: var(--hp1); }
+.dia-svg .ttl.hp2, .dia-svg .lbl.hp2, .dia-svg .anno.hp2, .dia-svg .tick.hp2 { fill: var(--hp2); }
+.dia-svg .ttl.somatic,  .dia-svg .lbl.somatic,  .dia-svg .anno.somatic,  .dia-svg .tick.somatic  { fill: var(--somatic); }
+.dia-svg .ttl.germline, .dia-svg .lbl.germline, .dia-svg .anno.germline, .dia-svg .tick.germline { fill: var(--germline); }
+.dia-svg .ttl.artifact, .dia-svg .lbl.artifact, .dia-svg .anno.artifact, .dia-svg .tick.artifact { fill: var(--artifact); }
+.dia-svg .ttl.met,      .dia-svg .lbl.met,      .dia-svg .anno.met,      .dia-svg .tick.met      { fill: var(--met); }
+.dia-svg .ttl.accent,   .dia-svg .lbl.accent,   .dia-svg .anno.accent,   .dia-svg .tick.accent   { fill: var(--accent); }
+.dia-svg .ttl.ok,   .dia-svg .lbl.ok,   .dia-svg .anno.ok,   .dia-svg .tick.ok   { fill: var(--ok); }
+.dia-svg .ttl.warn, .dia-svg .lbl.warn, .dia-svg .anno.warn, .dia-svg .tick.warn { fill: var(--warn); }
+.dia-svg .ttl.bad,  .dia-svg .lbl.bad,  .dia-svg .anno.bad,  .dia-svg .tick.bad  { fill: var(--bad); }
+
+/* --- 線條 / 座標軸 / 導引線 --------------------------------------------- */
+.dia-svg .axis  { stroke: var(--rule-strong); stroke-width: 2; fill: none; }
+.dia-svg .axis.ok  { stroke: var(--ok); }
+.dia-svg .axis.bad { stroke: var(--bad); }
+/* 使用者可拖動的門檻線：必須跟它穿過的座標軸明顯分得開 */
+.dia-svg .axis.accent { stroke: var(--accent); stroke-width: 3; }
+.dia-svg .guide { stroke: var(--rule); stroke-width: 1.5; stroke-dasharray: 5 4; fill: none; }
+.dia-svg .guide.muted { stroke: var(--muted); }
+/* 指向「目前這個點」的讀數線；跟背景導引線同形狀，靠色相分辨 */
+.dia-svg .guide.somatic { stroke: var(--somatic); }
+.dia-svg .conn  { stroke: var(--rule-strong); stroke-width: 2; fill: none; }
+.dia-svg .conn.hp1 { stroke: var(--hp1); }
+.dia-svg .conn.hp2 { stroke: var(--hp2); }
+.dia-svg .conn.somatic { stroke: var(--somatic); }
+.dia-svg .conn.artifact { stroke: var(--artifact); }
+.dia-svg .conn.ok   { stroke: var(--ok); }
+.dia-svg .conn.warn { stroke: var(--warn); }
+.dia-svg .conn.bad  { stroke: var(--bad); }
+.dia-svg .conn.met  { stroke: var(--met); }
+.dia-svg .conn.thick { stroke-width: 4; }
+.dia-svg .flow  { stroke: var(--accent); stroke-width: 2.5; fill: none; }
+
+/* --- 方框 / 面板 --------------------------------------------------------- */
+.dia-svg .box {
+  fill: var(--paper-sunken);
+  stroke: var(--rule);
+  stroke-width: 2;
+}
+.dia-svg .box.accent  { fill: var(--term-bg); stroke: var(--accent); }
+.dia-svg .box.ok      { fill: var(--ok-fill);  stroke: var(--ok); }
+.dia-svg .box.bad     { fill: var(--bad-fill); stroke: var(--bad); }
+.dia-svg .box.warn    { fill: var(--warn-fill);stroke: var(--warn); }
+.dia-svg .box.plain   { fill: var(--paper);    stroke: var(--rule); }
+.dia-svg .box.ghost   { fill: none; stroke: var(--rule); stroke-dasharray: 6 4; }
+.dia-svg .box.sunken  { fill: var(--muted-fill); stroke: var(--rule); }
+.dia-svg .box.ghost.artifact { fill: none; stroke: var(--artifact); }
+.dia-svg .box.ghost.bad      { fill: none; stroke: var(--bad); }
+
+/* --- 區域高亮 ------------------------------------------------------------ */
+.dia-svg .region      { fill: var(--accent); opacity: .1; }
+.dia-svg .region.loh  { fill: var(--artifact); opacity: .16; }
+.dia-svg .region.bad  { fill: var(--bad); opacity: .1; }
+
+/* --- 資料點 -------------------------------------------------------------- */
+.dia-svg .pt { stroke-width: 1.2; }
+.dia-svg .pt.tp { fill: var(--somatic);  stroke: var(--somatic); }
+.dia-svg .pt.fp { fill: var(--artifact); stroke: var(--artifact); }
+.dia-svg .pt.gl { fill: var(--germline); stroke: var(--germline); }
+
+/* --- 長條 ---------------------------------------------------------------- */
+.dia-svg .bar          { fill: var(--muted-fill); stroke: var(--rule-strong); stroke-width: 1; }
+.dia-svg .bar.germline { fill: var(--germline-fill); stroke: var(--germline); }
+.dia-svg .bar.hp1      { fill: var(--hp1-fill); stroke: var(--hp1); }
+.dia-svg .bar.hp2      { fill: var(--hp2-fill); stroke: var(--hp2); }
+.dia-svg .bar.somatic  { fill: var(--somatic-fill); stroke: var(--somatic); }
+.dia-svg .bar.artifact { fill: var(--artifact-fill); stroke: var(--artifact); }
+.dia-svg .bar.ok       { fill: var(--ok-fill);   stroke: var(--ok); }
+.dia-svg .bar.warn     { fill: var(--warn-fill); stroke: var(--warn); }
+.dia-svg .bar.bad      { fill: var(--bad-fill);  stroke: var(--bad); }
+
+/* --- 數值格：熱圖／張量通道用，深淺＝數值大小 ---------------------------
+   刻意是中性的 ink 而非任何語意色 —— 這裡的深淺代表「數值大」，
+   不代表 haplotype、variant class 或 methylation，不能跟那三套編碼混用。
+   個別格子的數值用 fill-opacity 屬性帶（不要用 opacity，會被 CSS 蓋掉）。 */
+.dia-svg .cellv { fill: var(--ink); stroke: var(--paper); stroke-width: 1; }
+
+/* --- 動畫（尊重 reduced-motion，由 base.css 全域關掉） ------------------ */
+@keyframes dash-flow { to { stroke-dashoffset: -24; } }
+.dia-svg .animate-flow {
+  stroke-dasharray: 8 4;
+  animation: dash-flow 1.4s linear infinite;
+}
+@keyframes soft-pulse { 50% { opacity: .35; } }
+.dia-svg .animate-pulse { animation: soft-pulse 2.2s ease-in-out infinite; }

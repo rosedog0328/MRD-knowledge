@@ -1,0 +1,66 @@
+/* ==========================================================================
+   matrix.css — MRD 知識庫專屬的兩個元件
+   --------------------------------------------------------------------------
+   lab-tutorial 沒有這兩個 class，因為它沒有這種「多篇論文 × 多步驟」的表。
+   一律用 tokens.css 的變數，不寫死顏色（與該專案的 SVG 規則同理：
+   換主題時若有寫死顏色，深色模式會出現讀不到的文字）。
+   ========================================================================== */
+
+/* ── 可展開的比較矩陣 ───────────────────────────────────────────────
+   矩陣寬度遠超過內文的 --measure，因此需要自己的橫向捲動容器，
+   且第一欄要釘住 —— 否則捲到右邊就不知道在看哪一篇。 */
+.table-wrap--matrix { max-height: 78vh; overflow: auto; }
+
+table.matrix { min-width: 1500px; font-size: .84rem; }
+
+table.matrix th,
+table.matrix td { vertical-align: top; padding: .6rem .7rem; }
+
+table.matrix thead th {
+  position: sticky; top: 0; z-index: 3;
+  background: var(--paper-raised);
+  box-shadow: inset 0 -2px 0 var(--rule-strong);
+}
+
+table.matrix tbody td:first-child {
+  position: sticky; left: 0; z-index: 2;
+  background: var(--paper);
+  border-right: 2px solid var(--rule-strong);
+  white-space: nowrap;
+}
+table.matrix tbody tr:nth-child(even) td:first-child { background: var(--paper-sunken); }
+table.matrix tbody tr:nth-child(even) { background: var(--paper-sunken); }
+
+table.matrix td small { color: var(--muted); font-weight: 400; }
+table.matrix td small.ok { color: var(--ok); }
+
+/* 展開的規格清單 */
+table.matrix details > summary { cursor: pointer; list-style: none; }
+table.matrix details > summary::-webkit-details-marker { display: none; }
+table.matrix details > summary::after { content: " ▸"; color: var(--accent); }
+table.matrix details[open] > summary::after { content: " ▾"; }
+
+table.matrix details ul.prose {
+  margin: .55rem 0 .1rem;
+  padding-left: .9rem;
+  border-left: 2px solid var(--rule);
+  font-size: .95em;
+}
+table.matrix details ul.prose > li { margin: .35rem 0; line-height: 1.65; }
+
+/* ── 可移植性標籤 ──────────────────────────────────────────────────
+   三態共用同一個形狀，只換色相 —— 與 diagram.css 的「色相依語意分工」一致。 */
+.pill {
+  display: inline-block;
+  margin-left: .4em;
+  padding: 0 .5em;
+  font-size: .72rem;
+  line-height: 1.65;
+  white-space: nowrap;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  cursor: help;
+}
+.pill--ok   { color: var(--ok); }
+.pill--warn { color: var(--warn); }
+.pill--bad  { color: var(--bad); }

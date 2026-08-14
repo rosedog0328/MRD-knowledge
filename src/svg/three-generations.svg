@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 420">
+  <title>同一實驗室三代方法的演進：從演算法去噪走向定序化學</title>
+  <desc>由左至右三代，皆出自 Landau 實驗室，解的是同一個問題：訊噪比。
+        第一代 MRDetect 於 2020 年發表於 Nature Medicine，
+        用線性支持向量機對單條 read 做二分類，使用五個定序品質特徵，
+        訊噪比提升八點三倍，錯誤率降到約五乘以十的負五次方。
+        第二代 MRD-EDGE 於 2024 年發表於 Nature Medicine，
+        改用卷積神經網路加多層感知器的集成模型，
+        並加入 ctDNA 專屬的生物特徵，訊噪比提升到一百一十八倍。
+        第三代於 2025 年發表於 Nature Methods，
+        不再從演算法下手，改用雙股定序的化學方法，錯誤率壓到七點七乘以十的負七次方。
+        圖下方標出兩件事：一是第三代等於承認軟體去噪有天花板；
+        二是第三代作者自己指出，在腫瘤資訊導向的情境下，
+        加大輸入量的標準全基因體定序，預期可達到比雙股定序更低的偵測極限。
+        因此本專案沿用第一代的路線並未過時。</desc>
+
+  <text class="ttl bold zh" x="20" y="34">Landau lab 三代：每一代都在解同一個問題 —— 訊噪比</text>
+
+  <!-- 時間軸 -->
+  <path class="axis" d="M60 300 L940 300"/>
+  <text class="tick mid zh" x="180" y="326">2020</text>
+  <text class="tick mid zh" x="500" y="326">2024</text>
+  <text class="tick mid zh" x="820" y="326">2025</text>
+  <circle class="mark accent" cx="180" cy="300" r="7"/>
+  <circle class="mark accent" cx="500" cy="300" r="7"/>
+  <circle class="mark accent" cx="820" cy="300" r="7"/>
+
+  <!-- 第一代 -->
+  <rect class="box plain" x="42" y="62" width="276" height="212" rx="10"/>
+  <text class="anno bold mid zh" x="180" y="92">第一代 · MRDetect</text>
+  <text class="tick mid zh" x="180" y="114">Nature Medicine 2020</text>
+  <path class="guide" d="M66 128 L294 128"/>
+  <text class="anno bold mid accent zh" x="180" y="156">線性 SVM</text>
+  <text class="tick mid zh" x="180" y="180">5 個定序品質特徵</text>
+  <text class="tick mid zh" x="180" y="200">VBQ、MRBQ、PIR、R1/R2、MQ</text>
+  <text class="anno bold mid zh" x="180" y="232">訊噪比 8.3×</text>
+  <text class="tick mid zh" x="180" y="256">錯誤率 4.96e-5</text>
+
+  <!-- 第二代 -->
+  <rect class="box plain" x="362" y="62" width="276" height="212" rx="10"/>
+  <text class="anno bold mid zh" x="500" y="92">第二代 · MRD-EDGE</text>
+  <text class="tick mid zh" x="500" y="114">Nature Medicine 2024</text>
+  <path class="guide" d="M386 128 L614 128"/>
+  <text class="anno bold mid accent zh" x="500" y="156">CNN + MLP 集成</text>
+  <text class="tick mid zh" x="500" y="180">加入 ctDNA 生物特徵</text>
+  <text class="tick mid zh" x="500" y="200">SBS context、片段長度、表觀基因體</text>
+  <text class="anno bold mid zh" x="500" y="232">訊噪比 118×</text>
+  <text class="tick mid zh" x="500" y="256">不只壓噪音，還增強訊號</text>
+
+  <!-- 第三代 -->
+  <rect class="box" x="682" y="62" width="276" height="212" rx="10"/>
+  <text class="anno bold mid zh" x="820" y="92">第三代 · Ultima duplex</text>
+  <text class="tick mid zh" x="820" y="114">Nature Methods 2025</text>
+  <path class="guide" d="M706 128 L934 128"/>
+  <text class="anno bold mid accent zh" x="820" y="156">改走定序化學</text>
+  <text class="tick mid zh" x="820" y="180">低成本平台 ~120X ＋</text>
+  <text class="tick mid zh" x="820" y="200">全基因體 duplex 錯誤校正</text>
+  <text class="anno bold mid zh" x="820" y="232">錯誤率 7.7e-7</text>
+  <text class="tick mid zh" x="820" y="256">相對未校正改善 ~3,300×</text>
+
+  <!-- 演進箭頭 -->
+  <path class="conn thick" d="M322 168 L358 168" marker-end="url(#g1)"/>
+  <path class="conn thick" d="M642 168 L678 168" marker-end="url(#g1)"/>
+  <defs>
+    <marker id="g1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path class="conn" d="M0 0 L10 5 L0 10 z"/>
+    </marker>
+  </defs>
+  <text class="tick mid zh" x="340" y="158">換模型</text>
+  <text class="tick mid zh" x="660" y="158">換化學</text>
+
+  <!-- 結論 -->
+  <rect class="box plain" x="20" y="344" width="470" height="66" rx="8"/>
+  <text class="anno bold zh" x="44" y="372">第三代等於承認：軟體去噪有天花板</text>
+  <text class="tick zh" x="44" y="396">改從資料源頭解決，不再優化演算法</text>
+
+  <rect class="box" x="510" y="344" width="470" height="66" rx="8"/>
+  <text class="anno bold warn zh" x="534" y="372">⚠️ 但作者自己留了一個轉折</text>
+  <text class="tick zh" x="534" y="396">tumor-informed 情境下，標準 WGS ＋ 高輸入量可能更好</text>
+</svg>

@@ -1,0 +1,134 @@
+[
+  {
+    "id": "p00",
+    "num": "0",
+    "src": "p00-orientation.html",
+    "group": "導覽",
+    "short": "導覽",
+    "title_zh": "這份知識庫在回答什麼",
+    "title_en": "Orientation",
+    "q": "11 篇 MRD 偵測論文，要怎麼比較才看得出共同點？",
+    "sub": "說明六步共同骨架的組織原則、收錄範圍與三個閱讀警告。",
+    "est_min": 15
+  },
+  {
+    "id": "p01",
+    "num": "1",
+    "src": "p01-why-hard.html",
+    "group": "導覽",
+    "short": "問題設定",
+    "title_zh": "為什麼 MRD 偵測是個難題",
+    "title_en": "Why MRD detection is hard",
+    "q": "既然測不到，為什麼不把定序做得更深？",
+    "sub": "由血漿分子數的物理上限推導出「廣度取代深度」，並說明 read-centric 判斷單元的由來。",
+    "est_min": 25,
+    "prereq": [
+      "p00"
+    ]
+  },
+  {
+    "id": "p02",
+    "num": "2",
+    "src": "p02-targets-validation.html",
+    "group": "方法細節",
+    "short": "標的與驗證",
+    "title_zh": "① 追蹤標的 與 ② 驗證資料",
+    "title_en": "Targets and validation data",
+    "q": "要追蹤哪些位點？用什麼資料才能宣稱偵測極限？",
+    "sub": "五種標的定義方式與三種驗證資料的橫向對照，含各方法的位點規模與 replicate 設計。",
+    "est_min": 30,
+    "prereq": [
+      "p01"
+    ]
+  },
+  {
+    "id": "p03",
+    "num": "3",
+    "src": "p03-denoising.html",
+    "group": "方法細節",
+    "short": "壓噪音",
+    "title_zh": "③ 怎麼壓噪音：四類七種做法",
+    "title_en": "Error suppression",
+    "q": "錯誤率降兩個數量級，要付出什麼代價？",
+    "sub": "化學、統計建模、機器學習、換偵測單元四類做法的對照，含錯誤率總表與代價量化。",
+    "est_min": 45,
+    "prereq": [
+      "p01"
+    ]
+  },
+  {
+    "id": "p04",
+    "num": "4",
+    "src": "p04-score-threshold.html",
+    "group": "方法細節",
+    "short": "分數與門檻",
+    "title_zh": "④ 樣本層分數 與 ⑤ 門檻",
+    "title_en": "Sample score and threshold",
+    "q": "幾萬個位點怎麼變成一個「有癌／沒癌」的判定？",
+    "sub": "八種聚合統計與六種門檻決定方式；並指出只有一條路線需要陰性樣本世代。",
+    "est_min": 40,
+    "prereq": [
+      "p03"
+    ]
+  },
+  {
+    "id": "p05",
+    "num": "5",
+    "src": "p05-evaluation.html",
+    "group": "方法細節",
+    "short": "評估紀律",
+    "title_zh": "⑥ 評估與切分紀律",
+    "title_en": "Evaluation and split discipline",
+    "q": "怎麼證明報出來的數字不是過度擬合？",
+    "sub": "11 篇的切分紀律分級、LLOD 總表與不可比較的前提，以及作者自承限制的彙整。",
+    "est_min": 35,
+    "prereq": [
+      "p04"
+    ]
+  },
+  {
+    "id": "p06",
+    "num": "6",
+    "src": "p06-matrix.html",
+    "group": "方法細節",
+    "short": "完整矩陣",
+    "title_zh": "逐篇完整規格矩陣",
+    "title_en": "Full specification matrix",
+    "q": "某一篇在某一步到底怎麼做？",
+    "sub": "11 篇 × 六步的完整規格，含三篇由原始碼取得的實作細節。",
+    "est_min": 20,
+    "prereq": [
+      "p02"
+    ]
+  },
+  {
+    "id": "p07",
+    "num": "7",
+    "src": "p07-synthesis.html",
+    "group": "統整",
+    "short": "三條主線",
+    "title_zh": "跨論文統整：三條主線",
+    "title_en": "Three cross-cutting themes",
+    "q": "這 11 篇合起來說了什麼？",
+    "sub": "取捨三角、訊號模態的硬界線、以及同一實驗室三代方法的演進所揭示的天花板。",
+    "est_min": 30,
+    "prereq": [
+      "p05"
+    ]
+  },
+  {
+    "id": "p08",
+    "num": "8",
+    "src": "p08-our-position.html",
+    "group": "統整",
+    "short": "我們的位置",
+    "title_zh": "本專案的位置與設計選單",
+    "title_en": "Our position and design menu",
+    "q": "這些方法裡，哪些我們能用、哪些用不了？",
+    "sub": "結構性優劣勢、期望值校準，以及六步各自的建議選項與依據。",
+    "est_min": 30,
+    "prereq": [
+      "p07"
+    ]
+  }
+]

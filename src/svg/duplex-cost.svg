@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 400">
+  <title>壓低錯誤率從來不是免費的：每一種降噪手段都以損失分子數為代價</title>
+  <desc>本圖對照三種降噪手段的錯誤率與分子回收率。
+        第一種是雙股定序，錯誤率可低至十的負七次方等級，
+        但必須同時讀到同一分子的正反兩股，因此只回收約百分之十九的獨立片段。
+        第二種是滾環擴增共識，同樣把錯誤率大幅壓低，
+        但去重後只有百分之三十五到五十一的原始讀取能貢獻共識序列。
+        第三種是同相變異，也就是追蹤同一分子上的多個突變。
+        它的背景率同樣極低，二重為八乘以十的負七次方、三重為三點四乘以十的負八次方，
+        但關鍵差異在於它幾乎不損失分子：
+        間距小於二十個鹼基對的同相變異，其獨立深度幾乎等同樣本整體深度。
+        圖下方的結論是：前兩者用更少的分子換準確度，
+        而同相變異用同一分子上的巧合換準確度，是唯一宣稱兩者兼得的路線。</desc>
+
+  <text class="ttl bold zh" x="20" y="34">壓低錯誤率不是免費的 —— 代價是分子數</text>
+
+  <!-- 三欄 -->
+  <rect class="box plain" x="20" y="62" width="300" height="232" rx="10"/>
+  <text class="anno bold mid zh" x="170" y="92">duplex 定序</text>
+  <text class="tick mid zh" x="170" y="116">正反兩股都要讀到</text>
+  <text class="anno bold mid ok" x="170" y="152" style="font-size:19px">錯誤率 ~1e-7</text>
+  <text class="anno bold mid zh" x="170" y="184">分子回收率</text>
+  <!-- 回收率長條 19% -->
+  <rect class="bar ghost" x="50" y="198" width="240" height="26" rx="4"/>
+  <rect class="bar bad" x="50" y="198" width="46" height="26" rx="4"/>
+  <text class="anno bold mid bad" x="170" y="248" style="font-size:20px">只回收 19%</text>
+  <text class="tick mid zh" x="170" y="276">丟掉八成分子換準確度</text>
+
+  <rect class="box plain" x="350" y="62" width="300" height="232" rx="10"/>
+  <text class="anno bold mid zh" x="500" y="92">RCA 共識</text>
+  <text class="tick mid zh" x="500" y="116">同分子多份串聯拷貝</text>
+  <text class="anno bold mid ok" x="500" y="152" style="font-size:19px">錯誤率 4.2e-7 / 7.2e-4</text>
+  <text class="anno bold mid zh" x="500" y="184">可用 read 比例</text>
+  <rect class="bar ghost" x="380" y="198" width="240" height="26" rx="4"/>
+  <rect class="bar warn" x="380" y="198" width="103" height="26" rx="4"/>
+  <text class="anno bold mid warn" x="500" y="248" style="font-size:20px">僅 35–51%</text>
+  <text class="tick mid zh" x="500" y="276">其餘無法貢獻共識</text>
+
+  <rect class="box" x="680" y="62" width="300" height="232" rx="10"/>
+  <text class="anno bold mid zh" x="830" y="92">phased variants</text>
+  <text class="tick mid zh" x="830" y="116">同分子上的多個突變</text>
+  <text class="anno bold mid ok" x="830" y="152" style="font-size:19px">背景 8.0e-7 / 3.4e-8</text>
+  <text class="anno bold mid zh" x="830" y="184">分子回收率</text>
+  <rect class="bar ghost" x="710" y="198" width="240" height="26" rx="4"/>
+  <rect class="bar ok" x="710" y="198" width="234" height="26" rx="4"/>
+  <text class="anno bold mid ok" x="830" y="248" style="font-size:20px">幾乎不損失</text>
+  <text class="tick mid zh" x="830" y="276">間距 &lt;20bp 者深度等同全樣本</text>
+
+  <!-- 結論 -->
+  <rect class="box plain" x="20" y="314" width="620" height="72" rx="8"/>
+  <text class="anno bold zh" x="44" y="344">前兩者：用「更少的分子」換準確度</text>
+  <text class="tick zh" x="44" y="370">分子是有限資源（1 mL 血漿僅 10³–10⁴ GE），丟掉就補不回來</text>
+
+  <rect class="box" x="670" y="314" width="310" height="72" rx="8"/>
+  <text class="anno bold ok zh" x="694" y="344">phased variants：用「巧合」換</text>
+  <text class="tick zh" x="694" y="370">唯一宣稱兩者兼得的路線</text>
+</svg>

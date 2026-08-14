@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 502">
+  <title>降噪方法在錯誤率、可用分子數與涵蓋廣度之間的取捨</title>
+  <desc>本圖以二維座標呈現各方法的取捨位置。
+        橫軸為可用分子數，由左至右遞增；縱軸為錯誤率，由下至上遞增，
+        因此越靠右下角的位置越理想。
+        雙股定序位於左下：錯誤率極低，約十的負七次方，
+        但只回收百分之十九的獨立片段，可用分子數大幅減少。
+        滾環擴增共識位於其右上方：錯誤率同樣低，
+        但去重後僅三成五到五成一的原始讀取能貢獻共識。
+        同相變異位於右下角，是唯一同時具備低背景率與高分子保留率的位置，
+        因為它以同一分子上的巧合換取準確度，而非以分子數換取。
+        MRDetect 世系位於右上：分子數完整保留，但錯誤率較高，
+        改以全基因體的涵蓋廣度補償。
+        本專案以標準單股奈米孔定序，位於更右上方，
+        錯誤率比所有方法都高，但位點數多達三萬五千餘個。
+        圖下方標明第三個維度：涵蓋廣度，
+        亦即追蹤的位點數，由數十個到十萬個不等，
+        這是唯一可由設計自由決定的參數。</desc>
+
+  <text class="ttl bold zh" x="20" y="34">降噪方法的取捨：錯誤率 × 可用分子數 × 涵蓋廣度</text>
+  <text class="tick zh" x="20" y="58">越靠右下越理想（錯誤率低且分子保留多）—— 但沒有方法能同時佔滿兩軸</text>
+
+  <!-- 座標軸 -->
+  <path class="axis" d="M110 380 L920 380"/>
+  <path class="axis" d="M110 380 L110 90"/>
+  <text class="anno zh" x="515" y="412" text-anchor="middle">可用分子數 →</text>
+  <text class="anno zh" x="42" y="235" text-anchor="middle" transform="rotate(-90 42 235)">錯誤率 ↑</text>
+
+  <text class="tick zh" x="118" y="400">少</text>
+  <text class="tick zh" x="890" y="400">全部保留</text>
+  <text class="tick zh" x="72" y="106">高</text>
+  <text class="tick zh" x="72" y="374">低</text>
+
+  <!-- 理想區 -->
+  <rect class="region" x="640" y="290" width="270" height="82" rx="8"/>
+  <text class="tick mid zh" x="775" y="336">理想區</text>
+
+  <!-- 各方法定位 -->
+  <circle class="mark bad" cx="200" cy="336" r="12"/>
+  <text class="anno bold zh" x="150" y="316">duplex</text>
+  <text class="tick zh" x="130" y="364">7.7e-7｜僅回收 19%</text>
+
+  <circle class="mark warn" cx="340" cy="330" r="12"/>
+  <text class="anno bold zh" x="296" y="310">RCA 共識</text>
+  <text class="tick zh" x="272" y="358">4.2e-7｜可用 35–51%</text>
+
+  <circle class="mark ok" cx="800" cy="330" r="14"/>
+  <text class="anno bold ok zh" x="742" y="308">phased variants</text>
+  <text class="tick zh" x="716" y="358">8.0e-7｜幾乎不損失</text>
+
+  <circle class="mark accent" cx="820" cy="180" r="12"/>
+  <text class="anno bold zh" x="700" y="184">MRDetect 世系</text>
+  <text class="tick zh" x="700" y="212">4.96e-5｜分子完整</text>
+
+  <circle class="mark somatic" cx="860" cy="118" r="14"/>
+  <text class="anno bold somatic zh" x="700" y="112">本專案 ONT simplex</text>
+  <text class="tick zh" x="700" y="134">6.7e-3</text>
+
+  <!-- 第三維度 -->
+  <rect class="box" x="20" y="428" width="960" height="64" rx="8"/>
+  <text class="anno bold zh" x="44" y="454">第三個維度 · 涵蓋廣度（位點數）</text>
+  <text class="tick zh" x="44" y="478">iDES 30 個 → INVAR 10³ → MRDetect 10⁴–10⁵ → 本專案 35,603　—— 唯一可由設計自由決定的參數</text>
+</svg>
