@@ -1286,100 +1286,114 @@ LLOD 越低。這是唯一可以由設計自由決定的參數，因此也最容
 所以固定預算下只能<b>互相交換</b>。</li>
 </ol>
 
-<figure class="dia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 580" class="dia-svg" role="img" aria-labelledby="p02__five-target-designs__title" aria-describedby="p02__five-target-designs__desc">
+<figure class="dia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600" class="dia-svg" role="img" aria-labelledby="p02__five-target-designs__title" aria-describedby="p02__five-target-designs__desc">
   <title id="p02__five-target-designs__title">五種追蹤標的設計在「位點數 × 每位點深度」上的位置</title>
   <desc id="p02__five-target-designs__desc">本圖把五種定義追蹤標的的做法，擺在同一個平面上比較。
         橫軸是追蹤的位點數，由左至右從一個到十萬個，為對數刻度。
         縱軸是每個位點分到的定序深度，由下至上從一倍到一萬倍，同樣為對數刻度。
         兩軸相乘大致等於總定序量，因此固定預算下只能沿著左上到右下的方向移動，
-        位點數與深度是互相交換的關係。
+        位點數與深度是互相交換的關係，圖中以一條虛線標示這個方向。
         圖中標出五個位置。
-        通用標的組位在左上角：追蹤的位點極少，每位病人中位數僅四個單核苷酸變異，
-        但深度可達一萬倍。
-        個人化標的組位在中間偏上：位點數一百到一千，深度一千到一萬倍。
-        同分子多突變也位在中間偏上，位點數約一百多組，
-        但它改變的其實是判定單元而非位置本身。
-        全基因體體細胞單核苷酸變異位在右下角：位點數一千到十萬，
-        但深度只有二十到一百二十倍。
-        本專案也位在右下角，位點數三萬五千六百零三，深度二十五倍，
+        第二種通用標的組位在左上角：追蹤的位點極少，每位病人中位數僅四個單核苷酸變異，
+        但深度可達一萬倍，代表方法為 CAPP-Seq 與 iDES。
+        第三種個人化標的組位在中間偏上：位點數約數百，深度數千倍，
+        代表方法為 INVAR 與 PhasED-seq。
+        第四種同分子多突變位在中間，位點數約一百多組，
+        但它改變的其實是判定單元而非位置本身，代表方法為 PhasED-seq。
+        第一種全基因體體細胞單核苷酸變異位在右下角：位點數約一萬，
+        但深度只有數十倍，代表方法為 MRDetect、MRD-EDGE 與 AccuScan。
+        本專案同樣位在右下角，位點數三萬五千六百零三，深度二十五倍，
         比全基因體路線的典型位置更偏右下，也就是更廣但更淺。
         第五種做法不需要標的清單，因此不落在這個平面上，另以文字標於圖下方，
-        其代表為低覆蓋全基因體拷貝數方法與樣本層級分類器。
+        其代表為低覆蓋全基因體拷貝數方法 ichorCNA 與樣本層級分類器 Lung-CLiP。
         圖右側說明區分五種做法的三個問題：
         標的是由誰決定的、需不需要腫瘤組織定序、以及位點數與深度落在哪裡。</desc>
 
   <text class="ttl bold zh" x="20" y="34">五種做法的差別：位點數與深度是互相交換的</text>
 
-  <!-- 座標軸 -->
-  <path class="axis" d="M120 440 L700 440"/>
-  <path class="axis" d="M120 440 L120 74"/>
+  <!-- ══ 座標軸 ══ -->
+  <path class="axis" d="M150 430 L640 430"/>
+  <path class="axis" d="M150 430 L150 92"/>
 
-  <text class="tick mid zh" x="120" y="462">1</text>
-  <text class="tick mid zh" x="236" y="462">10</text>
-  <text class="tick mid zh" x="352" y="462">100</text>
-  <text class="tick mid zh" x="468" y="462">1,000</text>
-  <text class="tick mid zh" x="584" y="462">10,000</text>
-  <text class="tick mid zh" x="700" y="462">100,000</text>
-  <text class="anno bold mid zh" x="410" y="488">追蹤的位點數 →</text>
+  <!-- x 刻度：每十倍 98px -->
+  <text class="tick mid zh" x="150" y="452">1</text>
+  <text class="tick mid zh" x="248" y="452">10</text>
+  <text class="tick mid zh" x="346" y="452">100</text>
+  <text class="tick mid zh" x="444" y="452">1,000</text>
+  <text class="tick mid zh" x="542" y="452">10,000</text>
+  <text class="tick mid zh" x="640" y="452">100,000</text>
+  <text class="anno bold mid zh" x="395" y="478">追蹤的位點數 →</text>
 
-  <text class="tick zh" x="66" y="445">1×</text>
-  <text class="tick zh" x="52" y="355">10×</text>
-  <text class="tick zh" x="38" y="265">100×</text>
-  <text class="tick zh" x="24" y="175">1,000×</text>
-  <text class="tick zh" x="24" y="85">10,000×</text>
-  <text class="anno bold zh" x="20" y="60">↑ 每位點深度</text>
+  <!-- y 刻度：每十倍 82.5px -->
+  <text class="tick zh" x="138" y="435" text-anchor="end">1×</text>
+  <text class="tick zh" x="138" y="352" text-anchor="end">10×</text>
+  <text class="tick zh" x="138" y="270" text-anchor="end">100×</text>
+  <text class="tick zh" x="138" y="187" text-anchor="end">1,000×</text>
+  <text class="tick zh" x="138" y="105" text-anchor="end">10,000×</text>
+  <text class="anno bold zh" x="20" y="76">↑ 每位點深度</text>
 
-  <!-- 等總定序量的斜線 -->
-  <path class="guide" d="M150 110 L680 420"/>
-  <text class="tick zh" x="440" y="258" transform="rotate(30 440 258)">固定預算：只能沿此方向移動</text>
+  <!-- ══ 等總定序量的方向線 ══ -->
+  <path class="guide" d="M200 112 L636 424"/>
 
-  <!-- 資料點 -->
-  <circle class="mark accent" cx="190" cy="88" r="9"/>
-  <text class="anno bold zh" x="204" y="84">通用 panel</text>
-  <text class="tick zh" x="204" y="104">CAPP-Seq · iDES</text>
+  <!-- ══ ② 通用 panel ══ -->
+  <circle class="mark accent" cx="209" cy="100" r="9"/>
+  <text class="anno bold zh" x="226" y="96">② 通用 panel</text>
+  <text class="tick zh" x="226" y="118">CAPP-Seq · iDES</text>
 
-  <circle class="mark accent" cx="433" cy="130" r="9"/>
-  <text class="anno bold zh" x="447" y="126">個人化 panel</text>
-  <text class="tick zh" x="447" y="146">INVAR · PhasED-seq</text>
+  <!-- ══ ③ 個人化 panel ══ -->
+  <circle class="mark accent" cx="415" cy="125" r="9"/>
+  <text class="anno bold zh" x="432" y="121">③ 個人化 panel</text>
+  <text class="tick zh" x="432" y="143">INVAR</text>
 
-  <circle class="mark accent" cx="352" cy="196" r="9"/>
-  <text class="anno bold zh" x="180" y="192">同分子多突變</text>
-  <text class="tick zh" x="140" y="212">PhasED-seq（換的是判定單元）</text>
+  <!-- ══ ④ 同分子多突變 ══ -->
+  <circle class="mark accent" cx="353" cy="192" r="9"/>
+  <path class="conn" d="M345 199 L300 214"/>
+  <text class="anno bold zh" x="166" y="226">④ 同分子多突變</text>
+  <text class="tick zh" x="166" y="248">PhasED-seq</text>
 
-  <circle class="mark accent" cx="584" cy="290" r="9"/>
-  <text class="anno bold zh" x="440" y="286">全基因體 somatic SNV</text>
-  <text class="tick zh" x="380" y="306">MRDetect · MRD-EDGE · AccuScan</text>
+  <!-- ══ ① 全基因體 somatic SNV ══ -->
+  <circle class="mark accent" cx="542" cy="290" r="9"/>
+  <text class="tick zh" x="392" y="252">MRDetect · MRD-EDGE · AccuScan</text>
+  <text class="anno bold zh" x="392" y="274">① 全基因體 somatic SNV</text>
 
-  <circle class="mark somatic" cx="648" cy="318" r="11"/>
-  <text class="anno bold somatic zh" x="510" y="344">本專案 35,603 位點 · 25×</text>
+  <!-- ══ 本專案 ══ -->
+  <circle class="mark somatic" cx="596" cy="315" r="11"/>
+  <text class="anno bold somatic zh" x="360" y="356">本專案 35,603 位點 · 25×</text>
+  <path class="conn" d="M588 324 L570 344"/>
 
-  <!-- 第五種：不在此平面 -->
-  <rect class="box plain" x="120" y="500" width="580" height="56" rx="8"/>
-  <text class="anno bold zh" x="144" y="524">⑤ 不需要 compendium —— 不落在這個平面上</text>
-  <text class="tick zh" x="144" y="546">ichorCNA（拷貝數）· Lung-CLiP（樣本層分類器）：完全不建清單</text>
+  <!-- ══ ⑤ 不在此平面 ══ -->
+  <rect class="box plain" x="150" y="496" width="490" height="62" rx="8"/>
+  <text class="anno bold zh" x="172" y="522">⑤ 不需要 compendium</text>
+  <text class="tick zh" x="172" y="544">ichorCNA · Lung-CLiP：不建清單，不落在這個平面上</text>
 
-  <!-- 右欄 -->
-  <rect class="box" x="724" y="74" width="256" height="256" rx="10"/>
-  <text class="anno bold zh" x="748" y="102">區分它們的三個問題</text>
+  <!-- ══ 右欄：三個問題 ══ -->
+  <rect class="box" x="680" y="92" width="300" height="228" rx="10"/>
+  <text class="anno bold zh" x="704" y="120">區分它們的三個問題</text>
 
-  <text class="anno bold accent zh" x="748" y="136">① 標的由誰決定？</text>
-  <text class="tick zh" x="748" y="156">演算法事先選（通用）</text>
-  <text class="tick zh" x="748" y="176">／病人的腫瘤決定</text>
+  <text class="anno bold accent zh" x="704" y="154">① 標的由誰決定？</text>
+  <text class="tick zh" x="704" y="176">演算法事先選（通用）</text>
+  <text class="tick zh" x="704" y="196">／病人的腫瘤決定</text>
 
-  <text class="anno bold accent zh" x="748" y="210">② 要不要腫瘤組織？</text>
-  <text class="tick zh" x="748" y="230">個人化與全基因體都要；</text>
-  <text class="tick zh" x="748" y="250">通用 panel 與 ⑤ 不要</text>
+  <text class="anno bold accent zh" x="704" y="230">② 要不要腫瘤組織？</text>
+  <text class="tick zh" x="704" y="252">①③④ 要；②⑤ 不用</text>
 
-  <text class="anno bold accent zh" x="748" y="284">③ 落在平面的哪裡？</text>
-  <text class="tick zh" x="748" y="304">左上＝深而窄</text>
-  <text class="tick zh" x="748" y="324">右下＝淺而廣</text>
+  <text class="anno bold accent zh" x="704" y="286">③ 落在平面的哪裡？</text>
+  <text class="tick zh" x="704" y="308">左上＝深而窄，右下＝淺而廣</text>
 
-  <rect class="box" x="724" y="346" width="256" height="122" rx="10"/>
-  <text class="anno bold zh" x="748" y="374">兩軸相乘 ≈ 總定序量</text>
-  <text class="tick zh" x="748" y="400">所以這不是「哪個比較好」，</text>
-  <text class="tick zh" x="748" y="420">是「把同樣的預算花在</text>
-  <text class="tick zh" x="748" y="440">哪一邊」——</text>
-  <text class="anno bold accent zh" x="748" y="462">兩條路線各有適用情境</text>
+  <!-- ══ 右欄：怎麼讀 ══ -->
+  <rect class="box" x="680" y="336" width="300" height="222" rx="10"/>
+  <text class="anno bold zh" x="704" y="364">怎麼讀這張圖</text>
+
+  <path class="guide" d="M704 386 L744 386"/>
+  <text class="tick zh" x="754" y="391">＝總定序量相同</text>
+
+  <text class="tick zh" x="704" y="422">兩軸相乘 ≈ 總定序量，</text>
+  <text class="tick zh" x="704" y="444">所以固定預算下只能沿</text>
+  <text class="tick zh" x="704" y="466">虛線方向移動。</text>
+
+  <text class="anno bold accent zh" x="704" y="502">這不是排名 ——</text>
+  <text class="tick zh" x="704" y="524">是把同樣的預算花在</text>
+  <text class="tick zh" x="704" y="546">哪一邊，各有適用情境</text>
 </svg><figcaption>五種做法在「位點數 × 每位點深度」平面上的位置。左上＝深而窄，右下＝淺而廣。第五種不建清單，因此不落在這個平面上。</figcaption></figure>
 
 <h4 id="p02__全基因體-somatic-snv-不挑位點-全部拿來追">① 全基因體 somatic SNV：不挑位點，全部拿來追</h4>
