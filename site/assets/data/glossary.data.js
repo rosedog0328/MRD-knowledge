@@ -1090,7 +1090,6 @@ window.TW_GLOSSARY = {
   "slug": "ont-simplex",
   "modules": [
    "p00",
-   "p06",
    "p08"
   ]
  },

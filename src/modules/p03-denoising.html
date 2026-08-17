@@ -4,7 +4,7 @@
     "說明七種判斷「一條 read 是真是假」的方式各自怎麼運作，以及依據什麼",
     "以量化方式陳述錯誤率與定序深度之間的換算關係",
     "說明每一種降噪手段的隱藏成本，並指出哪一種宣稱可避開該成本",
-    "判斷哪些做法可移植至標準 ONT 資料，並說明無法移植者的具體原因"
+    "說明每一種做法各自依賴什麼前提條件"
   ]
 }
 -->
@@ -148,14 +148,10 @@
 以及該突變來自[[clonal hematopoiesis|克隆造血]]的可能性 ——
 它用片段化模式來區分「腫瘤來源」與「CH 來源」，而不是直接當偵測訊號。</p>
 
-<div class="guardrail guardrail--warn">
-<p class="guardrail__hd">這一類對本專案的移植性最差，而且原因不是效能</p>
-<p class="prose">兩個模型的核心特徵都<b>假設雙端定序</b>：
+<p class="prose">要注意這兩個模型的<b>核心特徵都假設雙端定序</b>：
 [[MRDetect]] 的五特徵裡有一個是 R1/R2 一致性，
 [[MRD-EDGE]] 的 CNN 直接把 R1、R2 編進 18×240 的 tensor。
-ONT 是單分子長讀、<b>沒有 read pair</b>，這些特徵不存在，
-不是「效果差一點」而是<b>算不出來</b>。</p>
-</div>
+換到沒有 read pair 的平台時，這些特徵並非「效果差一點」，而是根本不存在。</p>
 
 <h3>⑦ 換偵測單元：改看同一條分子上的多個突變</h3>
 
@@ -190,34 +186,44 @@ ONT 是單分子長讀、<b>沒有 read pair</b>，這些特徵不存在，
 <div class="table-wrap">
 <table>
 <thead><tr>
-  <th>做法</th><th>判斷依據</th><th>效果</th><th>代價／依賴</th><th>ONT 可用？</th>
+  <th>做法</th><th>判斷依據</th><th>效果</th><th>代價／依賴</th>
 </tr></thead>
 <tbody>
 <tr><td><b>① [[UMI]] read family</b></td><td>同分子的複製品應一致</td>
-    <td>—（四層之一）</td><td>需條碼建庫</td><td>❌</td></tr>
+    <td>—（四層之一）</td><td>需條碼建庫</td></tr>
 <tr><td><b>② [[duplex sequencing|duplex]]</b></td><td>錯誤只出現在單股</td>
-    <td>7.7e-7</td><td>只回收 19% 分子</td><td>❌</td></tr>
+    <td>7.7e-7</td><td>只回收 19% 分子</td></tr>
 <tr><td><b>③ [[RCA]] read 內共識</b></td><td>read 內拷貝應一致</td>
-    <td>4.2e-7／ONT 7.2e-4</td><td>需 RCA 建庫；35–51% 可用</td><td>❌<br><span class="tick">（需改建庫）</span></td></tr>
+    <td>4.2e-7／ONT 7.2e-4</td><td>需 RCA 建庫；35–51% 可用</td></tr>
 <tr><td><b>④ [[background polishing|位置專一背景模型]]</b></td><td>此位置平常有多吵</td>
-    <td>約 3 倍（+條碼 ~15 倍）</td><td><b>需 12 個陰性樣本</b></td><td>🔶</td></tr>
+    <td>約 3 倍（+條碼 ~15 倍）</td><td><b>需 12 個陰性樣本</b></td></tr>
 <tr><td><b>⑤ [[outlier suppression|離群抑制]]</b></td><td>支持 read 多到不合理</td>
-    <td>對照 ↓3 倍，病人留 96.1%</td><td>無特殊需求</td><td>✅</td></tr>
+    <td>對照 ↓3 倍，病人留 96.1%</td><td>無特殊需求</td></tr>
 <tr><td><b>⑥ 機器學習分類器</b></td><td>模型自己學</td>
-    <td>14.4 倍／<b>118 倍</b></td><td>核心特徵假設雙端定序</td><td>❌</td></tr>
+    <td>14.4 倍／<b>118 倍</b></td><td>核心特徵假設雙端定序</td></tr>
 <tr><td><b>⑦ [[phased variant|換偵測單元]]</b></td><td>同分子上多個突變</td>
-    <td>2× 8.0e-7、3× 3.4e-8</td><td><b>幾乎不損失分子</b></td><td>✅<br><span class="tick">（且 ONT 佔優）</span></td></tr>
+    <td>2× 8.0e-7、3× 3.4e-8</td><td><b>幾乎不損失分子</b></td></tr>
 </tbody>
 </table>
 </div>
 
-<div class="guardrail guardrail--info">
-<p class="guardrail__hd">看這張表要注意：可用的兩種都是純計算，而本專案一項都還沒做</p>
-<p class="prose">④⑤⑦ 不依賴分子條碼、不依賴雙端定序、不依賴特殊建庫，
-在標準 ONT 資料上可以執行。其中 ④ 卡在陰性樣本數
-（需 12 個，本專案僅 5 個獨立陰性個體），⑤⑦ 無此限制。</p>
-<p class="prose">①②③ 卡在<b>建庫</b>，不是演算法問題 ——
-要用它們必須重做濕實驗，這不是分析階段能補的。</p>
+<p class="prose">看這張表時，「代價／依賴」那一欄可以再分成<b>三個不同層次</b>，
+因為它們能不能被克服差很多：</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>依賴的層次</th><th>哪幾種</th><th>要補得回來需要什麼</th></tr></thead>
+<tbody>
+<tr><td><b>建庫</b></td><td>① 分子條碼、② duplex、③ RCA</td>
+    <td>重做濕實驗 —— 分析階段補不了</td></tr>
+<tr><td><b>定序方式</b></td><td>⑥ 機器學習（部分特徵）</td>
+    <td>需要雙端定序才有 R1/R2 相關特徵</td></tr>
+<tr><td><b>樣本數</b></td><td>④ 位置專一背景模型</td>
+    <td>湊到足夠的陰性樣本（iDES 用 12 個）</td></tr>
+<tr><td><b>無特殊依賴</b></td><td>⑤ 離群抑制、⑦ 換偵測單元</td>
+    <td>純計算，有資料就能做</td></tr>
+</tbody>
+</table>
 </div>
 </section>
 
@@ -262,57 +268,21 @@ ONT 是單分子長讀、<b>沒有 read pair</b>，這些特徵不存在，
 [[Landau gen3|Landau 第三代]]的作者即明確指出，
 在 <b>[[tumor-informed]] 情境下，加大輸入量的標準 WGS 預期可達到比 duplex 更低的偵測極限</b>。</p>
 
-<h3>ONT 在同相變異上的結構優勢</h3>
+<h3>⑦ 受限於 read 讀得到多長</h3>
 
-{{svg:pv-distance-readlength | 同相變異的間距分布與兩個平台的涵蓋範圍。}}
+{{svg:pv-distance-readlength | 同相變異的間距分布與讀長的涵蓋範圍。兩個突變必須落在同一條 read 上才算數，因此讀長直接決定能用上多少組 PV。}}
 
-<p class="prose">[[PhasED-seq]] 自身的數據顯示，
-Illumina 因 read 與 insert 長度限制，
-只有 <b>48% 的 PV 間距小於 80 bp</b> 而能被有效捕捉。
-[[read length advantage|ONT 的數 kb read]]理論上不受此限。</p>
+<p class="prose">⑦ 有一個前提常被忽略：兩個突變必須<b>落在同一條 read 上</b>才算數，
+因此<b>讀長直接決定能用上多少組 PV</b>。</p>
+
+<p class="prose">[[PhasED-seq]] 自身的數據顯示，受 read 與 insert 長度限制，
+只有 <b>48% 的 PV 間距小於 80 bp</b> 而能被有效捕捉 ——
+換句話說，超過一半的 PV 因為兩個突變離太遠而用不上。</p>
 </section>
 
 
 <section data-part="predict">
-<h2>對本專案的可移植性</h2>
-
-<div class="table-wrap">
-<table>
-<thead><tr><th>做法</th><th>可移植性</th><th>原因</th></tr></thead>
-<tbody>
-<tr><td>[[MRDetect]] 的 5 特徵 SVM</td><td><b>不可移植</b></td>
-    <td>[[R1/R2 concordance|R1/R2 一致性]]特徵不存在；PIR 的 Illumina cycle-error 假設不成立；R1/R2 concordance 過濾亦無法執行</td></tr>
-<tr><td>[[MRD-EDGE]] 的 CNN</td><td><b>不可移植</b></td>
-    <td>18×240 tensor 設計假設雙端讀取；insert size 過濾對細胞株 gDNA 無意義</td></tr>
-<tr><td>[[duplex sequencing|duplex]]／[[RCA]]</td><td><b>不可移植</b></td>
-    <td>皆需特殊建庫；本專案為標準 simplex，read 內無同分子重複拷貝</td></tr>
-<tr><td><b>[[background polishing|背景拋光]]</b></td><td>需調整</td>
-    <td>純計算，但需 12 個陰性訓練樣本；本專案僅 5 個獨立陰性個體</td></tr>
-<tr><td><b>[[trinucleotide context|context 分層]]</b></td><td><b>可移植</b></td>
-    <td>不依賴任何平台特性。ONT 的錯誤同樣有強烈 context 依賴</td></tr>
-<tr><td><b>[[outlier suppression|離群抑制]]</b></td><td><b>可移植</b></td>
-    <td>不依賴任何平台特性；INVAR2 開源碼提供完整演算法</td></tr>
-<tr><td><b>[[single-molecule rule|單分子準則]]</b></td><td><b>可移植</b></td>
-    <td>同上</td></tr>
-<tr><td><b>[[phased variant|PV]]</b></td><td><b>可移植（且 ONT 佔優）</b></td>
-    <td>ONT 讀長可捕捉任意間距的組合，且不損失分子</td></tr>
-</tbody>
-</table>
-</div>
-
-{{guard:8 | ONT 的錯誤是否獨立，決定 PV 這條路能不能走}}
-<p class="prose">[[phased variant|PV]] 的優勢來自「兩個位置同時出錯的機率<b>相乘</b>」，
-而相乘成立的前提是<b>錯誤彼此獨立</b>。</p>
-<p class="prose">若錯誤獨立，以 ONT 單鹼基錯誤率 6.7e-3 推算，
-2× PV 背景約 4.5e-5、3× 約 3e-7 ——
-仍高於 Illumina 的 8.0e-7 與 3.4e-8，
-但相對 ONT 自身的單鹼基錯誤率已是<b>三個數量級的改善</b>。</p>
-<p class="prose">但 ONT 的 homopolymer 與甲基化 [[trinucleotide context|context]] 造成的
-系統性錯誤，<b>可能在同一條 read 上相關聯</b>，使相乘假設失效。
-此點<b>必須實測，不可假設</b>。</p>
-<p class="prose">第一步的盤點在現有資料上即可進行：
-統計有多少條 read 同時命中兩個以上的 compendium 位點。</p>
-{{/guard}}
+<h2>兩個常見的誤讀</h2>
 
 {{guard:9 | 「錯誤率更低」不等於「偵測效能更好」}}
 <p class="prose">比較兩個方法的錯誤率時，必須同時看它們各自損失了多少分子。</p>
@@ -332,11 +302,11 @@ the specific application or context」，並未斷言 duplex 較佳。</p>
 <table>
 <thead><tr><th>觀察</th><th>依據</th></tr></thead>
 <tbody>
-<tr><td>七種做法中，四種依賴 ONT 缺乏的條件</td><td>各篇 s3</td></tr>
-<tr><td><b>B 類統計建模全部可用，而本專案一項都還沒做</b></td><td>iDES、INVAR、AccuScan s3</td></tr>
+<tr><td>七種做法中，三種要改建庫、一種要雙端定序</td><td>各篇 s3</td></tr>
+<tr><td><b>純計算的做法有三種（④⑤⑦），不需改變實驗流程</b></td><td>iDES、INVAR、PhasED-seq s3</td></tr>
 <tr><td>錯誤率降 2 個數量級 ≈ 深度增 5 倍</td><td>AccuScan：4.2e-7@20× ≈ 2.8e-5@100×</td></tr>
 <tr><td>降噪的代價一律是分子數；PV 是唯一宣稱可避開者</td><td>PhasED-seq（duplex 僅回收 19%）</td></tr>
-<tr><td>ONT 在 PV 上有結構優勢，但錯誤獨立性未經驗證</td><td>PhasED-seq（48% 間距 &lt;80bp）</td></tr>
+<tr><td>PV 受讀長限制：僅 48% 的 PV 間距 &lt;80bp</td><td>PhasED-seq</td></tr>
 </tbody>
 </table>
 </div>

@@ -24,12 +24,6 @@ STEPS = [
     ("s6_evaluation",      "⑥ 評估"),
 ]
 
-TAG = {
-    "portable":     ("可移植",   "ok"),
-    "needs_change": ("需調整",   "warn"),
-    "blocked":      ("不可移植", "bad"),
-}
-
 # 顯示順序：世系三代 → 去噪源頭 → 統計/ML → ONT/單讀取 → CNA
 ORDER = ["core1", "core2", "33", "16", "17", "01", "03", "18", "34", "35", "05"]
 
@@ -98,16 +92,15 @@ def step_cell(p, key, seen):
     st = (p.get("steps") or {}).get(key)
     if not st:
         return "<td>—</td>"
-    tr = (p.get("ont_transfer") or {}).get(key) or {}
-    label, cls = TAG.get(tr.get("status"), ("", ""))
-    tag = (f'<span class="pill pill--{cls}" title="{html.escape(tr.get("why", ""))}">'
-           f"{label}</span>") if label else ""
+    # ont_transfer 刻意不輸出：那是本專案對 ONT 的推測，不是論文的說法，
+    # 且在實測之前不該以色標的形式呈現得像是定論。原始判斷仍保留在
+    # dissection/*.json，需要時可回頭查。
     items = "".join(f"<li>{md(x, True, seen)}</li>" for x in st.get("spec", []))
     extra = "".join(
         f'<li><b>{html.escape(k)}</b>：{md(v, True, seen)}</li>'
         for k, v in st.items() if k not in ("summary", "spec") and isinstance(v, str)
     )
-    return ("<td><details><summary>" + md(st.get("summary", ""), True, seen) + tag +
+    return ("<td><details><summary>" + md(st.get("summary", ""), True, seen) +
             f"</summary><ul class='prose'>{items}{extra}</ul></details></td>")
 
 
@@ -143,12 +136,6 @@ def main():
         f'<td>{md(p["implementation"].get("note", ""))}</td></tr>'
         for p in impl)
 
-    counts = {}
-    for p in papers:
-        for k, _ in STEPS:
-            s = (p.get("ont_transfer") or {}).get(k, {}).get("status")
-            counts[s] = counts.get(s, 0) + 1
-
     doc = f"""<!--tw
 {{
   "objectives": [
@@ -174,16 +161,9 @@ def main():
 <h2>方法拆解矩陣</h2>
 
 <p class="prose">點任一格展開該步驟的完整規格。
-色標為本專案對 [[ONT simplex|ONT]] 可移植性的判斷
-（<span class="pill pill--ok">可移植</span>
-<span class="pill pill--warn">需調整</span>
-<span class="pill pill--bad">不可移植</span>，滑鼠停留看理由），
-<b>非論文原文的說法</b>。</p>
-
-<p class="prose">全部 {len(papers) * 6} 格的分布：
-可移植 <b>{counts.get('portable', 0)}</b>、
-需調整 <b>{counts.get('needs_change', 0)}</b>、
-不可移植 <b>{counts.get('blocked', 0)}</b>。</p>
+全部 {len(papers)} 篇 × 6 個步驟 = {len(papers) * 6} 格，
+內容一律<b>忠實轉述論文原文</b>；
+取自開源程式碼者另標於下方的實作表。</p>
 
 <div class="table-wrap table-wrap--matrix">
 <table class="matrix">

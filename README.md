@@ -23,7 +23,7 @@
 本知識庫假設讀者已具備長讀長癌症基因體學的基礎，**不重複說明**。
 所需概念在實驗室既有教材 [lab-tutorial](../lab-tutorial/) 的 M2、M3、M7、M8、M9、M10 已完整涵蓋。
 
-MRD 專屬的術語則於本知識庫定義（105 條，其中 91 條為 MRD 專屬、14 條繼承自 lab-tutorial）。
+MRD 專屬的術語則於本知識庫定義（113 條，其中 14 條繼承自 lab-tutorial）。
 
 ### 頁面結構
 
@@ -71,13 +71,13 @@ src/                      作者用，讀者不會打開
 ├─ partials/shell.html    唯一的頁面模板
 ├─ svg/*.svg              手繪圖，一圖一檔，可獨立開啟預覽
 └─ data/
-   ├─ glossary.json       詞彙（唯一來源，105 條）
+   ├─ glossary.json       詞彙（唯一來源，113 條）
    └─ modules.json        頁面順序與 metadata
 
 tools/                    不會發佈
 ├─ build.mjs              產生器
 ├─ verify.mjs             file:// 安全 + 內容 linter
-├─ guards.mjs             「不要搞混」警告框的唯一名冊（18 個）
+├─ guards.mjs             「不要搞混」警告框的唯一名冊（15 個）
 ├─ gen_matrix_module.py   ★ 從 dissection/*.json 產生 p06
 └─ check_svg_layout.py    SVG 版面檢查（CJK 全形字用的）
 
@@ -100,7 +100,7 @@ site/                     ★ 交付物，整包複製就能用
 
 | 項目 | 差異 | 理由 |
 |---|---|---|
-| `tools/guards.mjs` | 換成本知識庫的 18 個警告框 | 主題不同 |
+| `tools/guards.mjs` | 換成本知識庫的 15 個警告框 | 主題不同 |
 | `tools/verify.mjs` 第 10 項 | **不再擋「N 篇論文」** | lab-tutorial 的讀者手上沒有那些投影片；本知識庫的論文就收在 `docs/paper/`，讀者拿得到 |
 | `site/assets/css/matrix.css` | 新增 `.matrix` 與 `.pill` | lab-tutorial 沒有「多篇 × 多步驟」的可展開矩陣 |
 
@@ -108,13 +108,12 @@ site/                     ★ 交付物，整包複製就能用
 
 ---
 
-## 內容的四種來源，必須區分
+## 內容的三種來源，必須區分
 
 | 類型 | 來源 | 可信度 |
 |---|---|---|
 | 問題設定、方法規格、效能數字、作者自承限制 | 論文原文 | 忠實轉述 |
 | **實作細節**（3 篇：INVAR、ichorCNA、Landau 第三代） | **開源程式碼** | **高於論文文字** |
-| ONT 可移植性判斷（66 格） | 本專案推論 | 非論文說法 |
 | 跨論文的綜合（p07、p08） | 本知識庫 | 可回溯至上述來源 |
 
 **p08 的判斷會隨本專案的實測結果而修正** —— 它是目前的最佳判斷，不是定論。
