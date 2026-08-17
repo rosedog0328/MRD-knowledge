@@ -135,6 +135,7 @@ window.TW_GLOSSARY = {
    "p00",
    "p01",
    "p02",
+   "p03",
    "p05",
    "p08"
   ]
@@ -387,7 +388,8 @@ window.TW_GLOSSARY = {
   ],
   "slug": "background-error-rate",
   "modules": [
-   "p01"
+   "p01",
+   "p03"
   ]
  },
  "signal-to-noise enrichment": {
@@ -1530,7 +1532,9 @@ window.TW_GLOSSARY = {
   ],
   "_inherited": "lab-tutorial glossary（基礎術語，非 MRD 專屬）",
   "slug": "read",
-  "modules": []
+  "modules": [
+   "p03"
+  ]
  },
  "coverage": {
   "zh_gloss": "覆蓋度／深度",
@@ -1687,6 +1691,7 @@ window.TW_GLOSSARY = {
   "modules": [
    "p01",
    "p02",
+   "p03",
    "p04",
    "p05",
    "p07",
@@ -1755,6 +1760,21 @@ window.TW_GLOSSARY = {
    "read-centric"
   ],
   "slug": "edit-distance",
+  "modules": [
+   "p03"
+  ]
+ },
+ "molecule": {
+  "zh_gloss": "分子（可用分子數）",
+  "zh": "一段實際存在於樣本中的 cfDNA <b>實體</b>，與 <code>read</code> 不是同一件事。<b>一條 read 是一次觀測，一個分子是一個實體</b> —— 多條 read 可能來自同一個分子（PCR 重複、<code>RCA</code> 的串聯拷貝、<code>duplex</code> 的正反兩股）。這個區分在 MRD 很重要，因為真正稀缺的是<b>分子</b>而非 read：read 數可以靠加深定序增加，但一份血漿裡有幾個分子由 <code>genomic equivalents</code> 決定，是物理上限。因此降噪手段丟掉的分子<b>無法補回</b>，這是「錯誤率更低不等於效能更好」的根本原因。",
+  "en": "A physical piece of cell-free DNA actually present in the sample, which is not the same thing as a read: a read is one observation, a molecule is one entity, and several reads can come from the same molecule (PCR duplicates, tandem copies from RCA, the two strands of a duplex pair). The distinction matters in MRD because the scarce resource is molecules, not reads: read count can be raised by sequencing deeper, but how many molecules a plasma sample contains is fixed by its genomic equivalents. Molecules discarded by an error-suppression step therefore cannot be recovered, which is the root reason a lower error rate does not automatically mean better performance.",
+  "see": [
+   "genomic equivalents",
+   "background error rate",
+   "read",
+   "duplex sequencing"
+  ],
+  "slug": "molecule",
   "modules": [
    "p03"
   ]

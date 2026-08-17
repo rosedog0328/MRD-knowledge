@@ -181,6 +181,18 @@
 <p class="prose">2× PV 的背景率比 duplex 低 <b>15 倍</b>、3× 低 <b>350 倍</b>，
 <b>而且不需要分子條碼</b>。這是七種裡唯一宣稱不損失分子的做法。</p>
 
+<h4>⑦ 的前提：兩個突變必須落在<b>同一條 read</b> 上</h4>
+
+<p class="prose">這一點常被忽略，卻直接決定 ⑦ 能用上多少組 PV ——
+兩個突變若離得太遠、被切在不同的 read 裡，就湊不成一組。
+因此<b>讀長決定了可用的 PV 數量</b>。</p>
+
+{{svg:pv-distance-readlength | 同相變異的間距分布與讀長的涵蓋範圍。兩個突變必須落在同一條 read 上才算數，因此讀長直接決定能用上多少組 PV。}}
+
+<p class="prose">[[PhasED-seq]] 自身的數據顯示，受 read 與 insert 長度限制，
+只有 <b>48% 的 PV 間距小於 80 bp</b> 而能被有效捕捉 ——
+換句話說，<b>超過一半的 PV 因為兩個突變離太遠而用不上</b>。</p>
+
 <h3>七種一覽</h3>
 
 <div class="table-wrap">
@@ -229,55 +241,89 @@
 
 
 <section data-part="evidence">
-<h2>兩個可量化的取捨</h2>
+<h2>看到一個錯誤率數字，要再問兩件事</h2>
 
-<h3>錯誤率與深度之間有匯率</h3>
+<p class="prose">上面七種做法各自報了一個[[background error rate|錯誤率]]，
+看起來可以直接比大小。但<b>單獨一個錯誤率數字是沒有意義的</b> ——
+它至少取決於下面兩件事，而這兩件事都可以量化。</p>
 
-<p class="prose">[[AccuScan]] 給出了直接對照：在 [[cVAF]] 2.5e-5、
-使用 10,000 個 [[marker|標的]]的條件下，兩種組合達到相同的 96% 偵測率。</p>
+<h3>一 · 它是用多少深度換來的？</h3>
 
-{{svg:error-vs-depth | 錯誤率與深度的換算關係，以及本專案在此尺度上的位置。}}
+<p class="prose">[[AccuScan]] 做過一個直接的對照實驗。
+在 [[cVAF]] 2.5e-5、使用 10,000 個 [[marker|標的]]的條件下，
+下面<b>兩種組合達到完全相同的 96% 偵測率</b>：</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>組合</th><th>[[background error rate|錯誤率]]</th><th>定序深度</th><th>偵測率</th></tr></thead>
+<tbody>
+<tr><td><b>A</b></td><td>4.2e-7</td><td>20 倍</td><td>96%</td></tr>
+<tr><td><b>B</b></td><td>2.8e-5</td><td>100 倍</td><td>96%</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="prose">B 的錯誤率比 A <b>高約 67 倍</b>（接近兩個數量級），
+照理說應該差很多；但 B 的深度是 A 的 <b>5 倍</b> —— 結果<b>打平</b>。
+也就是說，這兩者之間存在一個可換算的匯率：</p>
+
+{{svg:error-vs-depth | 錯誤率與深度可以互換。同一條等偵測率的線上，錯誤率低的方法用較淺的深度，錯誤率高的方法用較深的深度。}}
 
 {{eq}}
 \text{錯誤率降 2 個數量級} ≈ \text{深度提高 5 倍}
 {{note}}
-由 4.2e-7 @ 20× 與 2.8e-5 @ 100× 兩點推得。
-此匯率使「本專案的高錯誤率要付多少深度代價」成為可估算的量。
+由上表 A、B 兩點推得。
 {{/eq}}
 
-<h3>壓低錯誤率從來不是免費的</h3>
+<p class="prose"><b>這個匯率的用途</b>：把不同深度下量到的錯誤率換算到同一個基準再比。
+例如一個「錯誤率 1e-5、深度 6 倍」的方法，
+與一個「錯誤率 1e-3、深度 30 倍」的方法，大致是等價的 ——
+儘管前者的錯誤率數字漂亮 100 倍。</p>
 
-<p class="prose">三個獨立來源指向同一件事：降噪的代價是<b>可用分子數的損失</b>。</p>
+<h3>二 · 它損失了多少分子？</h3>
+
+<p class="prose">先分清楚兩個常被混用的詞：
+<b>一條 [[read]] 是一次觀測，一個[[molecule|分子]]是一個實體</b>。
+多條 read 可能來自同一個分子（PCR 重複、[[RCA]] 的串聯拷貝、
+[[duplex sequencing|duplex]] 的正反兩股）。</p>
+
+<p class="prose">這個區分很重要，因為<b>真正稀缺的是分子，不是 read</b>：
+read 數可以靠加深定序增加，但一份血漿裡有幾個分子由
+[[genomic equivalents|基因組當量]]決定，是<b>物理上限</b>。</p>
+
+<p class="prose">而幾乎每一種降噪手段，都是<b>丟掉一部分分子</b>換來的：</p>
 
 {{svg:duplex-cost | 三種降噪手段的錯誤率與分子回收率對照。前兩者以更少的分子換準確度，同相變異則以同分子上的巧合換準確度。}}
 
 <div class="table-wrap">
 <table>
-<thead><tr><th>手段</th><th>代價</th><th>來源</th></tr></thead>
+<thead><tr><th>手段</th><th>還剩下多少[[molecule|分子]]可用</th><th>來源</th></tr></thead>
 <tbody>
-<tr><td>[[duplex sequencing|duplex]]</td><td><b>只回收 19% 的獨立 cfDNA 片段</b></td><td>PhasED-seq 量測</td></tr>
-<tr><td>[[duplex sequencing|duplex]]</td><td>捕獲的獨立分子數少一個數量級</td><td><b>Landau 第三代作者自承</b></td></tr>
-<tr><td>[[RCA]] 共識</td><td>去重後僅 35–51% 的原始 read 能貢獻共識</td><td>NanoRCS</td></tr>
-<tr><td><b>[[phased variant|PV]]</b></td><td><b>幾乎不損失</b>（間距 &lt;20 bp 者深度等同全樣本）</td><td>PhasED-seq</td></tr>
+<tr><td>② [[duplex sequencing|duplex]]</td>
+    <td><b>只回收 19%</b> 的獨立 cfDNA 片段<br>
+        <span class="tick">另一個說法：捕獲的獨立分子數少一個數量級</span></td>
+    <td>PhasED-seq 量測<br><span class="tick">Landau 第三代作者自承</span></td></tr>
+<tr><td>③ [[RCA]] 共識</td>
+    <td>去重後僅 <b>35–51%</b> 的原始 read 能貢獻共識</td>
+    <td>NanoRCS</td></tr>
+<tr><td><b>⑦ [[phased variant|PV]]</b></td>
+    <td><b>幾乎不損失</b><br><span class="tick">間距 &lt;20 bp 者深度等同全樣本</span></td>
+    <td>PhasED-seq</td></tr>
 </tbody>
 </table>
 </div>
 
-<p class="prose">在有限的 [[genomic equivalents|基因組當量]]下，丟掉的分子無法補回。
-因此「錯誤率更低」與「效能更好」並非同一件事 ——
-[[Landau gen3|Landau 第三代]]的作者即明確指出，
-在 <b>[[tumor-informed]] 情境下，加大輸入量的標準 WGS 預期可達到比 duplex 更低的偵測極限</b>。</p>
+<p class="prose">丟掉的分子<b>無法補回</b>。因此「錯誤率更低」與「效能更好」並不是同一件事 ——
+[[Landau gen3|Landau 第三代]]的作者自己就指出，
+在 [[tumor-informed]] 情境下，<b>加大輸入量的標準 WGS 預期可達到比 duplex 更低的偵測極限</b>。
+用更好的化學把錯誤率壓到 7.7e-7，卻只剩 19% 的分子可看，未必划算。</p>
 
-<h3>⑦ 受限於 read 讀得到多長</h3>
+<h3>合起來看</h3>
 
-{{svg:pv-distance-readlength | 同相變異的間距分布與讀長的涵蓋範圍。兩個突變必須落在同一條 read 上才算數，因此讀長直接決定能用上多少組 PV。}}
+<p class="prose">這兩件事指向同一個結論：<b>錯誤率是中間量，不是結論</b>。
+要比較兩個方法，得問「在<b>同樣的深度、同樣的分子數</b>下，誰測得到更低的 [[TF]]」——
+這正是 <a href="p05.html">p05</a> 的[[LLOD|偵測極限]]必須附帶條件的原因。</p>
 
-<p class="prose">⑦ 有一個前提常被忽略：兩個突變必須<b>落在同一條 read 上</b>才算數，
-因此<b>讀長直接決定能用上多少組 PV</b>。</p>
-
-<p class="prose">[[PhasED-seq]] 自身的數據顯示，受 read 與 insert 長度限制，
-只有 <b>48% 的 PV 間距小於 80 bp</b> 而能被有效捕捉 ——
-換句話說，超過一半的 PV 因為兩個突變離太遠而用不上。</p>
 </section>
 
 
