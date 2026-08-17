@@ -16,12 +16,12 @@ SRC = Path("/big8_disk/pingting114/MRD_detection/docs/paper/dissection")
 OUT = BASE / "src" / "modules" / "p07-matrix.html"
 
 STEPS = [
-    ("s1_compendium",      "① 追蹤標的"),
+    ("s1_compendium",      "① 突變清單"),
     ("s2_validation_data", "② 驗證資料"),
-    ("s3_read_denoise",    "③ read 層去噪"),
-    ("s4_sample_score",    "④ 樣本層分數"),
-    ("s5_threshold",       "⑤ 門檻"),
-    ("s6_evaluation",      "⑥ 評估"),
+    ("s3_read_denoise",    "③ 真偽判定"),
+    ("s4_sample_score",    "④ 訊號整合"),
+    ("s5_threshold",       "⑤ 判定門檻"),
+    ("s6_evaluation",      "⑥ 效能評估"),
 ]
 
 # 顯示順序：世系三代 → 去噪源頭 → 統計/ML → ONT/單讀取 → CNA

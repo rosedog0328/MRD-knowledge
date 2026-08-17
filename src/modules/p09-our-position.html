@@ -392,7 +392,7 @@ MRD-EDGE 證明了「表觀基因體資訊有用」，但<b>沒有人做過 per-
 <thead><tr><th>步驟</th><th>建議</th><th>依據</th></tr></thead>
 <tbody>
 <tr>
-  <td><b>① 追蹤標的</b></td>
+  <td><b>① 突變清單</b></td>
   <td>維持現行的 35,603 位點</td>
   <td>規模是本專案的優勢；germline 移除為 11 篇的共同步驟。
       可考慮加入 [[MRD-EDGE]] 的 caller-agnostic 把關（配對正常樣本有任何 ALT 支持即剔除）</td>
@@ -404,25 +404,25 @@ MRD-EDGE 證明了「表觀基因體資訊有用」，但<b>沒有人做過 per-
       另可用 germline 差異當代理標的建立獨立驗證管道（[[AccuScan]] 作法）</td>
 </tr>
 <tr>
-  <td><b>③ read 層去噪</b></td>
+  <td><b>③ 真偽判定</b></td>
   <td><b>統計建模四項全做</b>，並評估 PV 可行性</td>
   <td>化學路線本專案做不到；ML 路線缺 [[R1/R2 concordance|R1/R2]] 特徵。
       統計建模是唯一完整可用的一類，而目前一項都還沒做</td>
 </tr>
 <tr>
-  <td><b>④ 樣本層分數</b></td>
+  <td><b>④ 訊號整合</b></td>
   <td>[[INVAR]] 式的[[likelihood ratio|廣義概似比]]，或 [[Lung-CLiP]] 式的樣本層分類器</td>
   <td>兩者皆不需[[control cohort|對照世代]]估 μ/σ；
       前者有開源實作，輸入僅需每位點的四個量</td>
 </tr>
 <tr>
-  <td><b>⑤ 門檻</b></td>
+  <td><b>⑤ 判定門檻</b></td>
   <td><b>統計模型反推</b>，保留跨個體樣本作驗證</td>
   <td>5 個陰性個體不足以做 [[iDES]] 式的背景拋光訓練；
       門檻須凍結後才跑測試集</td>
 </tr>
 <tr>
-  <td><b>⑥ 評估</b></td>
+  <td><b>⑥ 效能評估</b></td>
   <td>獨立 [[held-out|保留測試集]] + 分 TF 分層 + 多工作點</td>
   <td>[[Lung-CLiP]] 的切分紀律；[[CAPP-Seq]] 的分層報告；
       [[ichorCNA]] 的 Clopper–Pearson 信賴區間（小 n 時必要）</td>

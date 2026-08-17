@@ -54,7 +54,7 @@
 
 <div class="wrap ">
   <main class="main" id="main">
-    <header class="mhead"><p class="mhead__kicker">模組 4 · Aggregating observations into a sample-level score</p><h1>④ 把成千上萬個觀測合成一個分數</h1><p class="mhead__sub">八種聚合統計的直覺與輸出意義，以及只有一種需要陰性樣本世代這件事。</p><p class="mhead__meta"><span class="chip">約 25 分鐘</span><a class="chip" href="p03.html">建議先修：③ 壓噪音</a></p></header><section class="objectives"><h2>本模組學習目標</h2><ul><li>說明八種把多位點觀測聚合成單一分數的做法各自把什麼當證據、輸出代表什麼</li><li>區分四種不同性質的輸出，並說明它們為何不能直接比大小</li><li>指出哪些做法需要陰性樣本世代、哪些不需要，以及原因</li><li>依 INVAR2 開源實作，陳述廣義概似比檢定的完整計算流程</li></ul></section>
+    <header class="mhead"><p class="mhead__kicker">模組 4 · Aggregating observations into a sample-level score</p><h1>④ 把成千上萬個觀測合成一個分數</h1><p class="mhead__sub">八種聚合統計的直覺與輸出意義，以及只有一種需要陰性樣本世代這件事。</p><p class="mhead__meta"><span class="chip">約 25 分鐘</span><a class="chip" href="p03.html">建議先修：③ 真偽判定</a></p></header><section class="objectives"><h2>本模組學習目標</h2><ul><li>說明八種把多位點觀測聚合成單一分數的做法各自把什麼當證據、輸出代表什麼</li><li>區分四種不同性質的輸出，並說明它們為何不能直接比大小</li><li>指出哪些做法需要陰性樣本世代、哪些不需要，以及原因</li><li>依 INVAR2 開源實作，陳述廣義概似比檢定的完整計算流程</li></ul></section>
 
 <section data-part="why" class="part" id="part-why">
 <h2 data-num="①" id="為什麼重要">為什麼重要</h2>
@@ -217,7 +217,7 @@
 <p class="prose"><span class="term" data-term="AccuScan" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-accuscan-20">AccuScan<span class="term__pop" id="gd-accuscan-20" role="tooltip"><b class="term__hd">AccuScan <i>AccuScan</i></b><span class="term__def" data-lang="zh">2024 年的 WGS MRD 方法（EMBO Mol Med）。用 <b>RCA concatemer</b> 讓錯誤校正在單一 read 內完成，錯誤率 4.2e-7、LOD 達 cVAF 1e-6。<b>背景錯誤率由樣本自身量測、門檻由統計模型反推，皆不需 control 世代。</b></span><span class="term__def" data-lang="en" lang="en">A 2024 WGS MRD method (EMBO Mol Med) using RCA concatemers so that error correction happens within a single read, reaching an error rate of 4.2e-7 and an LOD of cVAF 1e-6. Its background error rate is measured from the sample itself and its threshold derived from the statistical model, neither requiring a control cohort.</span><a class="term__more" href="glossary.html#accuscan">完整條目 →</a></span></span> 把每個變異的觀測看成一個二項隨機變數，成功機率為</p>
 
 <div class="eq"><math display="block"><msub><mi>p</mi><mi>v</mi></msub><mo>=</mo><mi>VAF</mi><mo>+</mo><msub><mi>e</mi><mi>v</mi></msub></math><p class="eq__note"><math><msub><mi>e</mi><mi>v</mi></msub></math> 是<b>該 variant type 的錯誤率</b>（C→T、C→A… 各自不同）。
-把各 type 的獨立二項對數概似加總，即得樣本層分數。</p></div>
+把各 type 的獨立二項對數概似加總，即得該檢體的分數。</p></div>
 
 <p class="prose">關鍵設計在 <math><msub><mi>e</mi><mi>v</mi></msub></math> 的來源：<b>背景錯誤模型由該血漿樣本自己量測</b>，
 不是來自對照世代 —— 對隨機選取的約 200 Mb 位置就地估計。

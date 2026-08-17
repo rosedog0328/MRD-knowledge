@@ -54,7 +54,7 @@
 
 <div class="wrap ">
   <main class="main" id="main">
-    <header class="mhead"><p class="mhead__kicker">模組 8 · A hidden timeline and a hard floor</p><h1>一條時間軸與一條硬界線</h1><p class="mhead__sub">有些東西的形狀不是「一個步驟」—— 三篇論文其實是同一個實驗室的連續嘗試，以及一條決定「哪種訊號在哪個 TF 區間會整個失效」的界線。</p><p class="mhead__meta"><span class="chip">約 30 分鐘</span><a class="chip" href="p06.html">建議先修：⑥ 能不能相信</a></p></header><section class="objectives"><h2>本模組學習目標</h2><ul><li>說明 MRDetect、MRD-EDGE 與第三代其實是同一實驗室的三次改寫，以及第三次的轉向意味著什麼</li><li>指出訊號模態在腫瘤分數 3% 處的硬界線，及其兩個獨立來源</li><li>陳述 11 篇在六個步驟上真正的共同點，並指出唯一多數論文未做到的一項</li></ul></section>
+    <header class="mhead"><p class="mhead__kicker">模組 8 · A hidden timeline and a hard floor</p><h1>一條時間軸與一條硬界線</h1><p class="mhead__sub">有些東西的形狀不是「一個步驟」—— 三篇論文其實是同一個實驗室的連續嘗試，以及一條決定「哪種訊號在哪個 TF 區間會整個失效」的界線。</p><p class="mhead__meta"><span class="chip">約 30 分鐘</span><a class="chip" href="p06.html">建議先修：⑥ 效能評估</a></p></header><section class="objectives"><h2>本模組學習目標</h2><ul><li>說明 MRDetect、MRD-EDGE 與第三代其實是同一實驗室的三次改寫，以及第三次的轉向意味著什麼</li><li>指出訊號模態在腫瘤分數 3% 處的硬界線，及其兩個獨立來源</li><li>陳述 11 篇在六個步驟上真正的共同點，並指出唯一多數論文未做到的一項</li></ul></section>
 
 <section data-part="why" class="part" id="part-why">
 <h2 data-num="①" id="為什麼重要">為什麼重要</h2>
@@ -315,14 +315,14 @@ CNA 的成本優勢極大（<span class="term" data-term="ichorCNA" tabindex="0"
 <table>
 <thead><tr><th scope="col">步驟</th><th scope="col">11 篇的共同點</th></tr></thead>
 <tbody>
-<tr><td>① 追蹤標的</td><td><b>全部都做 germline 移除</b>，無一例外</td></tr>
+<tr><td>① 突變清單</td><td><b>全部都做 germline 移除</b>，無一例外</td></tr>
 <tr><td>② 驗證資料</td><td><b>全部都以稀釋序列量測 <span class="term" data-term="LLOD" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-llod-18">LLOD<span class="term__pop" id="gd-llod-18" role="tooltip"><b class="term__hd">LLOD <i>偵測極限</i></b><span class="term__def" data-lang="zh">能被可靠偵測到的最低 TF。<b>報告時必須附條件</b>：定序深度、位點數、以及對應的 specificity。不同方法的 LLOD 若深度與位點數不同，不可直接比較。</span><span class="term__def" data-lang="en" lang="en">The lowest tumour fraction reliably detectable. Reporting it requires stating the conditions: sequencing depth, number of tracked sites, and the corresponding specificity. LLODs from methods with different depths or site counts are not directly comparable.</span><a class="term__more" href="glossary.html#llod">完整條目 →</a></span></span></b>，無一篇僅憑臨床樣本宣稱</td></tr>
-<tr><td>③ read 層去噪</td><td>全部都在回答「這一條 read 是真的嗎」——
+<tr><td>③ 真偽判定</td><td>全部都在回答「這一條 read 是真的嗎」——
     差別在用化學、統計還是機器學習</td></tr>
-<tr><td>④ 樣本層分數</td><td>全部都在「把 N 個弱觀測合成一個數」，差別在機率模型</td></tr>
-<tr><td>⑤ 門檻</td><td>全部都與<span class="term" data-term="specificity" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-specificity-19">特異度<span class="term__pop" id="gd-specificity-19" role="tooltip"><b class="term__hd">specificity <i>特異度</i></b><span class="term__def" data-lang="zh">陰性樣本被正確判為陰性的比例：TN/(TN+FP)。<b>因為只由陰性樣本算出，不受陽性/陰性樣本組成比例影響</b>，是跨研究比較的主指標（Precision 與 F1 則會被 prevalence 綁架）。</span><span class="term__def" data-lang="en" lang="en">The proportion of negative samples correctly classified as negative: TN/(TN+FP). Because it is computed only from negatives, it is unaffected by the positive-to-negative composition and is the main metric for cross-study comparison, unlike precision and F1 which depend on prevalence.</span><a class="term__more" href="glossary.html#specificity">完整條目 →</a></span></span>目標綁定；
+<tr><td>④ 訊號整合</td><td>全部都在「把 N 個弱觀測合成一個數」，差別在機率模型</td></tr>
+<tr><td>⑤ 判定門檻</td><td>全部都與<span class="term" data-term="specificity" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-specificity-19">特異度<span class="term__pop" id="gd-specificity-19" role="tooltip"><b class="term__hd">specificity <i>特異度</i></b><span class="term__def" data-lang="zh">陰性樣本被正確判為陰性的比例：TN/(TN+FP)。<b>因為只由陰性樣本算出，不受陽性/陰性樣本組成比例影響</b>，是跨研究比較的主指標（Precision 與 F1 則會被 prevalence 綁架）。</span><span class="term__def" data-lang="en" lang="en">The proportion of negative samples correctly classified as negative: TN/(TN+FP). Because it is computed only from negatives, it is unaffected by the positive-to-negative composition and is the main metric for cross-study comparison, unlike precision and F1 which depend on prevalence.</span><a class="term__more" href="glossary.html#specificity">完整條目 →</a></span></span>目標綁定；
     差別在需不需要陰性樣本世代</td></tr>
-<tr><td>⑥ 評估</td><td>全部都報特異度、都做分層報告；
+<tr><td>⑥ 效能評估</td><td>全部都報特異度、都做分層報告；
     但<b>僅 3 篇明確聲明訓練與測試如何分開</b></td></tr>
 </tbody>
 </table>
