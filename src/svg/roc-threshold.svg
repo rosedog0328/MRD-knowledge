@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560">
+  <title>ROC 分析怎麼把一堆分數變成一個門檻數字</title>
+  <desc>本圖拆解用受試者操作特徵曲線決定門檻的四個步驟。
+        第一步：手上有兩群分數。陰性樣本是把這位病人的突變清單套到其他病人的血漿上算出來的，
+        分數聚在低處；陽性樣本是套到病人自己的血漿上算出來的，分數偏高。
+        兩群之間通常會有一段重疊，這正是需要選門檻的原因。
+        第二步：把門檻從最左掃到最右。每擺一個位置，就得到一組數字：
+        特異度等於被正確判為陰性的陰性樣本比例，敏感度等於被正確判為陽性的陽性樣本比例。
+        門檻往左移，敏感度上升但特異度下降；往右移則相反。
+        這兩者永遠互相交換，不存在同時最好的位置。
+        第三步：加上一個約束。INVAR 的硬性要求是特異度至少百分之九十，
+        這相當於在圖上劃出一條界線，只有滿足該條件的門檻位置才被允許。
+        第四步：在所有滿足約束的位置中，選敏感度最高的那一個，
+        它對應的分數就是門檻，決定之後即凍結。
+        圖右側是受試者操作特徵曲線。
+        橫軸是偽陽性率，也就是一減特異度；縱軸是敏感度。
+        曲線上的每一個點，都對應第二步掃描時的某一個門檻位置。
+        左側的陰影區是滿足特異度至少百分之九十這個約束的可行區，
+        亦即偽陽性率不超過零點一的範圍。
+        工作點選在可行區的邊界上，因為在滿足約束的前提下，
+        越靠近邊界敏感度越高。
+        圖最下方標出一個重要的但書：
+        INVAR 是每個世代各自跑一次這個流程、各自得到一個門檻，
+        因此不同世代的門檻數值並不相同，最後報出來的百分之九十五是各世代的中位數。
+        作者自己在討論中指出，規模化應用時應改為固定的特異度門檻。</desc>
+
+  <text class="ttl bold zh" x="20" y="34">ROC 怎麼把一堆分數變成一個門檻數字</text>
+
+  <!-- ══ 左：四個步驟 ══ -->
+  <text class="anno bold accent zh" x="20" y="72">① 手上有兩群分數</text>
+
+  <path class="axis" d="M60 148 L480 148"/>
+  <text class="tick zh" x="60" y="172">低</text>
+  <text class="tick zh" x="464" y="172">高</text>
+
+  <circle class="mark ref" cx="96" cy="148" r="7"/>
+  <circle class="mark ref" cx="118" cy="148" r="7"/>
+  <circle class="mark ref" cx="136" cy="148" r="7"/>
+  <circle class="mark ref" cx="158" cy="148" r="7"/>
+  <circle class="mark ref" cx="176" cy="148" r="7"/>
+  <circle class="mark ref" cx="200" cy="148" r="7"/>
+  <circle class="mark ref" cx="228" cy="148" r="7"/>
+  <circle class="mark ref" cx="262" cy="148" r="7"/>
+  <text class="tick zh" x="60" y="120">陰性：A 的清單 × 其他病人</text>
+
+  <circle class="mark somatic" cx="248" cy="148" r="8"/>
+  <circle class="mark somatic" cx="300" cy="148" r="8"/>
+  <circle class="mark somatic" cx="348" cy="148" r="8"/>
+  <circle class="mark somatic" cx="404" cy="148" r="8"/>
+  <text class="anno bold somatic zh" x="292" y="120">陽性：A 的清單 × A 自己</text>
+
+  <text class="tick zh" x="20" y="196">兩群之間有一段<tspan class="bold">重疊</tspan> —— 這正是需要選門檻的原因。</text>
+
+  <text class="anno bold accent zh" x="20" y="234">② 把門檻從左掃到右，每個位置記下一組數字</text>
+
+  <path class="guide thick" d="M212 254 L212 300"/>
+  <text class="tick mid zh" x="212" y="318">門檻放這</text>
+  <path class="guide thick" d="M330 254 L330 300"/>
+  <text class="tick mid zh" x="330" y="318">或這</text>
+  <path class="guide thick" d="M430 254 L430 300"/>
+  <text class="tick mid zh" x="430" y="318">或這</text>
+
+  <text class="tick zh" x="20" y="348">往左：敏感度高、特異度低　　往右：特異度高、敏感度低</text>
+  <text class="anno bold zh" x="20" y="374">兩者永遠互相交換，沒有同時最好的位置。</text>
+
+  <text class="anno bold accent zh" x="20" y="412">③ 加上約束：特異度 ≥ 90%</text>
+  <text class="tick zh" x="20" y="438">這條硬性要求把可用的門檻位置限縮到一個範圍。</text>
+
+  <text class="anno bold accent zh" x="20" y="476">④ 在滿足約束者中，選敏感度最高的</text>
+  <text class="tick zh" x="20" y="502">那個位置對應的分數＝門檻。決定之後<tspan class="bold">凍結</tspan>，才能拿去跑測試集。</text>
+
+  <!-- ══ 右：ROC ══ -->
+  <rect class="box" x="520" y="52" width="460" height="452" rx="10"/>
+  <text class="anno bold zh" x="544" y="82">ROC 曲線</text>
+  <text class="tick zh" x="544" y="106">曲線上每個點 ＝ 步驟②的某一個門檻位置</text>
+
+  <!-- 可行區 -->
+  <rect class="region" x="560" y="140" width="38" height="320" rx="3"/>
+
+  <path class="axis" d="M560 460 L940 460"/>
+  <path class="axis" d="M560 460 L560 140"/>
+
+  <text class="tick mid zh" x="560" y="484">0</text>
+  <text class="tick mid zh" x="598" y="484">0.1</text>
+  <text class="tick mid zh" x="940" y="484">1.0</text>
+  <text class="anno bold mid zh" x="750" y="506">偽陽性率（＝ 1 − 特異度）→</text>
+
+  <text class="tick zh" x="548" y="465" text-anchor="end">0</text>
+  <text class="tick zh" x="548" y="145" text-anchor="end">1.0</text>
+  <text class="anno bold zh" x="544" y="130">↑ 敏感度</text>
+
+  <path class="curve" d="M560 460 C 572 392, 586 300, 598 262 C 660 186, 790 156, 940 148"/>
+
+  <path class="guide" d="M598 140 L598 460"/>
+  <circle class="mark ok" cx="598" cy="262" r="9"/>
+  <text class="anno bold ok zh" x="616" y="248">選這裡</text>
+  <text class="tick zh" x="616" y="272">滿足約束下</text>
+  <text class="tick zh" x="616" y="294">敏感度最高的點</text>
+
+  <text class="tick zh" x="616" y="352">陰影＝可行區</text>
+  <text class="tick zh" x="616" y="374">（特異度 ≥ 90%，</text>
+  <text class="tick zh" x="616" y="396">即偽陽性率 ≤ 0.1）</text>
+
+  <text class="tick zh" x="616" y="428">越往右走敏感度越高，</text>
+  <text class="tick zh" x="616" y="450">但已經違反約束</text>
+
+  <!-- ══ 底：但書 ══ -->
+  <rect class="box plain" x="20" y="518" width="960" height="34" rx="8"/>
+  <text class="tick zh" x="44" y="540">⚠ INVAR 是<tspan class="bold">每個世代各跑一次這個流程</tspan>，各自得到一個門檻 —— 所以報出來的 95% 是各世代的<tspan class="bold">中位數</tspan>，不是單一門檻的成績。</text>
+</svg>
