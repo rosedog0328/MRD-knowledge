@@ -36,28 +36,39 @@ window.TW_MODULES = [
  {
   "id": "p03",
   "num": "3",
-  "title_zh": "③ 怎麼壓噪音：四類七種做法",
-  "title_en": "Error suppression",
-  "short": "壓噪音",
-  "q": "錯誤率降兩個數量級，要付出什麼代價？",
-  "sub": "化學、統計建模、機器學習、換偵測單元四類做法的對照，含錯誤率總表與代價量化。",
+  "title_zh": "③ 怎麼判斷一條 read 是真是假",
+  "title_en": "Judging whether a read is genuine",
+  "short": "③ 壓噪音",
+  "q": "帶著突變的 read，怎麼知道不是機器讀錯？",
+  "sub": "七種判斷方式的機制、效果與各自依賴的前提條件。",
   "est_min": 45,
   "group": "方法細節"
  },
  {
   "id": "p04",
   "num": "4",
-  "title_zh": "④ 樣本層分數 與 ⑤ 門檻",
-  "title_en": "Sample score and threshold",
-  "short": "分數與門檻",
-  "q": "幾萬個位點怎麼變成一個「有癌／沒癌」的判定？",
-  "sub": "八種聚合統計與六種門檻決定方式；並指出只有一條路線需要陰性樣本世代。",
-  "est_min": 40,
+  "title_zh": "④ 把成千上萬個觀測合成一個分數",
+  "title_en": "Aggregating observations into a sample-level score",
+  "short": "④ 樣本層分數",
+  "q": "幾萬個位點各自的微弱觀測，要怎麼變成一個數字？",
+  "sub": "八種聚合統計的直覺與輸出意義，以及只有一種需要陰性樣本世代這件事。",
+  "est_min": 25,
   "group": "方法細節"
  },
  {
   "id": "p05",
   "num": "5",
+  "title_zh": "⑤ 分數要多高才算「有」",
+  "title_en": "Deciding the threshold",
+  "short": "⑤ 門檻",
+  "q": "門檻要畫在哪裡？誰有資格決定？",
+  "sub": "六種決定門檻的方式，差別在需要幾個陰性樣本；以及陰性樣本稀缺時的兩條解法。",
+  "est_min": 25,
+  "group": "方法細節"
+ },
+ {
+  "id": "p06",
+  "num": "6",
   "title_zh": "⑥ 評估與切分紀律",
   "title_en": "Evaluation and split discipline",
   "short": "評估紀律",
@@ -67,8 +78,8 @@ window.TW_MODULES = [
   "group": "方法細節"
  },
  {
-  "id": "p06",
-  "num": "6",
+  "id": "p07",
+  "num": "7",
   "title_zh": "逐篇完整規格矩陣",
   "title_en": "Full specification matrix",
   "short": "完整矩陣",
@@ -78,8 +89,8 @@ window.TW_MODULES = [
   "group": "方法細節"
  },
  {
-  "id": "p07",
-  "num": "7",
+  "id": "p08",
+  "num": "8",
   "title_zh": "跨論文統整：三條主線",
   "title_en": "Three cross-cutting themes",
   "short": "三條主線",
@@ -89,8 +100,8 @@ window.TW_MODULES = [
   "group": "統整"
  },
  {
-  "id": "p08",
-  "num": "8",
+  "id": "p09",
+  "num": "9",
   "title_zh": "本專案的位置與設計選單",
   "title_en": "Our position and design menu",
   "short": "我們的位置",

@@ -23,15 +23,15 @@
 本知識庫假設讀者已具備長讀長癌症基因體學的基礎，**不重複說明**。
 所需概念在實驗室既有教材 [lab-tutorial](../lab-tutorial/) 的 M2、M3、M7、M8、M9、M10 已完整涵蓋。
 
-MRD 專屬的術語則於本知識庫定義（113 條，其中 14 條繼承自 lab-tutorial）。
+MRD 專屬的術語則於本知識庫定義（115 條，其中 14 條繼承自 lab-tutorial）。
 
 ### 頁面結構
 
 | 層 | 頁 | 內容 |
 |---|---|---|
-| **導覽** | p00–p01 | 六步骨架的組織原則；為什麼加深定序無效 |
-| **方法細節** | p02–p06 | 逐步驟橫向比較 11 篇的做法（**主體**） |
-| **統整** | p07–p08 | 跨論文的三條主線；本專案的位置與設計選單 |
+| **導覽** | p00–p01 | 六步骨架的組織原則；三個基本量與三個共同前提 |
+| **方法細節** | p02–p07 | 逐步驟橫向比較 11 篇的做法（**主體**） |
+| **統整** | p08–p09 | 跨論文的三條主線；本專案的位置與設計選單 |
 
 ---
 
@@ -47,14 +47,14 @@ MRD 專屬的術語則於本知識庫定義（113 條，其中 14 條繼承自 l
 └─ <id>_<key>.json  ← 逐篇完整規格（11 檔，全載入約 38k tokens）
 ```
 
-網站與 JSON **同源**（p06 由 JSON 自動產生），內容不會分歧。
+網站與 JSON **同源**（p07 由 JSON 自動產生），內容不會分歧。
 
 ---
 
 ## 給維護者：怎麼改
 
 ```bash
-python3 tools/gen_matrix_module.py   # dissection/*.json → p06 模組原始檔
+python3 tools/gen_matrix_module.py   # dissection/*.json → p07 模組原始檔
 node tools/build.mjs                 # src/ → site/
 node tools/verify.mjs                # file:// 安全 + 內容檢查，exit 0 才可發佈
 node tools/audit_order.mjs           # 閱讀順序稽核
@@ -67,18 +67,18 @@ python3 tools/check_svg_layout.py    # SVG 文字重疊與超出畫布
 
 ```
 src/                      作者用，讀者不會打開
-├─ modules/p00…p08.html   每頁一個檔（p06 為自動產生，勿手改）
+├─ modules/p00…p09.html   每頁一個檔（p07 為自動產生，勿手改）
 ├─ partials/shell.html    唯一的頁面模板
 ├─ svg/*.svg              手繪圖，一圖一檔，可獨立開啟預覽
 └─ data/
-   ├─ glossary.json       詞彙（唯一來源，113 條）
+   ├─ glossary.json       詞彙（唯一來源，115 條）
    └─ modules.json        頁面順序與 metadata
 
 tools/                    不會發佈
 ├─ build.mjs              產生器
 ├─ verify.mjs             file:// 安全 + 內容 linter
 ├─ guards.mjs             「不要搞混」警告框的唯一名冊（15 個）
-├─ gen_matrix_module.py   ★ 從 dissection/*.json 產生 p06
+├─ gen_matrix_module.py   ★ 從 dissection/*.json 產生 p07
 └─ check_svg_layout.py    SVG 版面檢查（CJK 全形字用的）
 
 site/                     ★ 交付物，整包複製就能用
@@ -89,7 +89,7 @@ site/                     ★ 交付物，整包複製就能用
 論文拆解的原始資料不在本 repo，而在
 `/big8_disk/pingting114/MRD_detection/docs/paper/dissection/`。
 `gen_matrix_module.py` 會直接讀該路徑 —— 改了 JSON 之後，
-必須重跑該腳本再 build，否則 p06 會落後。
+必須重跑該腳本再 build，否則 p07 會落後。
 
 ---
 
@@ -114,9 +114,9 @@ site/                     ★ 交付物，整包複製就能用
 |---|---|---|
 | 問題設定、方法規格、效能數字、作者自承限制 | 論文原文 | 忠實轉述 |
 | **實作細節**（3 篇：INVAR、ichorCNA、Landau 第三代） | **開源程式碼** | **高於論文文字** |
-| 跨論文的綜合（p07、p08） | 本知識庫 | 可回溯至上述來源 |
+| 跨論文的綜合（p08、p09） | 本知識庫 | 可回溯至上述來源 |
 
-**p08 的判斷會隨本專案的實測結果而修正** —— 它是目前的最佳判斷，不是定論。
+**p09 的判斷會隨本專案的實測結果而修正** —— 它是目前的最佳判斷，不是定論。
 
 ---
 

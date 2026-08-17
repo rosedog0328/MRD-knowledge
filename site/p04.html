@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>④ 樣本層分數 與 ⑤ 門檻 · MRD 偵測方法知識庫</title>
-<meta name="description" content="八種聚合統計與六種門檻決定方式；並指出只有一條路線需要陰性樣本世代。">
+<title>④ 把成千上萬個觀測合成一個分數 · MRD 偵測方法知識庫</title>
+<meta name="description" content="八種聚合統計的直覺與輸出意義，以及只有一種需要陰性樣本世代這件事。">
 <link rel="stylesheet" href="assets/css/tokens.css">
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/layout.css">
@@ -53,101 +53,292 @@
 
 <div class="wrap ">
   <main class="main" id="main">
-    <header class="mhead"><p class="mhead__kicker">模組 4 · Sample score and threshold</p><h1>④ 樣本層分數 與 ⑤ 門檻</h1><p class="mhead__sub">八種聚合統計與六種門檻決定方式；並指出只有一條路線需要陰性樣本世代。</p><p class="mhead__meta"><span class="chip">約 40 分鐘</span><a class="chip" href="p03.html">建議先修：壓噪音</a></p></header><section class="objectives"><h2>本模組學習目標</h2><ul><li>區分八種把多位點觀測聚合成單一分數的統計方法，並說明各自的輸入需求</li><li>指出哪些方法需要陰性樣本世代、哪些不需要</li><li>說明六種門檻決定方式，以及在陰性樣本稀缺時可用的兩條路徑</li><li>依 INVAR2 開源實作，陳述廣義概似比檢定的完整計算流程</li></ul></section>
+    <header class="mhead"><p class="mhead__kicker">模組 4 · Aggregating observations into a sample-level score</p><h1>④ 把成千上萬個觀測合成一個分數</h1><p class="mhead__sub">八種聚合統計的直覺與輸出意義，以及只有一種需要陰性樣本世代這件事。</p><p class="mhead__meta"><span class="chip">約 25 分鐘</span><a class="chip" href="p03.html">建議先修：③ 壓噪音</a></p></header><section class="objectives"><h2>本模組學習目標</h2><ul><li>說明八種把多位點觀測聚合成單一分數的做法各自把什麼當證據、輸出代表什麼</li><li>區分四種不同性質的輸出，並說明它們為何不能直接比大小</li><li>指出哪些做法需要陰性樣本世代、哪些不需要，以及原因</li><li>依 INVAR2 開源實作，陳述廣義概似比檢定的完整計算流程</li></ul></section>
 
 <section data-part="why" class="part" id="part-why">
 <h2 data-num="①" id="為什麼重要">為什麼重要</h2>
 
-<p class="prose">前一步處理的是單一觀測的可信度，這一步處理的是<b>如何把成千上萬個
-弱觀測合成一個判定</b>。</p>
+<p class="prose">前一步（<a href="p03.html">p03</a>）處理的是<b>單一觀測的可信度</b>：
+這一條 read 是真的還是讀錯的。</p>
 
-<p class="prose">這兩步對本專案特別關鍵，原因是<span class="term" data-term="control cohort" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-control-cohort-0">陰性樣本<span class="term__pop" id="gd-control-cohort-0" role="tooltip"><b class="term__hd">control cohort <i>對照世代</i></b><span class="term__def" data-lang="zh">用於估計噪音水準或決定門檻的陰性樣本集合。MRDetect 用 30 個 control plasma、iDES 用 12 個、ichorCNA 用 27 個健康捐贈者。⚠️ <b>本專案只有 5 個獨立陰性個體</b>，這是主要約束。</span><span class="term__def" data-lang="en" lang="en">The set of negative samples used to estimate noise levels or set thresholds. MRDetect used 30 control plasmas, iDES 12, and ichorCNA 27 healthy donors. This project has only five independent negative individuals, which is a principal constraint.</span><a class="term__more" href="glossary.html#control-cohort">完整條目 →</a></span></span>稀缺：
-本專案只有 5 個獨立陰性個體，
-而文獻中的方法動輒需要 12 至 30 個。
-本頁的核心問題是：<b>有沒有不需要陰性樣本世代的路徑</b>。</p>
+<p class="prose">但一條 read 說明不了什麼。真正的判定要靠<b>累加</b> ——
+把幾萬個位點各自的微弱觀測，合成一個「這份檢體有多像含有腫瘤」的數字。
+這就是第四步。</p>
 
-<p class="prose">答案是有，而且有兩條，各有一線期刊的先例。</p>
+<p class="prose">11 篇論文用了八種不同的統計方法做這件事。
+它們的差別不只是「公式不同」，
+而是<b>輸出的東西根本不是同一種</b> —— 有的給標準差、有的給機率、
+有的直接給 <span class="term" data-term="TF" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-tf-0">TF<span class="term__pop" id="gd-tf-0" role="tooltip"><b class="term__hd">TF <i>腫瘤分數的縮寫</i></b><span class="term__def" data-lang="zh"><code>tumor fraction</code>（腫瘤分數）的縮寫，本知識庫全篇使用。定義為樣本中源自腫瘤的 DNA 佔全部 DNA 的比例，代表<b>訊號的強度</b>。MRD 情境的量級為 10⁻⁵ – 10⁻⁶，與定序機本身的錯誤率同一個數量級 —— 這正是整個領域的核心困難。它由病人的疾病狀態決定，<b>不是可以由設計調整的參數</b>。</span><span class="term__def" data-lang="en" lang="en">Abbreviation for tumour fraction, used throughout this knowledge base. It is the proportion of DNA in a sample that originates from the tumour, and represents signal strength. In the MRD setting it is on the order of 1e-5 to 1e-6, the same order of magnitude as the sequencer's own error rate, which is the central difficulty of the whole field. It is set by the patient's disease state and is not a parameter the assay design can adjust.</span><a class="term__more" href="glossary.html#tf">完整條目 →</a></span></span> 估計值。這一頁先講清楚這件事，
+再逐一說明每一種<b>把什麼當證據</b>。</p>
 </section>
 
 
 <section data-part="concept" class="part" id="part-concept">
-<h2 data-num="②" id="樣本層分數-八種做法">④ 樣本層分數：八種做法</h2>
+<h2 data-num="②" id="先分清楚-輸出有四種">先分清楚：輸出有四種</h2>
+
+<p class="prose">八種方法都在做同一件事，但合出來的「數」代表什麼，分成四類。
+搞混會直接導致誤讀 —— 例如把一個概似值當成標準差來解釋。</p>
+
+<figure class="dia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" class="dia-svg" role="img" aria-labelledby="score-output-types__title" aria-describedby="score-output-types__desc">
+  <title id="score-output-types__title">八種聚合方法輸出的是四種不同的東西</title>
+  <desc id="score-output-types__desc">本圖說明八種把多位點觀測聚合成單一分數的方法，
+        它們的輸出可以分成四類，彼此的解讀方式完全不同。
+        第一類是標準化分數，代表這份檢體比正常人高出幾個標準差，
+        使用者為 MRDetect 與 MRD-EDGE，
+        其中 MRD-EDGE 另以 Stouffer 方法合併多個獨立的標準化分數。
+        這一類需要陰性樣本世代才能估出平均值與標準差。
+        第二類是機率或概似，代表在統計模型下，
+        觀測到的資料有多不可能只是背景造成的。
+        使用者為 iDES 與 PhasED-seq 的偵測機率模型、
+        AccuScan 的二項式對數概似、以及 INVAR 的廣義概似比。
+        這一類不需要陰性樣本世代，因為基準由統計模型或樣本自身提供。
+        第三類是直接估計腫瘤分數，
+        亦即反推哪一個腫瘤分數最能解釋觀測到的資料，
+        使用者為 NanoRCS 的蒙地卡羅模擬與 ichorCNA 的隱藏馬可夫模型。
+        ichorCNA 需要健康捐贈者參考集，蒙地卡羅則不需要。
+        第四類是學習得到的機率，由分類器輸出零到一之間的數值，
+        使用者為 Lung-CLiP，需要訓練資料。
+        圖最下方指出這個分類的用途：
+        四類的輸出不是同一種東西，不能直接比大小，
+        選哪一類的第一個判準是手上有沒有陰性樣本可用。</desc>
+
+  <text class="ttl bold zh" x="20" y="34">八種聚合方法，輸出的是四種不同的東西</text>
+
+  <rect class="box plain" x="20" y="52" width="960" height="44" rx="8"/>
+  <text class="tick zh" x="44" y="80">八種都在做同一件事 —— 把成千上萬個弱觀測合成一個數。但合出來的「數」代表什麼，分成四類。</text>
+
+  <!-- ══ 一 ══ -->
+  <rect class="box" x="20" y="110" width="960" height="100" rx="10"/>
+  <text class="anno bold accent zh" x="44" y="140">一 · 標準化分數</text>
+  <text class="tick zh" x="44" y="166">比正常人高幾個</text>
+  <text class="tick zh" x="44" y="188">標準差</text>
+
+  <text class="tick zh" x="270" y="140">解讀：Z = 2 代表比陰性樣本的平均高兩個標準差</text>
+  <text class="tick zh" x="270" y="166">MRDetect · MRD-EDGE（另用 Stouffer 合併多個獨立 Z）</text>
+  <text class="anno bold somatic zh" x="270" y="194">⚠ 需要陰性樣本世代才能估 μ、σ</text>
+
+  <!-- ══ 二 ══ -->
+  <rect class="box" x="20" y="222" width="960" height="100" rx="10"/>
+  <text class="anno bold accent zh" x="44" y="252">二 · 機率／概似</text>
+  <text class="tick zh" x="44" y="278">在統計模型下，</text>
+  <text class="tick zh" x="44" y="300">有多不像純背景</text>
+
+  <text class="tick zh" x="270" y="252">解讀：「若真的沒有腫瘤，看到這筆資料有多不可能」</text>
+  <text class="tick zh" x="270" y="278">iDES · PhasED-seq（偵測機率）· AccuScan（二項對數概似）· INVAR（概似比）</text>
+  <text class="anno bold ok zh" x="270" y="306">✓ 不需要陰性樣本世代 —— 基準由模型或樣本自身提供</text>
+
+  <!-- ══ 三 ══ -->
+  <rect class="box" x="20" y="334" width="960" height="100" rx="10"/>
+  <text class="anno bold accent zh" x="44" y="364">三 · 直接估 TF</text>
+  <text class="tick zh" x="44" y="390">反推哪個腫瘤分數</text>
+  <text class="tick zh" x="44" y="412">最能解釋觀測</text>
+
+  <text class="tick zh" x="270" y="364">解讀：輸出本身就有物理意義（這份檢體的 TF 大約是多少）</text>
+  <text class="tick zh" x="270" y="390">NanoRCS（蒙地卡羅模擬）· ichorCNA（HMM）</text>
+  <text class="tick zh" x="270" y="418">蒙地卡羅不需陰性樣本；ichorCNA 需 27 個健康捐贈者參考集</text>
+
+  <!-- ══ 四 ══ -->
+  <rect class="box" x="20" y="446" width="960" height="76" rx="10"/>
+  <text class="anno bold accent zh" x="44" y="476">四 · 學出來的機率</text>
+  <text class="tick zh" x="44" y="502">分類器輸出 0–1</text>
+
+  <text class="tick zh" x="270" y="476">解讀：模型認為「這份檢體含腫瘤」的可能性</text>
+  <text class="tick zh" x="270" y="502">Lung-CLiP（樣本層級 ensemble）　⚠ 需要訓練資料</text>
+
+  <text class="tick zh" x="44" y="546">四類的輸出不是同一種東西，不能直接比大小。選哪一類，第一個判準是<tspan class="bold">手上有沒有陰性樣本可用</tspan>。</text>
+</svg><figcaption>八種聚合方法依輸出性質分成四類。四類的輸出不是同一種東西，不能直接比大小。</figcaption></figure>
 
 <div class="table-wrap">
 <table>
-<thead><tr><th scope="col">做法</th><th scope="col">方法</th><th scope="col">輸出</th><th scope="col">需要陰性世代？</th></tr></thead>
+<thead><tr><th scope="col">輸出的種類</th><th scope="col">它在說什麼</th><th scope="col">誰用</th><th scope="col">需要陰性樣本世代？</th></tr></thead>
 <tbody>
-<tr><td><span class="term" data-term="detection rate" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-detection-rate-1">偵測率<span class="term__pop" id="gd-detection-rate-1" role="tooltip"><b class="term__hd">detection rate <i>偵測率</i></b><span class="term__def" data-lang="zh">本專案的定義（2026-08-09 定案）：帶到突變（ALT）的 read 數 ÷ 在 compendium 位點上檢查過的 read 數。⚠️ 論文的分子是<b>被偵測到的位點數 M</b>，低 TF 下兩者相同，高 TF 或有 germline 汙染時會分岔。</span><span class="term__def" data-lang="en" lang="en">As defined in this project: the number of ALT-bearing reads divided by the number of reads examined at compendium sites. Note that the papers use the number of detected sites as numerator; the two coincide at low TF but diverge at high TF or under germline contamination.</span><a class="term__more" href="glossary.html#detection-rate">完整條目 →</a></span></span> → <span class="term" data-term="Z-score" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-z-score-2">Z-score<span class="term__pop" id="gd-z-score-2" role="tooltip"><b class="term__hd">Z-score <i>標準分數</i></b><span class="term__def" data-lang="zh">把偵測分數對陰性對照世代的分布標準化：Z = (det_rate − μ)/σ。⚠️ <b>本專案已降級為選項之一</b>（2026-08-08）—— 常態假設未經檢定，且會把稀缺的陰性樣本綁去估參數。</span><span class="term__def" data-lang="en" lang="en">Standardising a detection score against the distribution of a negative control cohort: Z = (det_rate − μ)/σ. Downgraded to one option among several in this project, since the normality assumption is untested and it consumes scarce negative samples for parameter estimation.</span><a class="term__more" href="glossary.html#z-score">完整條目 →</a></span></span></td><td><span class="term" data-term="MRDetect" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-mrdetect-3">MRDetect<span class="term__pop" id="gd-mrdetect-3" role="tooltip"><b class="term__hd">MRDetect <i>MRDetect（第一代）</i></b><span class="term__def" data-lang="zh">Landau lab 2020 年的方法（Nat Med），本專案的基準。核心是「廣度取代深度」：35X WGS + 全基因體數千個 SNV 累加，用線性 SVM 對單條 read 去噪（5 特徵）。LLOD 約 1e-5。⚠️ 程式碼未開源。</span><span class="term__def" data-lang="en" lang="en">The 2020 method from the Landau lab (Nat Med) and the baseline for this project. Its core is breadth supplanting depth: 35X WGS integrating thousands of genome-wide SNVs, with a linear SVM denoising individual reads on five features. LLOD about 1e-5. Code is not open source.</span><a class="term__more" href="glossary.html#mrdetect">完整條目 →</a></span></span>、<span class="term" data-term="MRD-EDGE" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-mrd-edge-4">MRD-EDGE<span class="term__pop" id="gd-mrd-edge-4" role="tooltip"><b class="term__hd">MRD-EDGE <i>MRD-EDGE（第二代）</i></b><span class="term__def" data-lang="zh">Landau lab 2024 年的續作（Nat Med）。把 SVM 換成 CNN + MLP ensemble，並加入 ctDNA 專屬生物特徵（SBS context、fragment length、regional epigenomics），訊噪比從 8.3× 提升到 118×。</span><span class="term__def" data-lang="en" lang="en">The Landau lab's 2024 successor (Nat Med), replacing the SVM with a CNN and MLP ensemble and adding ctDNA-specific biological features such as SBS context, fragment length and regional epigenomics, raising signal-to-noise enrichment from 8.3-fold to 118-fold.</span><a class="term__more" href="glossary.html#mrd-edge">完整條目 →</a></span></span></td>
-    <td>標準化分數</td><td><b>是</b>（估 μ、σ）</td></tr>
-<tr><td><b><span class="term" data-term="detection probability model" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-detection-probability-model-5">Poisson／幾何模型<span class="term__pop" id="gd-detection-probability-model-5" role="tooltip"><b class="term__hd">detection probability model <i>偵測機率模型</i></b><span class="term__def" data-lang="zh">iDES 提出的簡潔模型。設 n = 定序到的 GE 數、d = 偵測極限、k = reporter 數，則偵測到至少一個 ctDNA 分子的機率為 p = 1 − e^(−ndk)。可解任一參數，是評估「位點數換靈敏度」的直接工具。</span><span class="term__def" data-lang="en" lang="en">A compact model from iDES. With n genomic equivalents sequenced, detection limit d and k reporters, the probability of detecting at least one ctDNA molecule is p = 1 − exp(−ndk). Any parameter can be solved for, making it a direct tool for assessing how site count buys sensitivity.</span><a class="term__more" href="glossary.html#detection-probability-model">完整條目 →</a></span></span></b></td><td><span class="term" data-term="iDES" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-ides-6">iDES<span class="term__pop" id="gd-ides-6" role="tooltip"><b class="term__hd">iDES <i>iDES</i></b><span class="term__def" data-lang="zh">Stanford 2016 年的 CAPP-Seq 改良（Nat Biotechnol）。整合分子條碼與 <b>background polishing</b>（逐位置逐取代類型建背景分布），兩者各約 3× 改善、合併達 ~15×，偵測極限降到 0.0025%。<b>其 background polishing 是本專案最可直接移植的降噪法。</b></span><span class="term__def" data-lang="en" lang="en">The 2016 Stanford refinement of CAPP-Seq (Nat Biotechnol), integrating molecular barcoding with background polishing that models background per position and substitution type. Each contributes about threefold, combining to roughly fifteenfold, lowering the detection limit to 0.0025%. Its background polishing is the most directly transferable denoising method for this project.</span><a class="term__more" href="glossary.html#ides">完整條目 →</a></span></span>、<span class="term" data-term="PhasED-seq" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-phased-seq-7">PhasED-seq<span class="term__pop" id="gd-phased-seq-7" role="tooltip"><b class="term__hd">PhasED-seq <i>PhasED-seq</i></b><span class="term__def" data-lang="zh">Stanford 2021 年的方法（Nat Biotechnol）。<b>改變偵測單元</b>：不看單鹼基而看同一分子上的多個突變（phased variants），背景率降至 8.0e-7（2x）與 3.4e-8（3x），且不需分子條碼、不犧牲分子回收率。<b>其限制正好是 ONT 的優勢。</b></span><span class="term__def" data-lang="en" lang="en">The 2021 Stanford method (Nat Biotechnol) that changes the unit of detection: instead of single bases it tracks multiple mutations on the same molecule (phased variants), lowering background to 8.0e-7 for doublets and 3.4e-8 for triplets without molecular barcodes and without sacrificing molecule recovery. Its key limitation is precisely where ONT holds an advantage.</span><a class="term__more" href="glossary.html#phased-seq">完整條目 →</a></span></span></td>
-    <td>偵測機率</td><td>否</td></tr>
-<tr><td><b>依 variant type 分層的二項式對數概似</b></td><td><span class="term" data-term="AccuScan" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-accuscan-8">AccuScan<span class="term__pop" id="gd-accuscan-8" role="tooltip"><b class="term__hd">AccuScan <i>AccuScan</i></b><span class="term__def" data-lang="zh">2024 年的 WGS MRD 方法（EMBO Mol Med）。用 <b>RCA concatemer</b> 讓錯誤校正在單一 read 內完成，錯誤率 4.2e-7、LOD 達 cVAF 1e-6。<b>背景錯誤率由樣本自身量測、門檻由統計模型反推，皆不需 control 世代。</b></span><span class="term__def" data-lang="en" lang="en">A 2024 WGS MRD method (EMBO Mol Med) using RCA concatemers so that error correction happens within a single read, reaching an error rate of 4.2e-7 and an LOD of cVAF 1e-6. Its background error rate is measured from the sample itself and its threshold derived from the statistical model, neither requiring a control cohort.</span><a class="term__more" href="glossary.html#accuscan">完整條目 →</a></span></span></td>
-    <td>對數概似</td><td><b>否</b>（背景由樣本自身量測）</td></tr>
-<tr><td><b><span class="term" data-term="likelihood ratio" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-likelihood-ratio-9">廣義概似比<span class="term__pop" id="gd-likelihood-ratio-9" role="tooltip"><b class="term__hd">likelihood ratio <i>概似比</i></b><span class="term__def" data-lang="zh">INVAR 的判定量：比較「有 ctDNA」與「無 ctDNA」兩個假設下觀測資料的相對概似。用它取代「至少 N 個突變分子」的計數門檻。</span><span class="term__def" data-lang="en" lang="en">INVAR's decision statistic: the relative likelihood of the observed data under the ctDNA-present versus ctDNA-absent hypotheses. It replaces count-based thresholds such as requiring a minimum number of mutant molecules.</span><a class="term__more" href="glossary.html#likelihood-ratio">完整條目 →</a></span></span></b></td><td><span class="term" data-term="INVAR" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-invar-10">INVAR<span class="term__pop" id="gd-invar-10" role="tooltip"><b class="term__hd">INVAR <i>INVAR</i></b><span class="term__def" data-lang="zh">劍橋 Rosenfeld lab 2020 年的方法（Sci Transl Med）。與 MRDetect 同期同目標但<b>走純統計路線不用 ML</b>：四層誤差抑制疊加（背景降 131×），以 likelihood ratio 判定，並<b>用其他病人的樣本當陰性對照定門檻</b>。有開源碼（INVAR2）。</span><span class="term__def" data-lang="en" lang="en">The 2020 method from Rosenfeld's lab in Cambridge (Sci Transl Med). Contemporaneous with MRDetect and sharing its goal but taking a purely statistical route without machine learning: four stacked layers of error suppression (131-fold background reduction), decisions by likelihood ratio, and thresholds set using other patients' samples as negative controls. Open source as INVAR2.</span><a class="term__more" href="glossary.html#invar">完整條目 →</a></span></span></td>
-    <td>LR 與 <span class="term" data-term="IMAF" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-imaf-11">IMAF<span class="term__pop" id="gd-imaf-11" role="tooltip"><b class="term__hd">IMAF <i>整合突變等位基因分率</i></b><span class="term__def" data-lang="zh">INVAR 的量化輸出：跨所有病人專屬位點取<b>背景扣除後、深度加權</b>的平均 allele fraction。用整合取代單點量測，以降低抽樣噪音。</span><span class="term__def" data-lang="en" lang="en">INVAR's quantitative output: the background-subtracted, depth-weighted mean allele fraction across all patient-specific loci. Integration replaces single-site measurement to reduce sampling noise.</span><a class="term__more" href="glossary.html#imaf">完整條目 →</a></span></span></td><td>否</td></tr>
-<tr><td><b><span class="term" data-term="Monte Carlo" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-monte-carlo-12">Monte Carlo<span class="term__pop" id="gd-monte-carlo-12" role="tooltip"><b class="term__hd">Monte Carlo <i>蒙地卡羅模擬</i></b><span class="term__def" data-lang="zh">以大量隨機抽樣逼近難以解析求解的分布。NanoRCS 用它估 TF：輸入觀測到的 SNV 數、各 SNV 在腫瘤的 VAF、與定序錯誤率，模擬出最可能的 TF。優點是能吸收 VAF 異質性。</span><span class="term__def" data-lang="en" lang="en">Approximating an analytically intractable distribution by repeated random sampling. NanoRCS uses it to estimate TF from the observed SNV count, each SNV's VAF in the tumour, and the sequencing error rate, with the advantage of absorbing VAF heterogeneity.</span><a class="term__more" href="glossary.html#monte-carlo">完整條目 →</a></span></span> 模擬</b></td><td><span class="term" data-term="NanoRCS" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-nanorcs-13">NanoRCS<span class="term__pop" id="gd-nanorcs-13" role="tooltip"><b class="term__hd">NanoRCS <i>NanoRCS</i></b><span class="term__def" data-lang="zh">UMC Utrecht 2025 年的方法（Genome Research）。<b>唯一一篇在 ONT 平台上做 cfDNA 腫瘤偵測的方法論文。</b> RCA + 長讀共識把 ONT 錯誤率從 Q21 降到 Q31（改善 9.4×），LOD 為 TF 0.24%。同時取 SNV、CNA、fragmentomics 三種訊號。</span><span class="term__def" data-lang="en" lang="en">The 2025 method from UMC Utrecht (Genome Research) and the only methods paper performing cfDNA tumour detection on the ONT platform. RCA plus long-read consensus lowers ONT error from Q21 to Q31, a 9.4-fold improvement, achieving an LOD of TF 0.24% while extracting SNV, CNA and fragmentomics signals simultaneously.</span><a class="term__more" href="glossary.html#nanorcs">完整條目 →</a></span></span></td>
-    <td>最可能的 <span class="term" data-term="TF" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-tf-14">TF<span class="term__pop" id="gd-tf-14" role="tooltip"><b class="term__hd">TF <i>腫瘤分數的縮寫</i></b><span class="term__def" data-lang="zh"><code>tumor fraction</code>（腫瘤分數）的縮寫，本知識庫全篇使用。定義為樣本中源自腫瘤的 DNA 佔全部 DNA 的比例，代表<b>訊號的強度</b>。MRD 情境的量級為 10⁻⁵ – 10⁻⁶，與定序機本身的錯誤率同一個數量級 —— 這正是整個領域的核心困難。它由病人的疾病狀態決定，<b>不是可以由設計調整的參數</b>。</span><span class="term__def" data-lang="en" lang="en">Abbreviation for tumour fraction, used throughout this knowledge base. It is the proportion of DNA in a sample that originates from the tumour, and represents signal strength. In the MRD setting it is on the order of 1e-5 to 1e-6, the same order of magnitude as the sequencer's own error rate, which is the central difficulty of the whole field. It is set by the patient's disease state and is not a parameter the assay design can adjust.</span><a class="term__more" href="glossary.html#tf">完整條目 →</a></span></span></td><td>否</td></tr>
-<tr><td><b><span class="term" data-term="HMM" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-hmm-15">HMM<span class="term__pop" id="gd-hmm-15" role="tooltip"><b class="term__hd">HMM <i>隱藏馬可夫模型</i></b><span class="term__def" data-lang="zh">用於分段推論的機率模型。ichorCNA 以 HMM 同時預測 CNA 片段與估計 TF，emission 用 Student's t 分布（比高斯對離群穩健），以 EM 演算法推論。</span><span class="term__def" data-lang="en" lang="en">A probabilistic model for segmental inference. ichorCNA uses an HMM to jointly predict CNA segments and estimate TF, with a Student's t emission distribution for outlier robustness, fitted by expectation-maximisation.</span><a class="term__more" href="glossary.html#hmm">完整條目 →</a></span></span> + Student's t + <span class="term" data-term="EM algorithm" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-em-algorithm-16">EM<span class="term__pop" id="gd-em-algorithm-16" role="tooltip"><b class="term__hd">EM algorithm <i>期望最大化演算法</i></b><span class="term__def" data-lang="zh">在有隱藏變數時交替執行「求期望」與「最大化」以擬合參數的方法。ichorCNA 用它同時解出 tumor fraction 與 ploidy。</span><span class="term__def" data-lang="en" lang="en">An iterative method alternating expectation and maximisation steps to fit parameters in the presence of latent variables. ichorCNA uses it to jointly solve for tumour fraction and ploidy.</span><a class="term__more" href="glossary.html#em-algorithm">完整條目 →</a></span></span></b></td><td><span class="term" data-term="ichorCNA" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-ichorcna-17">ichorCNA<span class="term__pop" id="gd-ichorcna-17" role="tooltip"><b class="term__hd">ichorCNA <i>ichorCNA</i></b><span class="term__def" data-lang="zh">Broad Institute 2017 年的工具（Nat Commun）。從 <b>0.1× 超低深度 WGS</b> 估 tumor fraction，不需事先知道腫瘤變異。用 HMM 同時預測 CNA 片段與估 TF。<b>MRDetect 三代都在用它。</b> ⚠️ 偵測下限 TF 3%，遠高於 MRD 目標區間。</span><span class="term__def" data-lang="en" lang="en">The 2017 Broad Institute tool (Nat Commun) estimating tumour fraction from 0.1x ultra-low-pass WGS without prior knowledge of tumour variants, using an HMM to jointly predict CNA segments and TF. All three MRDetect generations use it. Its detection floor of TF 3% is far above the MRD target range.</span><a class="term__more" href="glossary.html#ichorcna">完整條目 →</a></span></span></td>
-    <td>CNA 片段 + TF</td><td>是（27 個健康捐贈者參考集）</td></tr>
-<tr><td><b>樣本層級 ML 分類器</b></td><td><span class="term" data-term="Lung-CLiP" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-lung-clip-18">Lung-CLiP<span class="term__pop" id="gd-lung-clip-18" role="tooltip"><b class="term__hd">Lung-CLiP <i>Lung-CLiP</i></b><span class="term__def" data-lang="zh">Stanford 2020 年的 tumor-naive 早期肺癌偵測（Nature）。<b>多層級 ML</b>：先估每個變異是腫瘤來源的機率，再與全基因體 CNA 整合成<b>病人層級分類器</b>。<b>切分紀律最嚴謹的一篇</b> —— 用不同機構前瞻收案的獨立驗證世代，並明文批評同世代交叉驗證。</span><span class="term__def" data-lang="en" lang="en">The 2020 Stanford tumour-naive early lung cancer detector (Nature). A multi-tiered machine learning design first estimates the probability that each variant is tumour-derived, then integrates this with genome-wide CNA into a patient-level classifier. It has the strictest split discipline of the set, using an independent validation cohort prospectively enrolled at a different institution and explicitly criticising within-cohort cross-validation.</span><a class="term__more" href="glossary.html#lung-clip">完整條目 →</a></span></span></td>
-    <td>0–1 機率</td><td>是（訓練集）</td></tr>
-<tr><td><span class="term" data-term="Stouffer's method" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-stouffer-s-method-19">Stouffer 合併<span class="term__pop" id="gd-stouffer-s-method-19" role="tooltip"><b class="term__hd">Stouffer's method <i>Stouffer 合併法</i></b><span class="term__def" data-lang="zh">合併多個獨立 Z 分數的公式：Z = ΣZᵢ/√k。MRD-EDGE 用它整合 read-depth、BAF 與 fragment entropy 三個 CNV 訊號源，以及 SNV 與 CNV 兩個模組。</span><span class="term__def" data-lang="en" lang="en">A formula for combining independent Z-scores: Z = ΣZi/√k. MRD-EDGE uses it to integrate three CNV signal sources (read depth, BAF and fragment entropy) as well as the SNV and CNV modules.</span><a class="term__more" href="glossary.html#stouffer-s-method">完整條目 →</a></span></span></td><td><span class="term" data-term="MRD-EDGE" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-mrd-edge-20">MRD-EDGE<span class="term__pop" id="gd-mrd-edge-20" role="tooltip"><b class="term__hd">MRD-EDGE <i>MRD-EDGE（第二代）</i></b><span class="term__def" data-lang="zh">Landau lab 2024 年的續作（Nat Med）。把 SVM 換成 CNN + MLP ensemble，並加入 ctDNA 專屬生物特徵（SBS context、fragment length、regional epigenomics），訊噪比從 8.3× 提升到 118×。</span><span class="term__def" data-lang="en" lang="en">The Landau lab's 2024 successor (Nat Med), replacing the SVM with a CNN and MLP ensemble and adding ctDNA-specific biological features such as SBS context, fragment length and regional epigenomics, raising signal-to-noise enrichment from 8.3-fold to 118-fold.</span><a class="term__more" href="glossary.html#mrd-edge">完整條目 →</a></span></span></td>
-    <td>合併多個獨立 Z</td><td>是</td></tr>
+<tr><td><b>一 · 標準化分數</b></td><td>比正常人高幾個標準差</td>
+    <td><span class="term" data-term="MRDetect" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-mrdetect-1">MRDetect<span class="term__pop" id="gd-mrdetect-1" role="tooltip"><b class="term__hd">MRDetect <i>MRDetect（第一代）</i></b><span class="term__def" data-lang="zh">Landau lab 2020 年的方法（Nat Med），本專案的基準。核心是「廣度取代深度」：35X WGS + 全基因體數千個 SNV 累加，用線性 SVM 對單條 read 去噪（5 特徵）。LLOD 約 1e-5。⚠️ 程式碼未開源。</span><span class="term__def" data-lang="en" lang="en">The 2020 method from the Landau lab (Nat Med) and the baseline for this project. Its core is breadth supplanting depth: 35X WGS integrating thousands of genome-wide SNVs, with a linear SVM denoising individual reads on five features. LLOD about 1e-5. Code is not open source.</span><a class="term__more" href="glossary.html#mrdetect">完整條目 →</a></span></span>、<span class="term" data-term="MRD-EDGE" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-mrd-edge-2">MRD-EDGE<span class="term__pop" id="gd-mrd-edge-2" role="tooltip"><b class="term__hd">MRD-EDGE <i>MRD-EDGE（第二代）</i></b><span class="term__def" data-lang="zh">Landau lab 2024 年的續作（Nat Med）。把 SVM 換成 CNN + MLP ensemble，並加入 ctDNA 專屬生物特徵（SBS context、fragment length、regional epigenomics），訊噪比從 8.3× 提升到 118×。</span><span class="term__def" data-lang="en" lang="en">The Landau lab's 2024 successor (Nat Med), replacing the SVM with a CNN and MLP ensemble and adding ctDNA-specific biological features such as SBS context, fragment length and regional epigenomics, raising signal-to-noise enrichment from 8.3-fold to 118-fold.</span><a class="term__more" href="glossary.html#mrd-edge">完整條目 →</a></span></span></td><td><b>是</b>（估 μ、σ）</td></tr>
+<tr><td><b>二 · 機率／概似</b></td><td>若真的沒有腫瘤，看到這筆資料有多不可能</td>
+    <td><span class="term" data-term="iDES" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-ides-3">iDES<span class="term__pop" id="gd-ides-3" role="tooltip"><b class="term__hd">iDES <i>iDES</i></b><span class="term__def" data-lang="zh">Stanford 2016 年的 CAPP-Seq 改良（Nat Biotechnol）。整合分子條碼與 <b>background polishing</b>（逐位置逐取代類型建背景分布），兩者各約 3× 改善、合併達 ~15×，偵測極限降到 0.0025%。<b>其 background polishing 是本專案最可直接移植的降噪法。</b></span><span class="term__def" data-lang="en" lang="en">The 2016 Stanford refinement of CAPP-Seq (Nat Biotechnol), integrating molecular barcoding with background polishing that models background per position and substitution type. Each contributes about threefold, combining to roughly fifteenfold, lowering the detection limit to 0.0025%. Its background polishing is the most directly transferable denoising method for this project.</span><a class="term__more" href="glossary.html#ides">完整條目 →</a></span></span>、<span class="term" data-term="PhasED-seq" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-phased-seq-4">PhasED-seq<span class="term__pop" id="gd-phased-seq-4" role="tooltip"><b class="term__hd">PhasED-seq <i>PhasED-seq</i></b><span class="term__def" data-lang="zh">Stanford 2021 年的方法（Nat Biotechnol）。<b>改變偵測單元</b>：不看單鹼基而看同一分子上的多個突變（phased variants），背景率降至 8.0e-7（2x）與 3.4e-8（3x），且不需分子條碼、不犧牲分子回收率。<b>其限制正好是 ONT 的優勢。</b></span><span class="term__def" data-lang="en" lang="en">The 2021 Stanford method (Nat Biotechnol) that changes the unit of detection: instead of single bases it tracks multiple mutations on the same molecule (phased variants), lowering background to 8.0e-7 for doublets and 3.4e-8 for triplets without molecular barcodes and without sacrificing molecule recovery. Its key limitation is precisely where ONT holds an advantage.</span><a class="term__more" href="glossary.html#phased-seq">完整條目 →</a></span></span>、<span class="term" data-term="AccuScan" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-accuscan-5">AccuScan<span class="term__pop" id="gd-accuscan-5" role="tooltip"><b class="term__hd">AccuScan <i>AccuScan</i></b><span class="term__def" data-lang="zh">2024 年的 WGS MRD 方法（EMBO Mol Med）。用 <b>RCA concatemer</b> 讓錯誤校正在單一 read 內完成，錯誤率 4.2e-7、LOD 達 cVAF 1e-6。<b>背景錯誤率由樣本自身量測、門檻由統計模型反推，皆不需 control 世代。</b></span><span class="term__def" data-lang="en" lang="en">A 2024 WGS MRD method (EMBO Mol Med) using RCA concatemers so that error correction happens within a single read, reaching an error rate of 4.2e-7 and an LOD of cVAF 1e-6. Its background error rate is measured from the sample itself and its threshold derived from the statistical model, neither requiring a control cohort.</span><a class="term__more" href="glossary.html#accuscan">完整條目 →</a></span></span>、<span class="term" data-term="INVAR" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-invar-6">INVAR<span class="term__pop" id="gd-invar-6" role="tooltip"><b class="term__hd">INVAR <i>INVAR</i></b><span class="term__def" data-lang="zh">劍橋 Rosenfeld lab 2020 年的方法（Sci Transl Med）。與 MRDetect 同期同目標但<b>走純統計路線不用 ML</b>：四層誤差抑制疊加（背景降 131×），以 likelihood ratio 判定，並<b>用其他病人的樣本當陰性對照定門檻</b>。有開源碼（INVAR2）。</span><span class="term__def" data-lang="en" lang="en">The 2020 method from Rosenfeld's lab in Cambridge (Sci Transl Med). Contemporaneous with MRDetect and sharing its goal but taking a purely statistical route without machine learning: four stacked layers of error suppression (131-fold background reduction), decisions by likelihood ratio, and thresholds set using other patients' samples as negative controls. Open source as INVAR2.</span><a class="term__more" href="glossary.html#invar">完整條目 →</a></span></span></td><td><b>否</b></td></tr>
+<tr><td><b>三 · 直接估 <span class="term" data-term="TF" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-tf-7">TF<span class="term__pop" id="gd-tf-7" role="tooltip"><b class="term__hd">TF <i>腫瘤分數的縮寫</i></b><span class="term__def" data-lang="zh"><code>tumor fraction</code>（腫瘤分數）的縮寫，本知識庫全篇使用。定義為樣本中源自腫瘤的 DNA 佔全部 DNA 的比例，代表<b>訊號的強度</b>。MRD 情境的量級為 10⁻⁵ – 10⁻⁶，與定序機本身的錯誤率同一個數量級 —— 這正是整個領域的核心困難。它由病人的疾病狀態決定，<b>不是可以由設計調整的參數</b>。</span><span class="term__def" data-lang="en" lang="en">Abbreviation for tumour fraction, used throughout this knowledge base. It is the proportion of DNA in a sample that originates from the tumour, and represents signal strength. In the MRD setting it is on the order of 1e-5 to 1e-6, the same order of magnitude as the sequencer's own error rate, which is the central difficulty of the whole field. It is set by the patient's disease state and is not a parameter the assay design can adjust.</span><a class="term__more" href="glossary.html#tf">完整條目 →</a></span></span></b></td><td>哪個腫瘤分數最能解釋觀測</td>
+    <td><span class="term" data-term="NanoRCS" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-nanorcs-8">NanoRCS<span class="term__pop" id="gd-nanorcs-8" role="tooltip"><b class="term__hd">NanoRCS <i>NanoRCS</i></b><span class="term__def" data-lang="zh">UMC Utrecht 2025 年的方法（Genome Research）。<b>唯一一篇在 ONT 平台上做 cfDNA 腫瘤偵測的方法論文。</b> RCA + 長讀共識把 ONT 錯誤率從 Q21 降到 Q31（改善 9.4×），LOD 為 TF 0.24%。同時取 SNV、CNA、fragmentomics 三種訊號。</span><span class="term__def" data-lang="en" lang="en">The 2025 method from UMC Utrecht (Genome Research) and the only methods paper performing cfDNA tumour detection on the ONT platform. RCA plus long-read consensus lowers ONT error from Q21 to Q31, a 9.4-fold improvement, achieving an LOD of TF 0.24% while extracting SNV, CNA and fragmentomics signals simultaneously.</span><a class="term__more" href="glossary.html#nanorcs">完整條目 →</a></span></span>、<span class="term" data-term="ichorCNA" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-ichorcna-9">ichorCNA<span class="term__pop" id="gd-ichorcna-9" role="tooltip"><b class="term__hd">ichorCNA <i>ichorCNA</i></b><span class="term__def" data-lang="zh">Broad Institute 2017 年的工具（Nat Commun）。從 <b>0.1× 超低深度 WGS</b> 估 tumor fraction，不需事先知道腫瘤變異。用 HMM 同時預測 CNA 片段與估 TF。<b>MRDetect 三代都在用它。</b> ⚠️ 偵測下限 TF 3%，遠高於 MRD 目標區間。</span><span class="term__def" data-lang="en" lang="en">The 2017 Broad Institute tool (Nat Commun) estimating tumour fraction from 0.1x ultra-low-pass WGS without prior knowledge of tumour variants, using an HMM to jointly predict CNA segments and TF. All three MRDetect generations use it. Its detection floor of TF 3% is far above the MRD target range.</span><a class="term__more" href="glossary.html#ichorcna">完整條目 →</a></span></span></td><td>視方法而定</td></tr>
+<tr><td><b>四 · 學出來的機率</b></td><td>模型認為含腫瘤的可能性（0–1）</td>
+    <td><span class="term" data-term="Lung-CLiP" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-lung-clip-10">Lung-CLiP<span class="term__pop" id="gd-lung-clip-10" role="tooltip"><b class="term__hd">Lung-CLiP <i>Lung-CLiP</i></b><span class="term__def" data-lang="zh">Stanford 2020 年的 tumor-naive 早期肺癌偵測（Nature）。<b>多層級 ML</b>：先估每個變異是腫瘤來源的機率，再與全基因體 CNA 整合成<b>病人層級分類器</b>。<b>切分紀律最嚴謹的一篇</b> —— 用不同機構前瞻收案的獨立驗證世代，並明文批評同世代交叉驗證。</span><span class="term__def" data-lang="en" lang="en">The 2020 Stanford tumour-naive early lung cancer detector (Nature). A multi-tiered machine learning design first estimates the probability that each variant is tumour-derived, then integrates this with genome-wide CNA into a patient-level classifier. It has the strictest split discipline of the set, using an independent validation cohort prospectively enrolled at a different institution and explicitly criticising within-cohort cross-validation.</span><a class="term__more" href="glossary.html#lung-clip">完整條目 →</a></span></span></td><td>是（訓練集）</td></tr>
 </tbody>
 </table>
 </div>
 
-<div class="guardrail guardrail--info">
-<p class="guardrail__hd">共同點與關鍵分歧</p>
-<p class="prose"><b>共同點</b>：八種做法全部都在做同一件事 ——
-把 N 個弱觀測合成一個數。差別只在使用哪個機率模型。</p>
-<p class="prose"><b>關鍵分歧</b>：只有 <span class="term" data-term="MRDetect" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-mrdetect-21">MRDetect<span class="term__pop" id="gd-mrdetect-21" role="tooltip"><b class="term__hd">MRDetect <i>MRDetect（第一代）</i></b><span class="term__def" data-lang="zh">Landau lab 2020 年的方法（Nat Med），本專案的基準。核心是「廣度取代深度」：35X WGS + 全基因體數千個 SNV 累加，用線性 SVM 對單條 read 去噪（5 特徵）。LLOD 約 1e-5。⚠️ 程式碼未開源。</span><span class="term__def" data-lang="en" lang="en">The 2020 method from the Landau lab (Nat Med) and the baseline for this project. Its core is breadth supplanting depth: 35X WGS integrating thousands of genome-wide SNVs, with a linear SVM denoising individual reads on five features. LLOD about 1e-5. Code is not open source.</span><a class="term__more" href="glossary.html#mrdetect">完整條目 →</a></span></span> 世系需要
-<span class="term" data-term="control cohort" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-control-cohort-22">對照世代<span class="term__pop" id="gd-control-cohort-22" role="tooltip"><b class="term__hd">control cohort <i>對照世代</i></b><span class="term__def" data-lang="zh">用於估計噪音水準或決定門檻的陰性樣本集合。MRDetect 用 30 個 control plasma、iDES 用 12 個、ichorCNA 用 27 個健康捐贈者。⚠️ <b>本專案只有 5 個獨立陰性個體</b>，這是主要約束。</span><span class="term__def" data-lang="en" lang="en">The set of negative samples used to estimate noise levels or set thresholds. MRDetect used 30 control plasmas, iDES 12, and ichorCNA 27 healthy donors. This project has only five independent negative individuals, which is a principal constraint.</span><a class="term__more" href="glossary.html#control-cohort">完整條目 →</a></span></span>來估 <span class="term" data-term="Z-score" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-z-score-23">Z-score<span class="term__pop" id="gd-z-score-23" role="tooltip"><b class="term__hd">Z-score <i>標準分數</i></b><span class="term__def" data-lang="zh">把偵測分數對陰性對照世代的分布標準化：Z = (det_rate − μ)/σ。⚠️ <b>本專案已降級為選項之一</b>（2026-08-08）—— 常態假設未經檢定，且會把稀缺的陰性樣本綁去估參數。</span><span class="term__def" data-lang="en" lang="en">Standardising a detection score against the distribution of a negative control cohort: Z = (det_rate − μ)/σ. Downgraded to one option among several in this project, since the normality assumption is untested and it consumes scarce negative samples for parameter estimation.</span><a class="term__more" href="glossary.html#z-score">完整條目 →</a></span></span> 的 μ 與 σ。
-其餘做法或用統計模型直接推導，或由樣本自身量測背景 ——
-<b>不消耗稀缺的陰性樣本</b>。</p>
-</div>
-
-<h3 id="本專案已否決-z-score-路線">本專案已否決 Z-score 路線</h3>
-
-<p class="prose">本專案於 2026-08-08 將 <span class="term" data-term="Z-score" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-z-score-24">Z-score<span class="term__pop" id="gd-z-score-24" role="tooltip"><b class="term__hd">Z-score <i>標準分數</i></b><span class="term__def" data-lang="zh">把偵測分數對陰性對照世代的分布標準化：Z = (det_rate − μ)/σ。⚠️ <b>本專案已降級為選項之一</b>（2026-08-08）—— 常態假設未經檢定，且會把稀缺的陰性樣本綁去估參數。</span><span class="term__def" data-lang="en" lang="en">Standardising a detection score against the distribution of a negative control cohort: Z = (det_rate − μ)/σ. Downgraded to one option among several in this project, since the normality assumption is untested and it consumes scarce negative samples for parameter estimation.</span><a class="term__more" href="glossary.html#z-score">完整條目 →</a></span></span> 降級為選項之一，理由有三：
-常態假設從未檢定；它把稀缺的陰性樣本綁去估參數，
-導致測試集沒有乾淨的陰性樣本可算 <span class="term" data-term="specificity" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-specificity-25">特異度<span class="term__pop" id="gd-specificity-25" role="tooltip"><b class="term__hd">specificity <i>特異度</i></b><span class="term__def" data-lang="zh">陰性樣本被正確判為陰性的比例：TN/(TN+FP)。<b>因為只由陰性樣本算出，不受陽性/陰性樣本組成比例影響</b>，是跨研究比較的主指標（Precision 與 F1 則會被 prevalence 綁架）。</span><span class="term__def" data-lang="en" lang="en">The proportion of negative samples correctly classified as negative: TN/(TN+FP). Because it is computed only from negatives, it is unaffected by the positive-to-negative composition and is the main metric for cross-study comparison, unlike precision and F1 which depend on prevalence.</span><a class="term__more" href="glossary.html#specificity">完整條目 →</a></span></span>；
-且它只用到一個純量，丟棄其他可用的檢體層級資訊。</p>
-
-<p class="prose">因此本頁其餘七種做法都是實際的候選，而非僅供參考。</p>
+<p class="prose">這個分類最實用的地方在最後一欄：<b>只有第一類（與部分第三、四類）需要陰性樣本世代</b>。
+陰性樣本是稀缺資源（詳見 <a href="p05.html">p05</a>），
+因此這一欄往往才是實務上的第一個判準。</p>
 </section>
 
 
 <section data-part="evidence" class="part" id="part-evidence">
-<h2 data-num="③" id="兩個最完整的替代方案">兩個最完整的替代方案</h2>
+<h2 data-num="③" id="八種做法">八種做法</h2>
 
-<h3 id="其一-ides-的偵測機率模型">其一：iDES 的偵測機率模型</h3>
+<h3 id="偵測率-z-score">① <span class="term" data-term="detection rate" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-detection-rate-11">偵測率<span class="term__pop" id="gd-detection-rate-11" role="tooltip"><b class="term__hd">detection rate <i>偵測率</i></b><span class="term__def" data-lang="zh">本專案的定義（2026-08-09 定案）：帶到突變（ALT）的 read 數 ÷ 在 compendium 位點上檢查過的 read 數。⚠️ 論文的分子是<b>被偵測到的位點數 M</b>，低 TF 下兩者相同，高 TF 或有 germline 汙染時會分岔。</span><span class="term__def" data-lang="en" lang="en">As defined in this project: the number of ALT-bearing reads divided by the number of reads examined at compendium sites. Note that the papers use the number of detected sites as numerator; the two coincide at low TF but diverge at high TF or under germline contamination.</span><a class="term__more" href="glossary.html#detection-rate">完整條目 →</a></span></span> → <span class="term" data-term="Z-score" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-z-score-12">Z-score<span class="term__pop" id="gd-z-score-12" role="tooltip"><b class="term__hd">Z-score <i>標準分數</i></b><span class="term__def" data-lang="zh">把偵測分數對陰性對照世代的分布標準化：Z = (det_rate − μ)/σ。⚠️ <b>本專案已降級為選項之一</b>（2026-08-08）—— 常態假設未經檢定，且會把稀缺的陰性樣本綁去估參數。</span><span class="term__def" data-lang="en" lang="en">Standardising a detection score against the distribution of a negative control cohort: Z = (det_rate − μ)/σ. Downgraded to one option among several in this project, since the normality assumption is untested and it consumes scarce negative samples for parameter estimation.</span><a class="term__more" href="glossary.html#z-score">完整條目 →</a></span></span></h3>
 
-<p class="prose">最簡潔的一種。三個參數皆為本專案已知或可量測的量。</p>
+<p class="prose"><b>把什麼當證據</b>：帶到突變的 read 佔全部檢查過的 read 的<b>比例</b>。</p>
+
+<p class="prose">最直觀的一種。先算出這份檢體的<span class="term" data-term="detection rate" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-detection-rate-13">偵測率<span class="term__pop" id="gd-detection-rate-13" role="tooltip"><b class="term__hd">detection rate <i>偵測率</i></b><span class="term__def" data-lang="zh">本專案的定義（2026-08-09 定案）：帶到突變（ALT）的 read 數 ÷ 在 compendium 位點上檢查過的 read 數。⚠️ 論文的分子是<b>被偵測到的位點數 M</b>，低 TF 下兩者相同，高 TF 或有 germline 汙染時會分岔。</span><span class="term__def" data-lang="en" lang="en">As defined in this project: the number of ALT-bearing reads divided by the number of reads examined at compendium sites. Note that the papers use the number of detected sites as numerator; the two coincide at low TF but diverge at high TF or under germline contamination.</span><a class="term__more" href="glossary.html#detection-rate">完整條目 →</a></span></span>，
+再問「這個比例比陰性樣本的平均高出幾個標準差」。</p>
+
+<div class="eq"><math display="block"><mi>Z</mi><mo>=</mo><mfrac><mrow><mtext>det rate</mtext><mo>−</mo><mi>μ</mi></mrow><mi>σ</mi></mfrac></math><p class="eq__note"><math><mi>μ</mi></math>、<math><mi>σ</mi></math> 來自陰性樣本世代 —— 把<b>同一份</b>病人的變異清單套到那些樣本上算出的分數分布。</p></div>
+
+<p class="prose"><span class="term" data-term="MRDetect" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-mrdetect-14">MRDetect<span class="term__pop" id="gd-mrdetect-14" role="tooltip"><b class="term__hd">MRDetect <i>MRDetect（第一代）</i></b><span class="term__def" data-lang="zh">Landau lab 2020 年的方法（Nat Med），本專案的基準。核心是「廣度取代深度」：35X WGS + 全基因體數千個 SNV 累加，用線性 SVM 對單條 read 去噪（5 特徵）。LLOD 約 1e-5。⚠️ 程式碼未開源。</span><span class="term__def" data-lang="en" lang="en">The 2020 method from the Landau lab (Nat Med) and the baseline for this project. Its core is breadth supplanting depth: 35X WGS integrating thousands of genome-wide SNVs, with a linear SVM denoising individual reads on five features. LLOD about 1e-5. Code is not open source.</span><a class="term__more" href="glossary.html#mrdetect">完整條目 →</a></span></span> 另有一個二項模型可從偵測數反推 <span class="term" data-term="TF" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-tf-15">TF<span class="term__pop" id="gd-tf-15" role="tooltip"><b class="term__hd">TF <i>腫瘤分數的縮寫</i></b><span class="term__def" data-lang="zh"><code>tumor fraction</code>（腫瘤分數）的縮寫，本知識庫全篇使用。定義為樣本中源自腫瘤的 DNA 佔全部 DNA 的比例，代表<b>訊號的強度</b>。MRD 情境的量級為 10⁻⁵ – 10⁻⁶，與定序機本身的錯誤率同一個數量級 —— 這正是整個領域的核心困難。它由病人的疾病狀態決定，<b>不是可以由設計調整的參數</b>。</span><span class="term__def" data-lang="en" lang="en">Abbreviation for tumour fraction, used throughout this knowledge base. It is the proportion of DNA in a sample that originates from the tumour, and represents signal strength. In the MRD setting it is on the order of 1e-5 to 1e-6, the same order of magnitude as the sequencer's own error rate, which is the central difficulty of the whole field. It is set by the patient's disease state and is not a parameter the assay design can adjust.</span><a class="term__more" href="glossary.html#tf">完整條目 →</a></span></span>：</p>
+
+<div class="eq"><math display="block"><mi>M</mi><mo>=</mo><mi>N</mi><mo>·</mo><mo>(</mo><mn>1</mn><mo>−</mo><mo>(</mo><mn>1</mn><mo>−</mo><mi>TF</mi><msup><mo>)</mo><mi>cov</mi></msup><mo>)</mo><mo>+</mo><mi>μ</mi><mo>·</mo><mi>R</mi></math><p class="eq__note"><math><mi>M</mi></math> 為偵測到的 SNV 數、<math><mi>N</mi></math> 為清單上的位點數、
+<math><mi>cov</mi></math> 為局部覆蓋、<math><mi>R</mi></math> 為檢查過的 read 數。
+右邊第二項 <math><mi>μ</mi><mo>·</mo><mi>R</mi></math> 就是預期的背景貢獻。</p></div>
+
+<p class="prose"><b>代價</b>：<math><mi>μ</mi></math> 與 <math><mi>σ</mi></math> 必須從陰性樣本估。
+<span class="term" data-term="MRDetect" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-mrdetect-16">MRDetect<span class="term__pop" id="gd-mrdetect-16" role="tooltip"><b class="term__hd">MRDetect <i>MRDetect（第一代）</i></b><span class="term__def" data-lang="zh">Landau lab 2020 年的方法（Nat Med），本專案的基準。核心是「廣度取代深度」：35X WGS + 全基因體數千個 SNV 累加，用線性 SVM 對單條 read 去噪（5 特徵）。LLOD 約 1e-5。⚠️ 程式碼未開源。</span><span class="term__def" data-lang="en" lang="en">The 2020 method from the Landau lab (Nat Med) and the baseline for this project. Its core is breadth supplanting depth: 35X WGS integrating thousands of genome-wide SNVs, with a linear SVM denoising individual reads on five features. LLOD about 1e-5. Code is not open source.</span><a class="term__more" href="glossary.html#mrdetect">完整條目 →</a></span></span> 用了 <b>30 個</b>對照血漿。
+這批樣本一旦拿去估參數，就不能再用來算<span class="term" data-term="specificity" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-specificity-17">特異度<span class="term__pop" id="gd-specificity-17" role="tooltip"><b class="term__hd">specificity <i>特異度</i></b><span class="term__def" data-lang="zh">陰性樣本被正確判為陰性的比例：TN/(TN+FP)。<b>因為只由陰性樣本算出，不受陽性/陰性樣本組成比例影響</b>，是跨研究比較的主指標（Precision 與 F1 則會被 prevalence 綁架）。</span><span class="term__def" data-lang="en" lang="en">The proportion of negative samples correctly classified as negative: TN/(TN+FP). Because it is computed only from negatives, it is unaffected by the positive-to-negative composition and is the main metric for cross-study comparison, unlike precision and F1 which depend on prevalence.</span><a class="term__more" href="glossary.html#specificity">完整條目 →</a></span></span>。</p>
+
+<h3 id="poisson-幾何-偵測機率模型">② Poisson／幾何 偵測機率模型</h3>
+
+<p class="prose"><b>把什麼當證據</b>：不算分數 —— 直接問「以這個位點數與深度，<b>能測到的機率</b>是多少」。</p>
+
+<p class="prose">這是八種裡最簡潔的。假設每個位點偵測到 ctDNA 分子的次數服從 Poisson，
+<math><mi>k</mi></math> 個獨立位點至少命中一個的機率即為：</p>
 
 <div class="eq"><math display="block"><mi>p</mi><mo>=</mo><mn>1</mn><mo>−</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>n</mi><mo>·</mo><mi>d</mi><mo>·</mo><mi>k</mi></mrow></msup></math><p class="eq__note"><math><mi>n</mi></math> 為基因組當量數、<math><mi>d</mi></math> 為偵測極限、<math><mi>k</mi></math> 為追蹤位點數。
-可解任一參數 —— 例如給定 <math><mi>k</mi><mo>=</mo><mn>35</mn><mo>,</mo><mn>603</mn></math> 與目標 <math><mi>p</mi></math>，反推所需的 <math><mi>d</mi></math>。</p></div>
+這正是 <a href="p01.html">p01</a> 建立的那條式子。</p></div>
 
-<p class="prose"><span class="term" data-term="iDES" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-ides-26">iDES<span class="term__pop" id="gd-ides-26" role="tooltip"><b class="term__hd">iDES <i>iDES</i></b><span class="term__def" data-lang="zh">Stanford 2016 年的 CAPP-Seq 改良（Nat Biotechnol）。整合分子條碼與 <b>background polishing</b>（逐位置逐取代類型建背景分布），兩者各約 3× 改善、合併達 ~15×，偵測極限降到 0.0025%。<b>其 background polishing 是本專案最可直接移植的降噪法。</b></span><span class="term__def" data-lang="en" lang="en">The 2016 Stanford refinement of CAPP-Seq (Nat Biotechnol), integrating molecular barcoding with background polishing that models background per position and substitution type. Each contributes about threefold, combining to roughly fifteenfold, lowering the detection limit to 0.0025%. Its background polishing is the most directly transferable denoising method for this project.</span><a class="term__more" href="glossary.html#ides">完整條目 →</a></span></span> 以此建立 read support 門檻，
-不需要任何陰性樣本；其代價是模型較粗，
-未區分不同位點的背景差異。</p>
+<p class="prose">它的威力在於<b>三個參數皆可反解</b>。
+<span class="term" data-term="iDES" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-ides-18">iDES<span class="term__pop" id="gd-ides-18" role="tooltip"><b class="term__hd">iDES <i>iDES</i></b><span class="term__def" data-lang="zh">Stanford 2016 年的 CAPP-Seq 改良（Nat Biotechnol）。整合分子條碼與 <b>background polishing</b>（逐位置逐取代類型建背景分布），兩者各約 3× 改善、合併達 ~15×，偵測極限降到 0.0025%。<b>其 background polishing 是本專案最可直接移植的降噪法。</b></span><span class="term__def" data-lang="en" lang="en">The 2016 Stanford refinement of CAPP-Seq (Nat Biotechnol), integrating molecular barcoding with background polishing that models background per position and substitution type. Each contributes about threefold, combining to roughly fifteenfold, lowering the detection limit to 0.0025%. Its background polishing is the most directly transferable denoising method for this project.</span><a class="term__more" href="glossary.html#ides">完整條目 →</a></span></span> 用它反推 read support 門檻；也可以反過來給定位點數與目標偵測率，
+反推所需的錯誤率。<span class="term" data-term="PhasED-seq" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-phased-seq-19">PhasED-seq<span class="term__pop" id="gd-phased-seq-19" role="tooltip"><b class="term__hd">PhasED-seq <i>PhasED-seq</i></b><span class="term__def" data-lang="zh">Stanford 2021 年的方法（Nat Biotechnol）。<b>改變偵測單元</b>：不看單鹼基而看同一分子上的多個突變（phased variants），背景率降至 8.0e-7（2x）與 3.4e-8（3x），且不需分子條碼、不犧牲分子回收率。<b>其限制正好是 ONT 的優勢。</b></span><span class="term__def" data-lang="en" lang="en">The 2021 Stanford method (Nat Biotechnol) that changes the unit of detection: instead of single bases it tracks multiple mutations on the same molecule (phased variants), lowering background to 8.0e-7 for doublets and 3.4e-8 for triplets without molecular barcodes and without sacrificing molecule recovery. Its key limitation is precisely where ONT holds an advantage.</span><a class="term__more" href="glossary.html#phased-seq">完整條目 →</a></span></span> 用的是同一原理的二項式抽樣版本。</p>
 
-<h3 id="其二-invar-的廣義概似比檢定">其二：INVAR 的廣義概似比檢定</h3>
+<p class="prose"><b>代價</b>：模型較粗，<b>未區分不同位點的背景差異</b> ——
+它假設所有位點一樣吵，但實測上最吵與最靜的位點可以差兩個數量級。</p>
 
-<p class="prose">較完整的一種，且<b>有開源實作可直接對照</b>。
-論文僅稱「INVAR likelihood ratio」，
-以下取自 INVAR2 原始碼（<code>R/shared/detectionFunctions.R</code>）。</p>
+<h3 id="依-variant-type-分層的二項式對數概似">③ 依 variant type 分層的二項式對數概似</h3>
 
-<p class="prose">對數概似函數：令 <math><mi>M</mi></math> 為某位點的 mutant read 數、<math><mi>R</mi></math> 為深度、
-<math><mi>AF</mi></math> 為該位點在腫瘤中的 <span class="term" data-term="VAF" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-vaf-27">VAF<span class="term__pop" id="gd-vaf-27" role="tooltip"><b class="term__hd">VAF <i>變異等位基因頻率</i></b><span class="term__def" data-lang="zh">在某個位點上，支持 alt allele 的 read 佔全部 read 的比例。<b>VAF 不等於帶有這個突變的細胞比例</b>。</span><span class="term__def" data-lang="en" lang="en">Variant Allele Frequency: the fraction of reads supporting the alternate allele. Not the same as the fraction of cells carrying it.</span><a class="term__more" href="glossary.html#vaf">完整條目 →</a></span></span>、<math><mi>e</mi></math> 為背景錯誤率、<math><mi>p</mi></math> 為樣本的 ctDNA 水準，</p>
+<p class="prose"><b>把什麼當證據</b>：每個位點是一次二項抽樣；把各位點的對數概似<b>加總</b>。</p>
 
-<div class="eq"><math display="block"><mi>q</mi><mo>=</mo><mi>AF</mi><mo>·</mo><mo>(</mo><mn>1</mn><mo>−</mo><mi>e</mi><mo>)</mo><mo>·</mo><mi>p</mi><mo>+</mo><mo>(</mo><mn>1</mn><mo>−</mo><mi>AF</mi><mo>)</mo><mo>·</mo><mi>e</mi><mo>·</mo><mi>p</mi><mo>+</mo><mi>e</mi><mo>·</mo><mo>(</mo><mn>1</mn><mo>−</mo><mi>p</mi><mo>)</mo></math><p class="eq__note"><math><mi>q</mi></math> 是在給定 <math><mi>p</mi></math> 下，該位點觀測到 mutant read 的機率 ——
-三項分別對應「真訊號被正確讀出」「真訊號被讀錯」「野生型被讀錯」。</p></div>
+<p class="prose"><span class="term" data-term="AccuScan" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-accuscan-20">AccuScan<span class="term__pop" id="gd-accuscan-20" role="tooltip"><b class="term__hd">AccuScan <i>AccuScan</i></b><span class="term__def" data-lang="zh">2024 年的 WGS MRD 方法（EMBO Mol Med）。用 <b>RCA concatemer</b> 讓錯誤校正在單一 read 內完成，錯誤率 4.2e-7、LOD 達 cVAF 1e-6。<b>背景錯誤率由樣本自身量測、門檻由統計模型反推，皆不需 control 世代。</b></span><span class="term__def" data-lang="en" lang="en">A 2024 WGS MRD method (EMBO Mol Med) using RCA concatemers so that error correction happens within a single read, reaching an error rate of 4.2e-7 and an LOD of cVAF 1e-6. Its background error rate is measured from the sample itself and its threshold derived from the statistical model, neither requiring a control cohort.</span><a class="term__more" href="glossary.html#accuscan">完整條目 →</a></span></span> 把每個變異的觀測看成一個二項隨機變數，成功機率為</p>
 
-<div class="eq"><math display="block"><mi>log</mi><mi>L</mi><mo>=</mo><mfrac><mn>1</mn><mi>n</mi></mfrac><mo>∑</mo><mo>(</mo><mtext>lchoose</mtext><mo>(</mo><mi>R</mi><mo>,</mo><mi>M</mi><mo>)</mo><mo>+</mo><mi>M</mi><mo>·</mo><mi>log</mi><mi>q</mi><mo>+</mo><mo>(</mo><mi>R</mi><mo>−</mo><mi>M</mi><mo>)</mo><mo>·</mo><mi>log</mi><mo>(</mo><mn>1</mn><mo>−</mo><mi>q</mi><mo>)</mo><mo>)</mo></math><p class="eq__note"><math><mi>n</mi></math> 為位點數；<math><mtext>lchoose</mtext><mo>(</mo><mi>R</mi><mo>,</mo><mi>M</mi><mo>)</mo></math> 即 R 取 M 的二項式係數取對數。
+<div class="eq"><math display="block"><msub><mi>p</mi><mi>v</mi></msub><mo>=</mo><mi>VAF</mi><mo>+</mo><msub><mi>e</mi><mi>v</mi></msub></math><p class="eq__note"><math><msub><mi>e</mi><mi>v</mi></msub></math> 是<b>該 variant type 的錯誤率</b>（C→T、C→A… 各自不同）。
+把各 type 的獨立二項對數概似加總，即得樣本層分數。</p></div>
+
+<p class="prose">關鍵設計在 <math><msub><mi>e</mi><mi>v</mi></msub></math> 的來源：<b>背景錯誤模型由該血漿樣本自己量測</b>，
+不是來自對照世代 —— 對隨機選取的約 200 Mb 位置就地估計。
+這是它與 ① 最大的分歧。</p>
+
+<p class="prose">另有一條配套規則：<b>低腫瘤負荷時，排除支持分子數 &gt;1 的位點</b>。
+理由與 <a href="p03.html">p03</a> 的<span class="term" data-term="outlier suppression" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-outlier-suppression-21">離群抑制<span class="term__pop" id="gd-outlier-suppression-21" role="tooltip"><b class="term__hd">outlier suppression <i>離群抑制</i></b><span class="term__def" data-lang="zh">INVAR 的關鍵步驟：低 TF 下訊號應<b>隨機散布</b>在各位點、多數位點為零。對此分布找 outlier 並剔除不一致的單點訊號 → control 訊號降約 3 倍，病人訊號保留 96.1%。<b>不依賴任何平台特性。</b></span><span class="term__def" data-lang="en" lang="en">A key step in INVAR: at low TF, signal should be randomly scattered across sites with most sites at zero. Outliers against this distribution are identified and removed, reducing control signal roughly threefold while retaining 96.1% of patient signal. It depends on no platform-specific feature.</span><a class="term__more" href="glossary.html#outlier-suppression">完整條目 →</a></span></span>相同 ——
+低 <span class="term" data-term="cVAF" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-cvaf-22">cVAF<span class="term__pop" id="gd-cvaf-22" role="tooltip"><b class="term__hd">cVAF <i>循環變異等位基因分率</i></b><span class="term__def" data-lang="zh">血漿中某變異的等位基因分率。與一般 VAF 的差別在量級：germline VAF 約 0.5，而 MRD 情境的 cVAF 常在 10⁻⁵–10⁻⁶ 之間，與定序錯誤率同一個數量級。</span><span class="term__def" data-lang="en" lang="en">The variant allele frequency of a mutation in plasma. It differs from ordinary VAF in magnitude: germline VAF is about 0.5, whereas cVAF in MRD settings is typically 1e-5 to 1e-6, the same order as the sequencing error rate.</span><a class="term__more" href="glossary.html#cvaf">完整條目 →</a></span></span> 下真 somatic 變異幾乎都只出現在單一分子上。
+高負荷樣本（cVAF &gt; 15%）則不套用此規則。</p>
+
+<h3 id="廣義概似比-glrt">④ <span class="term" data-term="likelihood ratio" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-likelihood-ratio-23">廣義概似比<span class="term__pop" id="gd-likelihood-ratio-23" role="tooltip"><b class="term__hd">likelihood ratio <i>概似比</i></b><span class="term__def" data-lang="zh">INVAR 的判定量：比較「有 ctDNA」與「無 ctDNA」兩個假設下觀測資料的相對概似。用它取代「至少 N 個突變分子」的計數門檻。</span><span class="term__def" data-lang="en" lang="en">INVAR's decision statistic: the relative likelihood of the observed data under the ctDNA-present versus ctDNA-absent hypotheses. It replaces count-based thresholds such as requiring a minimum number of mutant molecules.</span><a class="term__more" href="glossary.html#likelihood-ratio">完整條目 →</a></span></span>（GLRT）</h3>
+
+<p class="prose"><b>把什麼當證據</b>：讓「含 ctDNA」與「不含」<b>兩個假設各自去解釋同一筆資料</b>，看誰解釋得比較好。</p>
+
+<figure class="dia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 520" class="dia-svg" role="img" aria-labelledby="likelihood-ratio__title" aria-describedby="likelihood-ratio__desc">
+  <title id="likelihood-ratio__title">概似比：讓兩個假設各自解釋同一筆資料，看誰解釋得比較好</title>
+  <desc id="likelihood-ratio__desc">本圖說明 INVAR 的廣義概似比檢定的直覺。
+        輸入是同一筆觀測資料：追蹤清單上的每個位點各自有幾條支持讀取、總深度多少、
+        該位點在腫瘤中的變異等位基因分率是多少、以及該位點的背景錯誤率。
+        接著讓兩個互相競爭的假設各自去解釋這同一筆資料。
+        左邊的假設是這份檢體完全不含循環腫瘤去氧核醣核酸，
+        亦即腫瘤含量參數為零，此時所有觀察到的支持讀取都必須由背景錯誤來解釋。
+        右邊的假設是這份檢體含有某個量的循環腫瘤去氧核醣核酸，
+        該量以最大概似估計求得，實際上用期望最大化演算法迭代兩百次。
+        兩個假設各自算出一個對數概似值，代表在該假設下觀測到這筆資料的可能性有多高。
+        概似比即為兩者相減：有腫瘤假設的對數概似減去無腫瘤假設的對數概似。
+        判讀方式是：概似比越大，代表含有循環腫瘤去氧核醣核酸這個解釋，
+        比不含這個解釋要好得越多。
+        圖右側說明這個做法為何不需要陰性樣本世代：
+        它的基準不是別人的樣本長什麼樣，而是同一筆資料在虛無假設下的概似，
+        因此基準完全由這份樣本自己提供。
+        圖下方另標出一個實作注意事項：
+        INVAR2 的原始碼另有一個把片段長度分布納入概似式的版本，
+        該版本假設樣本為游離去氧核醣核酸，對細胞株的基因體去氧核醣核酸並不適用。</desc>
+
+  <text class="ttl bold zh" x="20" y="34">概似比：讓兩個假設解釋同一筆資料，看誰解釋得比較好</text>
+
+  <defs>
+    <marker id="likelihood-ratio__lr-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path class="conn" d="M0 0 L10 5 L0 10 z"/>
+    </marker>
+  </defs>
+
+  <!-- 輸入 -->
+  <rect class="box" x="20" y="56" width="620" height="86" rx="10"/>
+  <text class="anno bold zh" x="44" y="84">同一筆觀測資料</text>
+  <text class="tick zh" x="44" y="110">清單上每個位點：支持 read 數 M、深度 R、</text>
+  <text class="tick zh" x="44" y="132">該位點在腫瘤中的 VAF、該位點的背景錯誤率 e</text>
+
+  <path class="conn thick" d="M240 144 L190 176" marker-end="url(#likelihood-ratio__lr-a)"/>
+  <path class="conn thick" d="M420 144 L470 176" marker-end="url(#likelihood-ratio__lr-a)"/>
+
+  <!-- 假設 A -->
+  <rect class="box" x="20" y="184" width="290" height="160" rx="10"/>
+  <text class="anno bold mid zh" x="165" y="214">假設 A：沒有 ctDNA</text>
+  <text class="tick mid zh" x="165" y="242">腫瘤含量 p = 0</text>
+  <text class="tick mid zh" x="165" y="270">所有支持 read 都得</text>
+  <text class="tick mid zh" x="165" y="292">由背景錯誤來解釋</text>
+  <rect class="box plain" x="44" y="304" width="242" height="30" rx="6"/>
+  <text class="anno bold mid zh" x="165" y="326">算出 log L(p = 0)</text>
+
+  <!-- 假設 B -->
+  <rect class="box" x="350" y="184" width="290" height="160" rx="10"/>
+  <text class="anno bold mid zh" x="495" y="214">假設 B：含有 ctDNA</text>
+  <text class="tick mid zh" x="495" y="242">腫瘤含量 p = 最可能的值</text>
+  <text class="tick mid zh" x="495" y="270">以 EM 演算法迭代 200 次</text>
+  <text class="tick mid zh" x="495" y="292">求最大概似估計</text>
+  <rect class="box plain" x="374" y="304" width="242" height="30" rx="6"/>
+  <text class="anno bold mid zh" x="495" y="326">算出 log L(p = p̂)</text>
+
+  <!-- 相減 -->
+  <path class="conn thick" d="M165 346 L165 372"/>
+  <path class="conn thick" d="M495 346 L495 372"/>
+  <path class="conn thick" d="M165 372 L495 372"/>
+  <path class="conn thick" d="M330 372 L330 394" marker-end="url(#likelihood-ratio__lr-a)"/>
+
+  <rect class="box" x="20" y="402" width="620" height="94" rx="10"/>
+  <text class="anno bold accent mid zh" x="330" y="432">概似比 LR = log L(p = p̂) − log L(p = 0)</text>
+  <text class="tick mid zh" x="330" y="460">LR 越大 = 「含有 ctDNA」比「不含」解釋得越好</text>
+  <text class="tick mid zh" x="330" y="484">判定就是拿 LR 跟門檻比</text>
+
+  <!-- 右欄 -->
+  <rect class="box" x="660" y="56" width="320" height="180" rx="10"/>
+  <text class="anno bold ok zh" x="684" y="86">為何不需要陰性樣本世代</text>
+  <text class="tick zh" x="684" y="118">它的基準不是「別人的樣本</text>
+  <text class="tick zh" x="684" y="140">長什麼樣」，</text>
+  <text class="anno bold zh" x="684" y="172">而是同一筆資料在</text>
+  <text class="anno bold zh" x="684" y="196">虛無假設下的概似</text>
+  <text class="tick zh" x="684" y="222">→ 基準由這份樣本自己提供</text>
+
+  <rect class="box" x="660" y="252" width="320" height="140" rx="10"/>
+  <text class="anno bold zh" x="684" y="282">輸入只需要四個量</text>
+  <text class="tick zh" x="684" y="312">M（支持 read 數）</text>
+  <text class="tick zh" x="684" y="336">R（深度）</text>
+  <text class="tick zh" x="684" y="360">AF（腫瘤中的 VAF）</text>
+  <text class="tick zh" x="684" y="384">e（背景錯誤率）</text>
+
+  <rect class="box plain" x="660" y="402" width="320" height="94" rx="10"/>
+  <text class="anno bold somatic zh" x="684" y="430">⚠ 實作注意</text>
+  <text class="tick zh" x="684" y="456">原始碼另有納入片段長度的</text>
+  <text class="tick zh" x="684" y="478">版本 —— 那版假設樣本是</text>
+  <text class="tick zh" x="684" y="500">cfDNA，對細胞株 gDNA 不適用</text>
+</svg><figcaption>INVAR 廣義概似比的直覺。基準不是別人的樣本長什麼樣，而是同一筆資料在虛無假設下的概似。</figcaption></figure>
+
+<p class="prose">這是八種裡機制最完整、且<b>有開源實作可直接對照</b>的一種。
+論文僅稱「INVAR likelihood ratio」，以下取自 INVAR2 原始碼
+（<code>R/shared/detectionFunctions.R</code>）。</p>
+
+<h4 id="先寫出單一位點觀測到-mutant-read-的機率">先寫出單一位點觀測到 mutant read 的機率</h4>
+
+<p class="prose">令 <math><mi>AF</mi></math> 為該位點在腫瘤中的 <span class="term" data-term="VAF" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-vaf-24">VAF<span class="term__pop" id="gd-vaf-24" role="tooltip"><b class="term__hd">VAF <i>變異等位基因頻率</i></b><span class="term__def" data-lang="zh">在某個位點上，支持 alt allele 的 read 佔全部 read 的比例。<b>VAF 不等於帶有這個突變的細胞比例</b>。</span><span class="term__def" data-lang="en" lang="en">Variant Allele Frequency: the fraction of reads supporting the alternate allele. Not the same as the fraction of cells carrying it.</span><a class="term__more" href="glossary.html#vaf">完整條目 →</a></span></span>、
+<math><mi>e</mi></math> 為背景錯誤率、<math><mi>p</mi></math> 為樣本的 ctDNA 水準：</p>
+
+<div class="eq"><math display="block"><mi>q</mi><mo>=</mo><mi>AF</mi><mo>·</mo><mo>(</mo><mn>1</mn><mo>−</mo><mi>e</mi><mo>)</mo><mo>·</mo><mi>p</mi><mo>+</mo><mo>(</mo><mn>1</mn><mo>−</mo><mi>AF</mi><mo>)</mo><mo>·</mo><mi>e</mi><mo>·</mo><mi>p</mi><mo>+</mo><mi>e</mi><mo>·</mo><mo>(</mo><mn>1</mn><mo>−</mo><mi>p</mi><mo>)</mo></math><p class="eq__note">三項分別對應「真訊號被正確讀出」「真訊號被讀錯」「野生型被讀錯」——
+把所有能產生一條 mutant read 的途徑都算進去。</p></div>
+
+<h4 id="再把所有位點的對數概似加起來">再把所有位點的對數概似加起來</h4>
+
+<div class="eq"><math display="block"><mi>log</mi><mi>L</mi><mo>=</mo><mfrac><mn>1</mn><mi>n</mi></mfrac><mo>∑</mo><mo>(</mo><mtext>lchoose</mtext><mo>(</mo><mi>R</mi><mo>,</mo><mi>M</mi><mo>)</mo><mo>+</mo><mi>M</mi><mo>·</mo><mi>log</mi><mi>q</mi><mo>+</mo><mo>(</mo><mi>R</mi><mo>−</mo><mi>M</mi><mo>)</mo><mo>·</mo><mi>log</mi><mo>(</mo><mn>1</mn><mo>−</mo><mi>q</mi><mo>)</mo><mo>)</mo></math><p class="eq__note"><math><mi>M</mi></math> 為該位點的 mutant read 數、<math><mi>R</mi></math> 為深度、<math><mi>n</mi></math> 為位點數。
 原始碼中此式除以 <math><mtext>length</mtext><mo>(</mo><mi>R</mi><mo>)</mo></math>，即對位點數取平均。</p></div>
 
-<p class="prose">樣本的 ctDNA 水準 <math><mi>p</mi></math> 以 EM 演算法估計：</p>
+<h4 id="ctdna-水準-p-以-em-演算法估計">ctDNA 水準 p 以 EM 演算法估計</h4>
 
 <pre><code># estimate_p_EM(M, R, AF, e, initial_p = 0.01, iterations = 200)
 g = AF*(1-e) + (1-AF)*e
@@ -160,103 +351,120 @@ for (i in 1:200) {
   p &lt;- sum(M*Z_1 + (R-M)*Z_0) / sum(R)
 }</code></pre>
 
-<p class="prose">最後取虛無假設與最大概似估計之差：</p>
+<h4 id="最後取兩個假設的差">最後取兩個假設的差</h4>
 
 <div class="eq"><math display="block"><mi>LR</mi><mo>=</mo><mi>log</mi><mi>L</mi><mo>(</mo><mi>p</mi><mo>=</mo><msub><mover accent="true"><mi>p</mi><mo>^</mo></mover><mi>MLE</mi></msub><mo>)</mo><mo>−</mo><mi>log</mi><mi>L</mi><mo>(</mo><mi>p</mi><mo>=</mo><mn>0</mn><mo>)</mo></math><p class="eq__note">虛無假設為 <math><mi>p</mi><mo>=</mo><mn>0</mn></math>（樣本不含 ctDNA）。
 <math><mi>LR</mi></math> 越大，「含 ctDNA」的解釋越優於「不含」。</p></div>
 
-<div class="guardrail guardrail--info">
-<p class="guardrail__hd">為什麼這個方案對本專案特別合適</p>
-<ul class="prose">
-<li><b>不需要對照世代</b>估 μ、σ —— 繞開陰性樣本稀缺的困境。</li>
-<li>輸入只需要每個位點的四個量：<math><mi>M</mi></math>、<math><mi>R</mi></math>、<math><mi>AF</mi></math>、<math><mi>e</mi></math>，全部是本專案已有或可算的。</li>
-<li>有開源實作可比對，不必從論文文字重建。</li>
-<li>⚠️ 原始碼另有 <code>*_with_RL</code> 版本，把片段長度分布納入概似式 ——
-<b>該版本對細胞株 gDNA 不適用</b>，應使用無片段長度的版本。</li>
-</ul>
+<p class="prose"><b>為什麼它不需要陰性樣本世代</b>：
+它的基準不是「別人的樣本長什麼樣」，
+而是<b>同一筆資料在虛無假設下的概似</b> —— 基準完全由這份樣本自己提供。</p>
+
+<div class="guardrail guardrail--warn">
+<p class="guardrail__hd">原始碼有兩個版本，選錯會用到不適用的假設</p>
+<p class="prose">INVAR2 另有 <code>*_with_RL</code> 版本，把<b>片段長度分布</b>納入概似式
+（腫瘤來源的 cfDNA 片段較短，可作為額外證據）。</p>
+<p class="prose">該版本假設樣本是 <span class="term" data-term="cfDNA" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-cfdna-25">cfDNA<span class="term__pop" id="gd-cfdna-25" role="tooltip"><b class="term__hd">cfDNA <i>游離 DNA</i></b><span class="term__def" data-lang="zh">血漿中游離的短 DNA 片段，主要由凋亡與壞死的細胞釋出，長度以約 166 bp 為眾數（對應核小體）。健康人與癌症病人都有。</span><span class="term__def" data-lang="en" lang="en">Short DNA fragments circulating freely in plasma, released mainly by apoptotic and necrotic cells, with a modal length of about 166 bp reflecting nucleosome protection. Present in both healthy and cancer subjects.</span><a class="term__more" href="glossary.html#cfdna">完整條目 →</a></span></span>。
+若樣本並非 cfDNA（例如細胞株的基因體 DNA），片段長度分布不具代表性，
+<b>應使用無片段長度的版本</b>。</p>
 </div>
+
+<h3 id="monte-carlo-模擬">⑤ <span class="term" data-term="Monte Carlo" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-monte-carlo-26">Monte Carlo<span class="term__pop" id="gd-monte-carlo-26" role="tooltip"><b class="term__hd">Monte Carlo <i>蒙地卡羅模擬</i></b><span class="term__def" data-lang="zh">以大量隨機抽樣逼近難以解析求解的分布。NanoRCS 用它估 TF：輸入觀測到的 SNV 數、各 SNV 在腫瘤的 VAF、與定序錯誤率，模擬出最可能的 TF。優點是能吸收 VAF 異質性。</span><span class="term__def" data-lang="en" lang="en">Approximating an analytically intractable distribution by repeated random sampling. NanoRCS uses it to estimate TF from the observed SNV count, each SNV's VAF in the tumour, and the sequencing error rate, with the advantage of absorbing VAF heterogeneity.</span><a class="term__more" href="glossary.html#monte-carlo">完整條目 →</a></span></span> 模擬</h3>
+
+<p class="prose"><b>把什麼當證據</b>：反過來做 —— <b>模擬各種 TF 下會看到什麼</b>，找出最像實際觀測的那個 TF。</p>
+
+<p class="prose"><span class="term" data-term="NanoRCS" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-nanorcs-27">NanoRCS<span class="term__pop" id="gd-nanorcs-27" role="tooltip"><b class="term__hd">NanoRCS <i>NanoRCS</i></b><span class="term__def" data-lang="zh">UMC Utrecht 2025 年的方法（Genome Research）。<b>唯一一篇在 ONT 平台上做 cfDNA 腫瘤偵測的方法論文。</b> RCA + 長讀共識把 ONT 錯誤率從 Q21 降到 Q31（改善 9.4×），LOD 為 TF 0.24%。同時取 SNV、CNA、fragmentomics 三種訊號。</span><span class="term__def" data-lang="en" lang="en">The 2025 method from UMC Utrecht (Genome Research) and the only methods paper performing cfDNA tumour detection on the ONT platform. RCA plus long-read consensus lowers ONT error from Q21 to Q31, a 9.4-fold improvement, achieving an LOD of TF 0.24% while extracting SNV, CNA and fragmentomics signals simultaneously.</span><a class="term__more" href="glossary.html#nanorcs">完整條目 →</a></span></span> 的做法：輸入三個量 ——
+① 觀測到的 tumor-informed SNV 數、
+② 每個 SNV 在腫瘤中的 <span class="term" data-term="VAF" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-vaf-28">VAF<span class="term__pop" id="gd-vaf-28" role="tooltip"><b class="term__hd">VAF <i>變異等位基因頻率</i></b><span class="term__def" data-lang="zh">在某個位點上，支持 alt allele 的 read 佔全部 read 的比例。<b>VAF 不等於帶有這個突變的細胞比例</b>。</span><span class="term__def" data-lang="en" lang="en">Variant Allele Frequency: the fraction of reads supporting the alternate allele. Not the same as the fraction of cells carrying it.</span><a class="term__more" href="glossary.html#vaf">完整條目 →</a></span></span>、
+③ 定序錯誤率 —— 然後大量模擬，推估最可能的 <span class="term" data-term="TF" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-tf-29">TF<span class="term__pop" id="gd-tf-29" role="tooltip"><b class="term__hd">TF <i>腫瘤分數的縮寫</i></b><span class="term__def" data-lang="zh"><code>tumor fraction</code>（腫瘤分數）的縮寫，本知識庫全篇使用。定義為樣本中源自腫瘤的 DNA 佔全部 DNA 的比例，代表<b>訊號的強度</b>。MRD 情境的量級為 10⁻⁵ – 10⁻⁶，與定序機本身的錯誤率同一個數量級 —— 這正是整個領域的核心困難。它由病人的疾病狀態決定，<b>不是可以由設計調整的參數</b>。</span><span class="term__def" data-lang="en" lang="en">Abbreviation for tumour fraction, used throughout this knowledge base. It is the proportion of DNA in a sample that originates from the tumour, and represents signal strength. In the MRD setting it is on the order of 1e-5 to 1e-6, the same order of magnitude as the sequencer's own error rate, which is the central difficulty of the whole field. It is set by the patient's disease state and is not a parameter the assay design can adjust.</span><a class="term__more" href="glossary.html#tf">完整條目 →</a></span></span>。</p>
+
+<p class="prose">好處是<b>輸出本身就有物理意義</b>（不是抽象分數，而是一個 TF 估計值），
+且不需要對背景分布做參數假設。代價是計算量大。</p>
+
+<h3 id="hmm-student-s-t-em">⑥ <span class="term" data-term="HMM" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-hmm-30">HMM<span class="term__pop" id="gd-hmm-30" role="tooltip"><b class="term__hd">HMM <i>隱藏馬可夫模型</i></b><span class="term__def" data-lang="zh">用於分段推論的機率模型。ichorCNA 以 HMM 同時預測 CNA 片段與估計 TF，emission 用 Student's t 分布（比高斯對離群穩健），以 EM 演算法推論。</span><span class="term__def" data-lang="en" lang="en">A probabilistic model for segmental inference. ichorCNA uses an HMM to jointly predict CNA segments and estimate TF, with a Student's t emission distribution for outlier robustness, fitted by expectation-maximisation.</span><a class="term__more" href="glossary.html#hmm">完整條目 →</a></span></span> + Student's t + <span class="term" data-term="EM algorithm" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-em-algorithm-31">EM<span class="term__pop" id="gd-em-algorithm-31" role="tooltip"><b class="term__hd">EM algorithm <i>期望最大化演算法</i></b><span class="term__def" data-lang="zh">在有隱藏變數時交替執行「求期望」與「最大化」以擬合參數的方法。ichorCNA 用它同時解出 tumor fraction 與 ploidy。</span><span class="term__def" data-lang="en" lang="en">An iterative method alternating expectation and maximisation steps to fit parameters in the presence of latent variables. ichorCNA uses it to jointly solve for tumour fraction and ploidy.</span><a class="term__more" href="glossary.html#em-algorithm">完整條目 →</a></span></span></h3>
+
+<p class="prose"><b>把什麼當證據</b>：不看點突變 —— 看<b>沿著染色體走時，深度在哪裡發生系統性偏移</b>。</p>
+
+<p class="prose"><span class="term" data-term="ichorCNA" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-ichorcna-32">ichorCNA<span class="term__pop" id="gd-ichorcna-32" role="tooltip"><b class="term__hd">ichorCNA <i>ichorCNA</i></b><span class="term__def" data-lang="zh">Broad Institute 2017 年的工具（Nat Commun）。從 <b>0.1× 超低深度 WGS</b> 估 tumor fraction，不需事先知道腫瘤變異。用 HMM 同時預測 CNA 片段與估 TF。<b>MRDetect 三代都在用它。</b> ⚠️ 偵測下限 TF 3%，遠高於 MRD 目標區間。</span><span class="term__def" data-lang="en" lang="en">The 2017 Broad Institute tool (Nat Commun) estimating tumour fraction from 0.1x ultra-low-pass WGS without prior knowledge of tumour variants, using an HMM to jointly predict CNA segments and TF. All three MRDetect generations use it. Its detection floor of TF 3% is far above the MRD target range.</span><a class="term__more" href="glossary.html#ichorcna">完整條目 →</a></span></span> 處理的是 CNA 而非 SNV，因此聚合方式完全不同。
+它把基因體切成 1 Mb 的 bin，用隱藏馬可夫模型沿染色體推論每一段的拷貝數狀態，
+同時估出 <span class="term" data-term="TF" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-tf-33">TF<span class="term__pop" id="gd-tf-33" role="tooltip"><b class="term__hd">TF <i>腫瘤分數的縮寫</i></b><span class="term__def" data-lang="zh"><code>tumor fraction</code>（腫瘤分數）的縮寫，本知識庫全篇使用。定義為樣本中源自腫瘤的 DNA 佔全部 DNA 的比例，代表<b>訊號的強度</b>。MRD 情境的量級為 10⁻⁵ – 10⁻⁶，與定序機本身的錯誤率同一個數量級 —— 這正是整個領域的核心困難。它由病人的疾病狀態決定，<b>不是可以由設計調整的參數</b>。</span><span class="term__def" data-lang="en" lang="en">Abbreviation for tumour fraction, used throughout this knowledge base. It is the proportion of DNA in a sample that originates from the tumour, and represents signal strength. In the MRD setting it is on the order of 1e-5 to 1e-6, the same order of magnitude as the sequencer's own error rate, which is the central difficulty of the whole field. It is set by the patient's disease state and is not a parameter the assay design can adjust.</span><a class="term__more" href="glossary.html#tf">完整條目 →</a></span></span>。</p>
+
+<p class="prose">兩個值得記的設計選擇：</p>
+
+<ul class="prose">
+<li>觀測值用 <b>Student's t 分布</b>而非高斯 —— t 分布的尾部較厚，對離群值更穩健。</li>
+<li>均值採<b>三成分混合</b>，同時容納 normal fraction、腫瘤倍體與 subclonal fraction；
+clonal 時退化為二成分。</li>
+</ul>
+
+<h3 id="樣本層級-ml-分類器">⑦ 樣本層級 ML 分類器</h3>
+
+<p class="prose"><b>把什麼當證據</b>：不預設用哪個統計量 —— <b>把多種特徵一起餵給模型</b>，讓它學。</p>
+
+<p class="prose"><span class="term" data-term="Lung-CLiP" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-lung-clip-34">Lung-CLiP<span class="term__pop" id="gd-lung-clip-34" role="tooltip"><b class="term__hd">Lung-CLiP <i>Lung-CLiP</i></b><span class="term__def" data-lang="zh">Stanford 2020 年的 tumor-naive 早期肺癌偵測（Nature）。<b>多層級 ML</b>：先估每個變異是腫瘤來源的機率，再與全基因體 CNA 整合成<b>病人層級分類器</b>。<b>切分紀律最嚴謹的一篇</b> —— 用不同機構前瞻收案的獨立驗證世代，並明文批評同世代交叉驗證。</span><span class="term__def" data-lang="en" lang="en">The 2020 Stanford tumour-naive early lung cancer detector (Nature). A multi-tiered machine learning design first estimates the probability that each variant is tumour-derived, then integrates this with genome-wide CNA into a patient-level classifier. It has the strictest split discipline of the set, using an independent validation cohort prospectively enrolled at a different institution and explicitly criticising within-cohort cross-validation.</span><a class="term__more" href="glossary.html#lung-clip">完整條目 →</a></span></span> 是三層架構的最後一層：
+把第一層的 SNV model 輸出（每個突變是腫瘤來源的機率）
+與第二層的全基因體 CNA 判讀<b>整合</b>，
+輸出「這份血液樣本含有肺癌來源 cfDNA 的可能性」。</p>
+
+<p class="prose">這是<b>最貼近「MRD 是分類問題」這個框架</b>的一種做法 ——
+一個檢體就是一列資料，輸出直接是機率。
+代價是需要訓練資料，而且訓練與測試必須依<b>病人</b>切分。</p>
+
+<h3 id="stouffer-合併">⑧ <span class="term" data-term="Stouffer's method" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-stouffer-s-method-35">Stouffer 合併<span class="term__pop" id="gd-stouffer-s-method-35" role="tooltip"><b class="term__hd">Stouffer's method <i>Stouffer 合併法</i></b><span class="term__def" data-lang="zh">合併多個獨立 Z 分數的公式：Z = ΣZᵢ/√k。MRD-EDGE 用它整合 read-depth、BAF 與 fragment entropy 三個 CNV 訊號源，以及 SNV 與 CNV 兩個模組。</span><span class="term__def" data-lang="en" lang="en">A formula for combining independent Z-scores: Z = ΣZi/√k. MRD-EDGE uses it to integrate three CNV signal sources (read depth, BAF and fragment entropy) as well as the SNV and CNV modules.</span><a class="term__more" href="glossary.html#stouffer-s-method">完整條目 →</a></span></span></h3>
+
+<p class="prose"><b>把什麼當證據</b>：已經有好幾個獨立的分數了 —— <b>怎麼合成一個</b>。</p>
+
+<p class="prose">嚴格說這不是一種聚合方法，而是<b>聚合之後的再聚合</b>。
+<span class="term" data-term="MRD-EDGE" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-mrd-edge-36">MRD-EDGE<span class="term__pop" id="gd-mrd-edge-36" role="tooltip"><b class="term__hd">MRD-EDGE <i>MRD-EDGE（第二代）</i></b><span class="term__def" data-lang="zh">Landau lab 2024 年的續作（Nat Med）。把 SVM 換成 CNN + MLP ensemble，並加入 ctDNA 專屬生物特徵（SBS context、fragment length、regional epigenomics），訊噪比從 8.3× 提升到 118×。</span><span class="term__def" data-lang="en" lang="en">The Landau lab's 2024 successor (Nat Med), replacing the SVM with a CNN and MLP ensemble and adding ctDNA-specific biological features such as SBS context, fragment length and regional epigenomics, raising signal-to-noise enrichment from 8.3-fold to 118-fold.</span><a class="term__more" href="glossary.html#mrd-edge">完整條目 →</a></span></span> 的 CNV 訊號來自三個獨立來源（read-depth、BAF／cnLOH、片段特徵），
+各自得到一個 Z，再合併：</p>
+
+<div class="eq"><math display="block"><mi>Z</mi><mo>=</mo><mo>(</mo><mo>∑</mo><msub><mi>Z</mi><mi>i</mi></msub><mo>)</mo><mo>/</mo><mtext>根號 k</mtext></math><p class="eq__note"><math><mi>k</mi></math> 為來源數。分母取 <math><mi>k</mi></math> 的平方根，
+是因為 <math><mi>k</mi></math> 個獨立標準常態變數之和的標準差正好等於 <math><mi>k</mi></math> 的平方根。</p></div>
+
+<p class="prose"><b>前提是各來源彼此獨立</b> —— 若三個來源其實高度相關，合併會高估顯著性。</p>
 </section>
 
 
 <section data-part="predict" class="part" id="part-predict">
-<h2 data-num="④" id="門檻-六種決定方式">⑤ 門檻：六種決定方式</h2>
+<h2 data-num="④" id="怎麼選">怎麼選</h2>
 
 <div class="table-wrap">
 <table>
-<thead><tr><th scope="col">方式</th><th scope="col">方法</th><th scope="col">需要幾個陰性樣本</th></tr></thead>
+<thead><tr><th scope="col">做法</th><th scope="col">把什麼當證據</th><th scope="col">輸出</th><th scope="col">陰性世代</th></tr></thead>
 <tbody>
-<tr><td>對照世代的 <span class="term" data-term="Z-score" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-z-score-28">Z-score<span class="term__pop" id="gd-z-score-28" role="tooltip"><b class="term__hd">Z-score <i>標準分數</i></b><span class="term__def" data-lang="zh">把偵測分數對陰性對照世代的分布標準化：Z = (det_rate − μ)/σ。⚠️ <b>本專案已降級為選項之一</b>（2026-08-08）—— 常態假設未經檢定，且會把稀缺的陰性樣本綁去估參數。</span><span class="term__def" data-lang="en" lang="en">Standardising a detection score against the distribution of a negative control cohort: Z = (det_rate − μ)/σ. Downgraded to one option among several in this project, since the normality assumption is untested and it consumes scarce negative samples for parameter estimation.</span><a class="term__more" href="glossary.html#z-score">完整條目 →</a></span></span>（spec 95%）</td><td><span class="term" data-term="MRDetect" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-mrdetect-29">MRDetect<span class="term__pop" id="gd-mrdetect-29" role="tooltip"><b class="term__hd">MRDetect <i>MRDetect（第一代）</i></b><span class="term__def" data-lang="zh">Landau lab 2020 年的方法（Nat Med），本專案的基準。核心是「廣度取代深度」：35X WGS + 全基因體數千個 SNV 累加，用線性 SVM 對單條 read 去噪（5 特徵）。LLOD 約 1e-5。⚠️ 程式碼未開源。</span><span class="term__def" data-lang="en" lang="en">The 2020 method from the Landau lab (Nat Med) and the baseline for this project. Its core is breadth supplanting depth: 35X WGS integrating thousands of genome-wide SNVs, with a linear SVM denoising individual reads on five features. LLOD about 1e-5. Code is not open source.</span><a class="term__more" href="glossary.html#mrdetect">完整條目 →</a></span></span>、<span class="term" data-term="MRD-EDGE" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-mrd-edge-30">MRD-EDGE<span class="term__pop" id="gd-mrd-edge-30" role="tooltip"><b class="term__hd">MRD-EDGE <i>MRD-EDGE（第二代）</i></b><span class="term__def" data-lang="zh">Landau lab 2024 年的續作（Nat Med）。把 SVM 換成 CNN + MLP ensemble，並加入 ctDNA 專屬生物特徵（SBS context、fragment length、regional epigenomics），訊噪比從 8.3× 提升到 118×。</span><span class="term__def" data-lang="en" lang="en">The Landau lab's 2024 successor (Nat Med), replacing the SVM with a CNN and MLP ensemble and adding ctDNA-specific biological features such as SBS context, fragment length and regional epigenomics, raising signal-to-noise enrichment from 8.3-fold to 118-fold.</span><a class="term__more" href="glossary.html#mrd-edge">完整條目 →</a></span></span></td><td><b>30</b></td></tr>
-<tr><td>健康捐贈者參考集</td><td><span class="term" data-term="ichorCNA" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-ichorcna-31">ichorCNA<span class="term__pop" id="gd-ichorcna-31" role="tooltip"><b class="term__hd">ichorCNA <i>ichorCNA</i></b><span class="term__def" data-lang="zh">Broad Institute 2017 年的工具（Nat Commun）。從 <b>0.1× 超低深度 WGS</b> 估 tumor fraction，不需事先知道腫瘤變異。用 HMM 同時預測 CNA 片段與估 TF。<b>MRDetect 三代都在用它。</b> ⚠️ 偵測下限 TF 3%，遠高於 MRD 目標區間。</span><span class="term__def" data-lang="en" lang="en">The 2017 Broad Institute tool (Nat Commun) estimating tumour fraction from 0.1x ultra-low-pass WGS without prior knowledge of tumour variants, using an HMM to jointly predict CNA segments and TF. All three MRDetect generations use it. Its detection floor of TF 3% is far above the MRD target range.</span><a class="term__more" href="glossary.html#ichorcna">完整條目 →</a></span></span></td><td><b>27</b></td></tr>
-<tr><td><span class="term" data-term="background polishing" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-background-polishing-32">背景拋光<span class="term__pop" id="gd-background-polishing-32" role="tooltip"><b class="term__hd">background polishing <i>背景拋光</i></b><span class="term__def" data-lang="zh">iDES 提出的<b>純計算</b>去噪法：用陰性對照世代為每個位置、每種取代類型各建一個背景分布（非零 AF <5 個用 Gaussian，否則擬合 Weibull，另存零值比例），新樣本的候選變異若與該分布無法區分就移除。</span><span class="term__def" data-lang="en" lang="en">A purely computational denoising method from iDES: using a cohort of negative controls, a background distribution is fitted for every position and substitution type (Gaussian if fewer than five non-zero AFs, otherwise a Weibull fit, plus the zero fraction). Candidate variants in a new sample are removed if indistinguishable from that null.</span><a class="term__more" href="glossary.html#background-polishing">完整條目 →</a></span></span>的訓練世代</td><td><span class="term" data-term="iDES" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-ides-33">iDES<span class="term__pop" id="gd-ides-33" role="tooltip"><b class="term__hd">iDES <i>iDES</i></b><span class="term__def" data-lang="zh">Stanford 2016 年的 CAPP-Seq 改良（Nat Biotechnol）。整合分子條碼與 <b>background polishing</b>（逐位置逐取代類型建背景分布），兩者各約 3× 改善、合併達 ~15×，偵測極限降到 0.0025%。<b>其 background polishing 是本專案最可直接移植的降噪法。</b></span><span class="term__def" data-lang="en" lang="en">The 2016 Stanford refinement of CAPP-Seq (Nat Biotechnol), integrating molecular barcoding with background polishing that models background per position and substitution type. Each contributes about threefold, combining to roughly fifteenfold, lowering the detection limit to 0.0025%. Its background polishing is the most directly transferable denoising method for this project.</span><a class="term__more" href="glossary.html#ides">完整條目 →</a></span></span></td><td><b>12</b></td></tr>
-<tr><td>與健康對照背景比（Fisher's exact）</td><td><span class="term" data-term="NanoRCS" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-nanorcs-34">NanoRCS<span class="term__pop" id="gd-nanorcs-34" role="tooltip"><b class="term__hd">NanoRCS <i>NanoRCS</i></b><span class="term__def" data-lang="zh">UMC Utrecht 2025 年的方法（Genome Research）。<b>唯一一篇在 ONT 平台上做 cfDNA 腫瘤偵測的方法論文。</b> RCA + 長讀共識把 ONT 錯誤率從 Q21 降到 Q31（改善 9.4×），LOD 為 TF 0.24%。同時取 SNV、CNA、fragmentomics 三種訊號。</span><span class="term__def" data-lang="en" lang="en">The 2025 method from UMC Utrecht (Genome Research) and the only methods paper performing cfDNA tumour detection on the ONT platform. RCA plus long-read consensus lowers ONT error from Q21 to Q31, a 9.4-fold improvement, achieving an LOD of TF 0.24% while extracting SNV, CNA and fragmentomics signals simultaneously.</span><a class="term__more" href="glossary.html#nanorcs">完整條目 →</a></span></span></td><td>7</td></tr>
-<tr><td><b><span class="term" data-term="cross-patient control" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-cross-patient-control-35">跨病人陰性對照<span class="term__pop" id="gd-cross-patient-control-35" role="tooltip"><b class="term__hd">cross-patient control <i>跨病人對照</i></b><span class="term__def" data-lang="zh">把 A 病人的變異清單套用到 B 病人的樣本上，當作陰性對照 —— 因為任兩位病人的腫瘤變異幾乎不重疊。INVAR 與 MRD-EDGE 皆採此法，是陰性樣本稀缺時的正規解法。</span><span class="term__def" data-lang="en" lang="en">Applying patient A's variant list to patient B's sample as a negative control, since any two patients' tumour variants scarcely overlap. Used by both INVAR and MRD-EDGE, it is an established solution when negatives are scarce.</span><a class="term__more" href="glossary.html#cross-patient-control">完整條目 →</a></span></span> + ROC</b></td><td><b><span class="term" data-term="INVAR" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-invar-36">INVAR<span class="term__pop" id="gd-invar-36" role="tooltip"><b class="term__hd">INVAR <i>INVAR</i></b><span class="term__def" data-lang="zh">劍橋 Rosenfeld lab 2020 年的方法（Sci Transl Med）。與 MRDetect 同期同目標但<b>走純統計路線不用 ML</b>：四層誤差抑制疊加（背景降 131×），以 likelihood ratio 判定，並<b>用其他病人的樣本當陰性對照定門檻</b>。有開源碼（INVAR2）。</span><span class="term__def" data-lang="en" lang="en">The 2020 method from Rosenfeld's lab in Cambridge (Sci Transl Med). Contemporaneous with MRDetect and sharing its goal but taking a purely statistical route without machine learning: four stacked layers of error suppression (131-fold background reduction), decisions by likelihood ratio, and thresholds set using other patients' samples as negative controls. Open source as INVAR2.</span><a class="term__more" href="glossary.html#invar">完整條目 →</a></span></span></b></td>
-    <td><b>0 個專用</b>（用其他病人的樣本）</td></tr>
-<tr><td><b><span class="term" data-term="nominal specificity" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-nominal-specificity-37">統計模型設定名目特異度<span class="term__pop" id="gd-nominal-specificity-37" role="tooltip"><b class="term__hd">nominal specificity <i>名目特異度</i></b><span class="term__def" data-lang="zh">由統計模型<b>預先設定</b>的特異度目標（如 AccuScan 的 99%），門檻直接由背景錯誤模型反推。<b>優點是不需要陰性樣本世代來定門檻</b> —— 對陰性樣本稀缺的情境特別有價值。</span><span class="term__def" data-lang="en" lang="en">A specificity target set in advance by the statistical model (AccuScan uses 99%), with the threshold derived directly from the background error model. Its advantage is that no negative-sample cohort is needed to set the threshold, which matters when negatives are scarce.</span><a class="term__more" href="glossary.html#nominal-specificity">完整條目 →</a></span></span></b></td><td><b><span class="term" data-term="AccuScan" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-accuscan-38">AccuScan<span class="term__pop" id="gd-accuscan-38" role="tooltip"><b class="term__hd">AccuScan <i>AccuScan</i></b><span class="term__def" data-lang="zh">2024 年的 WGS MRD 方法（EMBO Mol Med）。用 <b>RCA concatemer</b> 讓錯誤校正在單一 read 內完成，錯誤率 4.2e-7、LOD 達 cVAF 1e-6。<b>背景錯誤率由樣本自身量測、門檻由統計模型反推，皆不需 control 世代。</b></span><span class="term__def" data-lang="en" lang="en">A 2024 WGS MRD method (EMBO Mol Med) using RCA concatemers so that error correction happens within a single read, reaching an error rate of 4.2e-7 and an LOD of cVAF 1e-6. Its background error rate is measured from the sample itself and its threshold derived from the statistical model, neither requiring a control cohort.</span><a class="term__more" href="glossary.html#accuscan">完整條目 →</a></span></span></b>、<span class="term" data-term="iDES" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-ides-39">iDES<span class="term__pop" id="gd-ides-39" role="tooltip"><b class="term__hd">iDES <i>iDES</i></b><span class="term__def" data-lang="zh">Stanford 2016 年的 CAPP-Seq 改良（Nat Biotechnol）。整合分子條碼與 <b>background polishing</b>（逐位置逐取代類型建背景分布），兩者各約 3× 改善、合併達 ~15×，偵測極限降到 0.0025%。<b>其 background polishing 是本專案最可直接移植的降噪法。</b></span><span class="term__def" data-lang="en" lang="en">The 2016 Stanford refinement of CAPP-Seq (Nat Biotechnol), integrating molecular barcoding with background polishing that models background per position and substitution type. Each contributes about threefold, combining to roughly fifteenfold, lowering the detection limit to 0.0025%. Its background polishing is the most directly transferable denoising method for this project.</span><a class="term__more" href="glossary.html#ides">完整條目 →</a></span></span></td>
-    <td><b>0</b></td></tr>
+<tr><td><b>① <span class="term" data-term="detection rate" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-detection-rate-37">偵測率<span class="term__pop" id="gd-detection-rate-37" role="tooltip"><b class="term__hd">detection rate <i>偵測率</i></b><span class="term__def" data-lang="zh">本專案的定義（2026-08-09 定案）：帶到突變（ALT）的 read 數 ÷ 在 compendium 位點上檢查過的 read 數。⚠️ 論文的分子是<b>被偵測到的位點數 M</b>，低 TF 下兩者相同，高 TF 或有 germline 汙染時會分岔。</span><span class="term__def" data-lang="en" lang="en">As defined in this project: the number of ALT-bearing reads divided by the number of reads examined at compendium sites. Note that the papers use the number of detected sites as numerator; the two coincide at low TF but diverge at high TF or under germline contamination.</span><a class="term__more" href="glossary.html#detection-rate">完整條目 →</a></span></span> → <span class="term" data-term="Z-score" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-z-score-38">Z-score<span class="term__pop" id="gd-z-score-38" role="tooltip"><b class="term__hd">Z-score <i>標準分數</i></b><span class="term__def" data-lang="zh">把偵測分數對陰性對照世代的分布標準化：Z = (det_rate − μ)/σ。⚠️ <b>本專案已降級為選項之一</b>（2026-08-08）—— 常態假設未經檢定，且會把稀缺的陰性樣本綁去估參數。</span><span class="term__def" data-lang="en" lang="en">Standardising a detection score against the distribution of a negative control cohort: Z = (det_rate − μ)/σ. Downgraded to one option among several in this project, since the normality assumption is untested and it consumes scarce negative samples for parameter estimation.</span><a class="term__more" href="glossary.html#z-score">完整條目 →</a></span></span></b></td><td>帶到突變的 read 比例</td>
+    <td>標準差</td><td><b>30 個</b></td></tr>
+<tr><td><b>② Poisson／幾何機率模型</b></td><td>位點數 × 深度 × 錯誤率</td>
+    <td>偵測機率</td><td>0</td></tr>
+<tr><td><b>③ 二項式對數概似</b></td><td>每位點一次二項抽樣</td>
+    <td>對數概似</td><td><b>0</b>（背景由樣本自身量測）</td></tr>
+<tr><td><b>④ <span class="term" data-term="likelihood ratio" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-likelihood-ratio-39">廣義概似比<span class="term__pop" id="gd-likelihood-ratio-39" role="tooltip"><b class="term__hd">likelihood ratio <i>概似比</i></b><span class="term__def" data-lang="zh">INVAR 的判定量：比較「有 ctDNA」與「無 ctDNA」兩個假設下觀測資料的相對概似。用它取代「至少 N 個突變分子」的計數門檻。</span><span class="term__def" data-lang="en" lang="en">INVAR's decision statistic: the relative likelihood of the observed data under the ctDNA-present versus ctDNA-absent hypotheses. It replaces count-based thresholds such as requiring a minimum number of mutant molecules.</span><a class="term__more" href="glossary.html#likelihood-ratio">完整條目 →</a></span></span></b></td><td>兩個假設誰解釋得好</td>
+    <td>LR 與 <span class="term" data-term="IMAF" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-imaf-40">IMAF<span class="term__pop" id="gd-imaf-40" role="tooltip"><b class="term__hd">IMAF <i>整合突變等位基因分率</i></b><span class="term__def" data-lang="zh">INVAR 的量化輸出：跨所有病人專屬位點取<b>背景扣除後、深度加權</b>的平均 allele fraction。用整合取代單點量測，以降低抽樣噪音。</span><span class="term__def" data-lang="en" lang="en">INVAR's quantitative output: the background-subtracted, depth-weighted mean allele fraction across all patient-specific loci. Integration replaces single-site measurement to reduce sampling noise.</span><a class="term__more" href="glossary.html#imaf">完整條目 →</a></span></span></td><td>0</td></tr>
+<tr><td><b>⑤ <span class="term" data-term="Monte Carlo" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-monte-carlo-41">Monte Carlo<span class="term__pop" id="gd-monte-carlo-41" role="tooltip"><b class="term__hd">Monte Carlo <i>蒙地卡羅模擬</i></b><span class="term__def" data-lang="zh">以大量隨機抽樣逼近難以解析求解的分布。NanoRCS 用它估 TF：輸入觀測到的 SNV 數、各 SNV 在腫瘤的 VAF、與定序錯誤率，模擬出最可能的 TF。優點是能吸收 VAF 異質性。</span><span class="term__def" data-lang="en" lang="en">Approximating an analytically intractable distribution by repeated random sampling. NanoRCS uses it to estimate TF from the observed SNV count, each SNV's VAF in the tumour, and the sequencing error rate, with the advantage of absorbing VAF heterogeneity.</span><a class="term__more" href="glossary.html#monte-carlo">完整條目 →</a></span></span></b></td><td>模擬比對觀測</td>
+    <td>最可能的 <span class="term" data-term="TF" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-tf-42">TF<span class="term__pop" id="gd-tf-42" role="tooltip"><b class="term__hd">TF <i>腫瘤分數的縮寫</i></b><span class="term__def" data-lang="zh"><code>tumor fraction</code>（腫瘤分數）的縮寫，本知識庫全篇使用。定義為樣本中源自腫瘤的 DNA 佔全部 DNA 的比例，代表<b>訊號的強度</b>。MRD 情境的量級為 10⁻⁵ – 10⁻⁶，與定序機本身的錯誤率同一個數量級 —— 這正是整個領域的核心困難。它由病人的疾病狀態決定，<b>不是可以由設計調整的參數</b>。</span><span class="term__def" data-lang="en" lang="en">Abbreviation for tumour fraction, used throughout this knowledge base. It is the proportion of DNA in a sample that originates from the tumour, and represents signal strength. In the MRD setting it is on the order of 1e-5 to 1e-6, the same order of magnitude as the sequencer's own error rate, which is the central difficulty of the whole field. It is set by the patient's disease state and is not a parameter the assay design can adjust.</span><a class="term__more" href="glossary.html#tf">完整條目 →</a></span></span></td><td>0</td></tr>
+<tr><td><b>⑥ <span class="term" data-term="HMM" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-hmm-43">HMM<span class="term__pop" id="gd-hmm-43" role="tooltip"><b class="term__hd">HMM <i>隱藏馬可夫模型</i></b><span class="term__def" data-lang="zh">用於分段推論的機率模型。ichorCNA 以 HMM 同時預測 CNA 片段與估計 TF，emission 用 Student's t 分布（比高斯對離群穩健），以 EM 演算法推論。</span><span class="term__def" data-lang="en" lang="en">A probabilistic model for segmental inference. ichorCNA uses an HMM to jointly predict CNA segments and estimate TF, with a Student's t emission distribution for outlier robustness, fitted by expectation-maximisation.</span><a class="term__more" href="glossary.html#hmm">完整條目 →</a></span></span></b></td><td>沿染色體的深度偏移</td>
+    <td>CNA 片段 + TF</td><td>27 個</td></tr>
+<tr><td><b>⑦ 樣本層 ML 分類器</b></td><td>多種特徵一起</td>
+    <td>0–1 機率</td><td>訓練集</td></tr>
+<tr><td><b>⑧ <span class="term" data-term="Stouffer's method" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-stouffer-s-method-44">Stouffer<span class="term__pop" id="gd-stouffer-s-method-44" role="tooltip"><b class="term__hd">Stouffer's method <i>Stouffer 合併法</i></b><span class="term__def" data-lang="zh">合併多個獨立 Z 分數的公式：Z = ΣZᵢ/√k。MRD-EDGE 用它整合 read-depth、BAF 與 fragment entropy 三個 CNV 訊號源，以及 SNV 與 CNV 兩個模組。</span><span class="term__def" data-lang="en" lang="en">A formula for combining independent Z-scores: Z = ΣZi/√k. MRD-EDGE uses it to integrate three CNV signal sources (read depth, BAF and fragment entropy) as well as the SNV and CNV modules.</span><a class="term__more" href="glossary.html#stouffer-s-method">完整條目 →</a></span></span></b></td><td>多個獨立分數</td>
+    <td>合併後的 Z</td><td>隨來源而定</td></tr>
 </tbody>
 </table>
 </div>
 
-<h3 id="陰性樣本稀缺的兩條解法">陰性樣本稀缺的兩條解法</h3>
+<h3 id="關鍵分歧只有一個">關鍵分歧只有一個</h3>
 
-<p class="prose">本專案僅有 5 個獨立陰性個體（4 個 UCSC normal 加 held-out 的 COLO829BL），
-不足以支撐前四種方式。但最後兩種不受此限：</p>
+<p class="prose">八種方法的共同點是<b>全部都在把 N 個弱觀測合成一個數</b>，
+差別只在使用哪個機率模型。真正影響實務選擇的分歧只有一條：</p>
 
-<div class="table-wrap">
-<table>
-<thead><tr><th scope="col">解法</th><th scope="col">作法</th><th scope="col">先例</th></tr></thead>
-<tbody>
-<tr>
-  <td><b>用其他個體的樣本當陰性對照</b></td>
-  <td>把 A 的變異清單套到 B 的樣本上 —— 任兩個個體的 somatic 變異幾乎不重疊，故 B 自然是 A 的陰性對照</td>
-  <td><span class="term" data-term="INVAR" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-invar-40">INVAR<span class="term__pop" id="gd-invar-40" role="tooltip"><b class="term__hd">INVAR <i>INVAR</i></b><span class="term__def" data-lang="zh">劍橋 Rosenfeld lab 2020 年的方法（Sci Transl Med）。與 MRDetect 同期同目標但<b>走純統計路線不用 ML</b>：四層誤差抑制疊加（背景降 131×），以 likelihood ratio 判定，並<b>用其他病人的樣本當陰性對照定門檻</b>。有開源碼（INVAR2）。</span><span class="term__def" data-lang="en" lang="en">The 2020 method from Rosenfeld's lab in Cambridge (Sci Transl Med). Contemporaneous with MRDetect and sharing its goal but taking a purely statistical route without machine learning: four stacked layers of error suppression (131-fold background reduction), decisions by likelihood ratio, and thresholds set using other patients' samples as negative controls. Open source as INVAR2.</span><a class="term__more" href="glossary.html#invar">完整條目 →</a></span></span>（Sci Transl Med）：要求 <span class="term" data-term="specificity" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-specificity-41">特異度<span class="term__pop" id="gd-specificity-41" role="tooltip"><b class="term__hd">specificity <i>特異度</i></b><span class="term__def" data-lang="zh">陰性樣本被正確判為陰性的比例：TN/(TN+FP)。<b>因為只由陰性樣本算出，不受陽性/陰性樣本組成比例影響</b>，是跨研究比較的主指標（Precision 與 F1 則會被 prevalence 綁架）。</span><span class="term__def" data-lang="en" lang="en">The proportion of negative samples correctly classified as negative: TN/(TN+FP). Because it is computed only from negatives, it is unaffected by the positive-to-negative composition and is the main metric for cross-study comparison, unlike precision and F1 which depend on prevalence.</span><a class="term__more" href="glossary.html#specificity">完整條目 →</a></span></span> ≥90%，實測中位 95%<br><span class="term" data-term="MRD-EDGE" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-mrd-edge-42">MRD-EDGE<span class="term__pop" id="gd-mrd-edge-42" role="tooltip"><b class="term__hd">MRD-EDGE <i>MRD-EDGE（第二代）</i></b><span class="term__def" data-lang="zh">Landau lab 2024 年的續作（Nat Med）。把 SVM 換成 CNN + MLP ensemble，並加入 ctDNA 專屬生物特徵（SBS context、fragment length、regional epigenomics），訊噪比從 8.3× 提升到 118×。</span><span class="term__def" data-lang="en" lang="en">The Landau lab's 2024 successor (Nat Med), replacing the SVM with a CNN and MLP ensemble and adding ctDNA-specific biological features such as SBS context, fragment length and regional epigenomics, raising signal-to-noise enrichment from 8.3-fold to 118-fold.</span><a class="term__more" href="glossary.html#mrd-edge">完整條目 →</a></span></span> 亦採此法</td>
-</tr>
-<tr>
-  <td><b>完全不用陰性樣本</b></td>
-  <td>設定 <span class="term" data-term="nominal specificity" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-nominal-specificity-43">名目特異度<span class="term__pop" id="gd-nominal-specificity-43" role="tooltip"><b class="term__hd">nominal specificity <i>名目特異度</i></b><span class="term__def" data-lang="zh">由統計模型<b>預先設定</b>的特異度目標（如 AccuScan 的 99%），門檻直接由背景錯誤模型反推。<b>優點是不需要陰性樣本世代來定門檻</b> —— 對陰性樣本稀缺的情境特別有價值。</span><span class="term__def" data-lang="en" lang="en">A specificity target set in advance by the statistical model (AccuScan uses 99%), with the threshold derived directly from the background error model. Its advantage is that no negative-sample cohort is needed to set the threshold, which matters when negatives are scarce.</span><a class="term__more" href="glossary.html#nominal-specificity">完整條目 →</a></span></span>（如 99%），由背景錯誤模型直接反推門檻</td>
-  <td><span class="term" data-term="AccuScan" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-accuscan-44">AccuScan<span class="term__pop" id="gd-accuscan-44" role="tooltip"><b class="term__hd">AccuScan <i>AccuScan</i></b><span class="term__def" data-lang="zh">2024 年的 WGS MRD 方法（EMBO Mol Med）。用 <b>RCA concatemer</b> 讓錯誤校正在單一 read 內完成，錯誤率 4.2e-7、LOD 達 cVAF 1e-6。<b>背景錯誤率由樣本自身量測、門檻由統計模型反推，皆不需 control 世代。</b></span><span class="term__def" data-lang="en" lang="en">A 2024 WGS MRD method (EMBO Mol Med) using RCA concatemers so that error correction happens within a single read, reaching an error rate of 4.2e-7 and an LOD of cVAF 1e-6. Its background error rate is measured from the sample itself and its threshold derived from the statistical model, neither requiring a control cohort.</span><a class="term__more" href="glossary.html#accuscan">完整條目 →</a></span></span>：背景由樣本自身量測；實測特異度 ≥99%</td>
-</tr>
-</tbody>
-</table>
-</div>
+<p class="prose"><b>只有 ① 這一系需要對照世代來估 <math><mi>μ</mi></math> 與 <math><mi>σ</mi></math>。</b>
+其餘做法或用統計模型直接推導（②④），
+或由樣本自身量測背景（③），或用模擬（⑤）——
+<b>不消耗稀缺的陰性樣本</b>。</p>
 
-<p class="prose">本專案現行的 <span class="term" data-term="cross-sample normal" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-cross-sample-normal-45">跨個體正常樣本<span class="term__pop" id="gd-cross-sample-normal-45" role="tooltip"><b class="term__hd">cross-sample normal <i>跨個體正常樣本</i></b><span class="term__def" data-lang="zh">來自<b>不同個體</b>的正常樣本，是本專案真正獨立的陰性檢體（目前 4 個 UCSC normal + held-out COLO829BL）。與 INVAR 的 cross-patient control 是同一個概念。</span><span class="term__def" data-lang="en" lang="en">Normal samples from different individuals, the project's genuinely independent negative specimens (currently four UCSC normals plus a held-out COLO829BL). Conceptually the same as INVAR's cross-patient control.</span><a class="term__more" href="glossary.html#cross-sample-normal">完整條目 →</a></span></span>即是第一條解法的實作，
-與 INVAR 的 <span class="term" data-term="cross-patient control" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-cross-patient-control-46">cross-patient control<span class="term__pop" id="gd-cross-patient-control-46" role="tooltip"><b class="term__hd">cross-patient control <i>跨病人對照</i></b><span class="term__def" data-lang="zh">把 A 病人的變異清單套用到 B 病人的樣本上，當作陰性對照 —— 因為任兩位病人的腫瘤變異幾乎不重疊。INVAR 與 MRD-EDGE 皆採此法，是陰性樣本稀缺時的正規解法。</span><span class="term__def" data-lang="en" lang="en">Applying patient A's variant list to patient B's sample as a negative control, since any two patients' tumour variants scarcely overlap. Used by both INVAR and MRD-EDGE, it is an established solution when negatives are scarce.</span><a class="term__more" href="glossary.html#cross-patient-control">完整條目 →</a></span></span> 概念相同。</p>
-
-<aside class="guardrail" id="guard-10"><p class="guardrail__hd">重要區分 #10：INVAR 作者自承：逐 cohort 定門檻不是長久之計</p><p class="prose">INVAR 在 Discussion 中寫道，其效能是以
-「ROC analysis <b>across individual cohorts</b>」評估的，
-但「when applied at scale, it would be <b>desirable to set a fixed
-specificity threshold</b>」。</p>
-<p class="prose">換言之，作者自己認為逐世代重新畫 ROC 定門檻只是權宜之計，
-規模化時應改為<b>固定特異度門檻</b>。</p>
-<p class="prose">這正對應本專案的要求：門檻只能用訓練／驗證樣本決定，
-決定後<b>凍結並寫入報告</b>，再跑測試集。</p></aside>
-
-<aside class="guardrail" id="guard-11"><p class="guardrail__hd">重要區分 #11：提供過任何擬合量的樣本，不得再充當測試集的陰性樣本</p><p class="prose">凡是從資料學出來的量都算擬合，不只是模型權重 ——
-還包括<b>判定門檻</b>、標準化參數、以及（若沿用 Z-score）μ 與 σ。</p>
-<p class="prose">用來提供這些量的陰性樣本，若又拿去算 <span class="term" data-term="specificity" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-specificity-47">特異度<span class="term__pop" id="gd-specificity-47" role="tooltip"><b class="term__hd">specificity <i>特異度</i></b><span class="term__def" data-lang="zh">陰性樣本被正確判為陰性的比例：TN/(TN+FP)。<b>因為只由陰性樣本算出，不受陽性/陰性樣本組成比例影響</b>，是跨研究比較的主指標（Precision 與 F1 則會被 prevalence 綁架）。</span><span class="term__def" data-lang="en" lang="en">The proportion of negative samples correctly classified as negative: TN/(TN+FP). Because it is computed only from negatives, it is unaffected by the positive-to-negative composition and is the main metric for cross-study comparison, unlike precision and F1 which depend on prevalence.</span><a class="term__more" href="glossary.html#specificity">完整條目 →</a></span></span>，
-等於用訓練資料證明自己不會誤判。</p>
-<p class="prose">這條紀律與論文無關，不因換掉 Z-score 而消失。
-但<b>哪些樣本拿去擬合是自由的設計選擇</b> ——
-若改用不需陰性樣本的門檻（上表最後兩種），
-原本綁在估參數上的樣本即可釋出，改派為測試集的陰性樣本。</p></aside>
-
-<h3 id="lung-clip-的多工作點報告法">Lung-CLiP 的多工作點報告法</h3>
-
-<p class="prose"><span class="term" data-term="Lung-CLiP" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-lung-clip-48">Lung-CLiP<span class="term__pop" id="gd-lung-clip-48" role="tooltip"><b class="term__hd">Lung-CLiP <i>Lung-CLiP</i></b><span class="term__def" data-lang="zh">Stanford 2020 年的 tumor-naive 早期肺癌偵測（Nature）。<b>多層級 ML</b>：先估每個變異是腫瘤來源的機率，再與全基因體 CNA 整合成<b>病人層級分類器</b>。<b>切分紀律最嚴謹的一篇</b> —— 用不同機構前瞻收案的獨立驗證世代，並明文批評同世代交叉驗證。</span><span class="term__def" data-lang="en" lang="en">The 2020 Stanford tumour-naive early lung cancer detector (Nature). A multi-tiered machine learning design first estimates the probability that each variant is tumour-derived, then integrates this with genome-wide CNA into a patient-level classifier. It has the strictest split discipline of the set, using an independent validation cohort prospectively enrolled at a different institution and explicitly criticising within-cohort cross-validation.</span><a class="term__more" href="glossary.html#lung-clip">完整條目 →</a></span></span> 沒有只報一個門檻，而是<b>依臨床用途報告兩個工作點</b>：</p>
-
-<div class="table-wrap">
-<table>
-<thead><tr><th scope="col">工作點</th><th scope="col">用途</th><th scope="col">stage I</th><th scope="col">stage II</th><th scope="col">stage III</th></tr></thead>
-<tbody>
-<tr><td><b>98% <span class="term" data-term="specificity" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-specificity-49">特異度<span class="term__pop" id="gd-specificity-49" role="tooltip"><b class="term__hd">specificity <i>特異度</i></b><span class="term__def" data-lang="zh">陰性樣本被正確判為陰性的比例：TN/(TN+FP)。<b>因為只由陰性樣本算出，不受陽性/陰性樣本組成比例影響</b>，是跨研究比較的主指標（Precision 與 F1 則會被 prevalence 綁架）。</span><span class="term__def" data-lang="en" lang="en">The proportion of negative samples correctly classified as negative: TN/(TN+FP). Because it is computed only from negatives, it is unaffected by the positive-to-negative composition and is the main metric for cross-study comparison, unlike precision and F1 which depend on prevalence.</span><a class="term__more" href="glossary.html#specificity">完整條目 →</a></span></span></b></td><td>獨立篩檢工具，須最小化偽陽性</td><td>41%</td><td>54%</td><td>67%</td></tr>
-<tr><td><b>80% 特異度</b></td><td>影像檢查前的初篩，偽陽性可接受</td><td>63%</td><td>69%</td><td>75%</td></tr>
-</tbody>
-</table>
-</div>
-
-<p class="prose">此作法比只挑一個最漂亮的數字誠實，
-且明確把門檻的選擇與<b>使用情境</b>綁定。值得本專案沿用。</p>
+<p class="prose">為什麼這件事這麼重要，見下一頁 <a href="p05.html">p05</a>：
+陰性樣本同時是「定門檻用」與「算特異度用」的唯一來源，
+一份樣本只能有一個角色。</p>
 </section>
 
 
@@ -268,19 +476,19 @@ specificity threshold</b>」。</p>
 <thead><tr><th scope="col">觀察</th><th scope="col">依據</th></tr></thead>
 <tbody>
 <tr><td>八種聚合方法都在做同一件事，差別只在機率模型</td><td>11 篇 s4</td></tr>
-<tr><td><b>只有 MRDetect 世系需要對照世代估 μ/σ</b></td><td>各篇 s4</td></tr>
-<tr><td>陰性樣本稀缺有兩條解法，皆有一線期刊先例</td><td>INVAR s5、AccuScan s5</td></tr>
-<tr><td>INVAR 的 GLRT 有開源實作，輸入僅需四個量</td><td>INVAR2 <code>detectionFunctions.R</code></td></tr>
-<tr><td>門檻應與使用情境綁定，並報告多個工作點</td><td>Lung-CLiP s5</td></tr>
+<tr><td><b>輸出分四種性質，不能直接比大小</b></td><td>各篇 s4</td></tr>
+<tr><td><b>只有 Z-score 這一系需要對照世代估 μ／σ</b></td><td>各篇 s4</td></tr>
+<tr><td>AccuScan 的背景由樣本自身量測，是與 MRDetect 最大的分歧</td><td>AccuScan s4</td></tr>
+<tr><td>INVAR 的 GLRT 有開源實作，輸入僅需 M、R、AF、e 四個量</td><td>INVAR2 <code>detectionFunctions.R</code></td></tr>
 </tbody>
 </table>
 </div>
 </section>
 
-    <nav class="pager" aria-label="模組導覽"><a class="prev" href="p03.html"><small>← 上一模組</small>③ 怎麼壓噪音：四類七種做法</a><a class="next" href="p05.html"><small>下一模組 →</small>⑥ 評估與切分紀律</a></nav>
-    <section class="glossary-appendix"><h2>本模組術語</h2><dl><dt>AccuScan（AccuScan）</dt><dd>2024 年的 WGS MRD 方法（EMBO Mol Med）。用 <b>RCA concatemer</b> 讓錯誤校正在單一 read 內完成，錯誤率 4.2e-7、LOD 達 cVAF 1e-6。<b>背景錯誤率由樣本自身量測、門檻由統計模型反推，皆不需 control 世代。</b></dd><dt>EM algorithm（期望最大化演算法）</dt><dd>在有隱藏變數時交替執行「求期望」與「最大化」以擬合參數的方法。ichorCNA 用它同時解出 tumor fraction 與 ploidy。</dd><dt>HMM（隱藏馬可夫模型）</dt><dd>用於分段推論的機率模型。ichorCNA 以 HMM 同時預測 CNA 片段與估計 TF，emission 用 Student's t 分布（比高斯對離群穩健），以 EM 演算法推論。</dd><dt>IMAF（整合突變等位基因分率）</dt><dd>INVAR 的量化輸出：跨所有病人專屬位點取<b>背景扣除後、深度加權</b>的平均 allele fraction。用整合取代單點量測，以降低抽樣噪音。</dd><dt>INVAR（INVAR）</dt><dd>劍橋 Rosenfeld lab 2020 年的方法（Sci Transl Med）。與 MRDetect 同期同目標但<b>走純統計路線不用 ML</b>：四層誤差抑制疊加（背景降 131×），以 likelihood ratio 判定，並<b>用其他病人的樣本當陰性對照定門檻</b>。有開源碼（INVAR2）。</dd><dt>Lung-CLiP（Lung-CLiP）</dt><dd>Stanford 2020 年的 tumor-naive 早期肺癌偵測（Nature）。<b>多層級 ML</b>：先估每個變異是腫瘤來源的機率，再與全基因體 CNA 整合成<b>病人層級分類器</b>。<b>切分紀律最嚴謹的一篇</b> —— 用不同機構前瞻收案的獨立驗證世代，並明文批評同世代交叉驗證。</dd><dt>MRD-EDGE（MRD-EDGE（第二代））</dt><dd>Landau lab 2024 年的續作（Nat Med）。把 SVM 換成 CNN + MLP ensemble，並加入 ctDNA 專屬生物特徵（SBS context、fragment length、regional epigenomics），訊噪比從 8.3× 提升到 118×。</dd><dt>MRDetect（MRDetect（第一代））</dt><dd>Landau lab 2020 年的方法（Nat Med），本專案的基準。核心是「廣度取代深度」：35X WGS + 全基因體數千個 SNV 累加，用線性 SVM 對單條 read 去噪（5 特徵）。LLOD 約 1e-5。⚠️ 程式碼未開源。</dd><dt>Monte Carlo（蒙地卡羅模擬）</dt><dd>以大量隨機抽樣逼近難以解析求解的分布。NanoRCS 用它估 TF：輸入觀測到的 SNV 數、各 SNV 在腫瘤的 VAF、與定序錯誤率，模擬出最可能的 TF。優點是能吸收 VAF 異質性。</dd><dt>NanoRCS（NanoRCS）</dt><dd>UMC Utrecht 2025 年的方法（Genome Research）。<b>唯一一篇在 ONT 平台上做 cfDNA 腫瘤偵測的方法論文。</b> RCA + 長讀共識把 ONT 錯誤率從 Q21 降到 Q31（改善 9.4×），LOD 為 TF 0.24%。同時取 SNV、CNA、fragmentomics 三種訊號。</dd><dt>PhasED-seq（PhasED-seq）</dt><dd>Stanford 2021 年的方法（Nat Biotechnol）。<b>改變偵測單元</b>：不看單鹼基而看同一分子上的多個突變（phased variants），背景率降至 8.0e-7（2x）與 3.4e-8（3x），且不需分子條碼、不犧牲分子回收率。<b>其限制正好是 ONT 的優勢。</b></dd><dt>Stouffer's method（Stouffer 合併法）</dt><dd>合併多個獨立 Z 分數的公式：Z = ΣZᵢ/√k。MRD-EDGE 用它整合 read-depth、BAF 與 fragment entropy 三個 CNV 訊號源，以及 SNV 與 CNV 兩個模組。</dd><dt>TF（腫瘤分數的縮寫）</dt><dd><code>tumor fraction</code>（腫瘤分數）的縮寫，本知識庫全篇使用。定義為樣本中源自腫瘤的 DNA 佔全部 DNA 的比例，代表<b>訊號的強度</b>。MRD 情境的量級為 10⁻⁵ – 10⁻⁶，與定序機本身的錯誤率同一個數量級 —— 這正是整個領域的核心困難。它由病人的疾病狀態決定，<b>不是可以由設計調整的參數</b>。</dd><dt>VAF（變異等位基因頻率）</dt><dd>在某個位點上，支持 alt allele 的 read 佔全部 read 的比例。<b>VAF 不等於帶有這個突變的細胞比例</b>。</dd><dt>Z-score（標準分數）</dt><dd>把偵測分數對陰性對照世代的分布標準化：Z = (det_rate − μ)/σ。⚠️ <b>本專案已降級為選項之一</b>（2026-08-08）—— 常態假設未經檢定，且會把稀缺的陰性樣本綁去估參數。</dd><dt>background polishing（背景拋光）</dt><dd>iDES 提出的<b>純計算</b>去噪法：用陰性對照世代為每個位置、每種取代類型各建一個背景分布（非零 AF <5 個用 Gaussian，否則擬合 Weibull，另存零值比例），新樣本的候選變異若與該分布無法區分就移除。</dd><dt>control cohort（對照世代）</dt><dd>用於估計噪音水準或決定門檻的陰性樣本集合。MRDetect 用 30 個 control plasma、iDES 用 12 個、ichorCNA 用 27 個健康捐贈者。⚠️ <b>本專案只有 5 個獨立陰性個體</b>，這是主要約束。</dd><dt>cross-patient control（跨病人對照）</dt><dd>把 A 病人的變異清單套用到 B 病人的樣本上，當作陰性對照 —— 因為任兩位病人的腫瘤變異幾乎不重疊。INVAR 與 MRD-EDGE 皆採此法，是陰性樣本稀缺時的正規解法。</dd><dt>cross-sample normal（跨個體正常樣本）</dt><dd>來自<b>不同個體</b>的正常樣本，是本專案真正獨立的陰性檢體（目前 4 個 UCSC normal + held-out COLO829BL）。與 INVAR 的 cross-patient control 是同一個概念。</dd><dt>detection probability model（偵測機率模型）</dt><dd>iDES 提出的簡潔模型。設 n = 定序到的 GE 數、d = 偵測極限、k = reporter 數，則偵測到至少一個 ctDNA 分子的機率為 p = 1 − e^(−ndk)。可解任一參數，是評估「位點數換靈敏度」的直接工具。</dd><dt>detection rate（偵測率）</dt><dd>本專案的定義（2026-08-09 定案）：帶到突變（ALT）的 read 數 ÷ 在 compendium 位點上檢查過的 read 數。⚠️ 論文的分子是<b>被偵測到的位點數 M</b>，低 TF 下兩者相同，高 TF 或有 germline 汙染時會分岔。</dd><dt>iDES（iDES）</dt><dd>Stanford 2016 年的 CAPP-Seq 改良（Nat Biotechnol）。整合分子條碼與 <b>background polishing</b>（逐位置逐取代類型建背景分布），兩者各約 3× 改善、合併達 ~15×，偵測極限降到 0.0025%。<b>其 background polishing 是本專案最可直接移植的降噪法。</b></dd><dt>ichorCNA（ichorCNA）</dt><dd>Broad Institute 2017 年的工具（Nat Commun）。從 <b>0.1× 超低深度 WGS</b> 估 tumor fraction，不需事先知道腫瘤變異。用 HMM 同時預測 CNA 片段與估 TF。<b>MRDetect 三代都在用它。</b> ⚠️ 偵測下限 TF 3%，遠高於 MRD 目標區間。</dd><dt>likelihood ratio（概似比）</dt><dd>INVAR 的判定量：比較「有 ctDNA」與「無 ctDNA」兩個假設下觀測資料的相對概似。用它取代「至少 N 個突變分子」的計數門檻。</dd><dt>nominal specificity（名目特異度）</dt><dd>由統計模型<b>預先設定</b>的特異度目標（如 AccuScan 的 99%），門檻直接由背景錯誤模型反推。<b>優點是不需要陰性樣本世代來定門檻</b> —— 對陰性樣本稀缺的情境特別有價值。</dd><dt>specificity（特異度）</dt><dd>陰性樣本被正確判為陰性的比例：TN/(TN+FP)。<b>因為只由陰性樣本算出，不受陽性/陰性樣本組成比例影響</b>，是跨研究比較的主指標（Precision 與 F1 則會被 prevalence 綁架）。</dd></dl></section>
+    <nav class="pager" aria-label="模組導覽"><a class="prev" href="p03.html"><small>← 上一模組</small>③ 怎麼判斷一條 read 是真是假</a><a class="next" href="p05.html"><small>下一模組 →</small>⑤ 分數要多高才算「有」</a></nav>
+    <section class="glossary-appendix"><h2>本模組術語</h2><dl><dt>AccuScan（AccuScan）</dt><dd>2024 年的 WGS MRD 方法（EMBO Mol Med）。用 <b>RCA concatemer</b> 讓錯誤校正在單一 read 內完成，錯誤率 4.2e-7、LOD 達 cVAF 1e-6。<b>背景錯誤率由樣本自身量測、門檻由統計模型反推，皆不需 control 世代。</b></dd><dt>EM algorithm（期望最大化演算法）</dt><dd>在有隱藏變數時交替執行「求期望」與「最大化」以擬合參數的方法。ichorCNA 用它同時解出 tumor fraction 與 ploidy。</dd><dt>HMM（隱藏馬可夫模型）</dt><dd>用於分段推論的機率模型。ichorCNA 以 HMM 同時預測 CNA 片段與估計 TF，emission 用 Student's t 分布（比高斯對離群穩健），以 EM 演算法推論。</dd><dt>IMAF（整合突變等位基因分率）</dt><dd>INVAR 的量化輸出：跨所有病人專屬位點取<b>背景扣除後、深度加權</b>的平均 allele fraction。用整合取代單點量測，以降低抽樣噪音。</dd><dt>INVAR（INVAR）</dt><dd>劍橋 Rosenfeld lab 2020 年的方法（Sci Transl Med）。與 MRDetect 同期同目標但<b>走純統計路線不用 ML</b>：四層誤差抑制疊加（背景降 131×），以 likelihood ratio 判定，並<b>用其他病人的樣本當陰性對照定門檻</b>。有開源碼（INVAR2）。</dd><dt>Lung-CLiP（Lung-CLiP）</dt><dd>Stanford 2020 年的 tumor-naive 早期肺癌偵測（Nature）。<b>多層級 ML</b>：先估每個變異是腫瘤來源的機率，再與全基因體 CNA 整合成<b>病人層級分類器</b>。<b>切分紀律最嚴謹的一篇</b> —— 用不同機構前瞻收案的獨立驗證世代，並明文批評同世代交叉驗證。</dd><dt>MRD-EDGE（MRD-EDGE（第二代））</dt><dd>Landau lab 2024 年的續作（Nat Med）。把 SVM 換成 CNN + MLP ensemble，並加入 ctDNA 專屬生物特徵（SBS context、fragment length、regional epigenomics），訊噪比從 8.3× 提升到 118×。</dd><dt>MRDetect（MRDetect（第一代））</dt><dd>Landau lab 2020 年的方法（Nat Med），本專案的基準。核心是「廣度取代深度」：35X WGS + 全基因體數千個 SNV 累加，用線性 SVM 對單條 read 去噪（5 特徵）。LLOD 約 1e-5。⚠️ 程式碼未開源。</dd><dt>Monte Carlo（蒙地卡羅模擬）</dt><dd>以大量隨機抽樣逼近難以解析求解的分布。NanoRCS 用它估 TF：輸入觀測到的 SNV 數、各 SNV 在腫瘤的 VAF、與定序錯誤率，模擬出最可能的 TF。優點是能吸收 VAF 異質性。</dd><dt>NanoRCS（NanoRCS）</dt><dd>UMC Utrecht 2025 年的方法（Genome Research）。<b>唯一一篇在 ONT 平台上做 cfDNA 腫瘤偵測的方法論文。</b> RCA + 長讀共識把 ONT 錯誤率從 Q21 降到 Q31（改善 9.4×），LOD 為 TF 0.24%。同時取 SNV、CNA、fragmentomics 三種訊號。</dd><dt>PhasED-seq（PhasED-seq）</dt><dd>Stanford 2021 年的方法（Nat Biotechnol）。<b>改變偵測單元</b>：不看單鹼基而看同一分子上的多個突變（phased variants），背景率降至 8.0e-7（2x）與 3.4e-8（3x），且不需分子條碼、不犧牲分子回收率。<b>其限制正好是 ONT 的優勢。</b></dd><dt>Stouffer's method（Stouffer 合併法）</dt><dd>合併多個獨立 Z 分數的公式：Z = ΣZᵢ/√k。MRD-EDGE 用它整合 read-depth、BAF 與 fragment entropy 三個 CNV 訊號源，以及 SNV 與 CNV 兩個模組。</dd><dt>TF（腫瘤分數的縮寫）</dt><dd><code>tumor fraction</code>（腫瘤分數）的縮寫，本知識庫全篇使用。定義為樣本中源自腫瘤的 DNA 佔全部 DNA 的比例，代表<b>訊號的強度</b>。MRD 情境的量級為 10⁻⁵ – 10⁻⁶，與定序機本身的錯誤率同一個數量級 —— 這正是整個領域的核心困難。它由病人的疾病狀態決定，<b>不是可以由設計調整的參數</b>。</dd><dt>VAF（變異等位基因頻率）</dt><dd>在某個位點上，支持 alt allele 的 read 佔全部 read 的比例。<b>VAF 不等於帶有這個突變的細胞比例</b>。</dd><dt>Z-score（標準分數）</dt><dd>把偵測分數對陰性對照世代的分布標準化：Z = (det_rate − μ)/σ。⚠️ <b>本專案已降級為選項之一</b>（2026-08-08）—— 常態假設未經檢定，且會把稀缺的陰性樣本綁去估參數。</dd><dt>cVAF（循環變異等位基因分率）</dt><dd>血漿中某變異的等位基因分率。與一般 VAF 的差別在量級：germline VAF 約 0.5，而 MRD 情境的 cVAF 常在 10⁻⁵–10⁻⁶ 之間，與定序錯誤率同一個數量級。</dd><dt>cfDNA（游離 DNA）</dt><dd>血漿中游離的短 DNA 片段，主要由凋亡與壞死的細胞釋出，長度以約 166 bp 為眾數（對應核小體）。健康人與癌症病人都有。</dd><dt>detection rate（偵測率）</dt><dd>本專案的定義（2026-08-09 定案）：帶到突變（ALT）的 read 數 ÷ 在 compendium 位點上檢查過的 read 數。⚠️ 論文的分子是<b>被偵測到的位點數 M</b>，低 TF 下兩者相同，高 TF 或有 germline 汙染時會分岔。</dd><dt>iDES（iDES）</dt><dd>Stanford 2016 年的 CAPP-Seq 改良（Nat Biotechnol）。整合分子條碼與 <b>background polishing</b>（逐位置逐取代類型建背景分布），兩者各約 3× 改善、合併達 ~15×，偵測極限降到 0.0025%。<b>其 background polishing 是本專案最可直接移植的降噪法。</b></dd><dt>ichorCNA（ichorCNA）</dt><dd>Broad Institute 2017 年的工具（Nat Commun）。從 <b>0.1× 超低深度 WGS</b> 估 tumor fraction，不需事先知道腫瘤變異。用 HMM 同時預測 CNA 片段與估 TF。<b>MRDetect 三代都在用它。</b> ⚠️ 偵測下限 TF 3%，遠高於 MRD 目標區間。</dd><dt>likelihood ratio（概似比）</dt><dd>INVAR 的判定量：比較「有 ctDNA」與「無 ctDNA」兩個假設下觀測資料的相對概似。用它取代「至少 N 個突變分子」的計數門檻。</dd><dt>outlier suppression（離群抑制）</dt><dd>INVAR 的關鍵步驟：低 TF 下訊號應<b>隨機散布</b>在各位點、多數位點為零。對此分布找 outlier 並剔除不一致的單點訊號 → control 訊號降約 3 倍，病人訊號保留 96.1%。<b>不依賴任何平台特性。</b></dd><dt>specificity（特異度）</dt><dd>陰性樣本被正確判為陰性的比例：TN/(TN+FP)。<b>因為只由陰性樣本算出，不受陽性/陰性樣本組成比例影響</b>，是跨研究比較的主指標（Precision 與 F1 則會被 prevalence 綁架）。</dd></dl></section>
   </main>
-  <nav class="toc--sticky" aria-label="本頁目錄"><h2>本頁目錄</h2><ol><li class="lv2"><a href="#為什麼重要">為什麼重要</a></li><li class="lv2"><a href="#樣本層分數-八種做法">④ 樣本層分數：八種做法</a></li><li class="lv3"><a href="#本專案已否決-z-score-路線">本專案已否決 Z-score 路線</a></li><li class="lv2"><a href="#兩個最完整的替代方案">兩個最完整的替代方案</a></li><li class="lv3"><a href="#其一-ides-的偵測機率模型">其一：iDES 的偵測機率模型</a></li><li class="lv3"><a href="#其二-invar-的廣義概似比檢定">其二：INVAR 的廣義概似比檢定</a></li><li class="lv2"><a href="#門檻-六種決定方式">⑤ 門檻：六種決定方式</a></li><li class="lv3"><a href="#陰性樣本稀缺的兩條解法">陰性樣本稀缺的兩條解法</a></li><li class="lv3"><a href="#lung-clip-的多工作點報告法">Lung-CLiP 的多工作點報告法</a></li><li class="lv2"><a href="#小結">小結</a></li></ol></nav>
+  <nav class="toc--sticky" aria-label="本頁目錄"><h2>本頁目錄</h2><ol><li class="lv2"><a href="#為什麼重要">為什麼重要</a></li><li class="lv2"><a href="#先分清楚-輸出有四種">先分清楚：輸出有四種</a></li><li class="lv2"><a href="#八種做法">八種做法</a></li><li class="lv3"><a href="#偵測率-z-score">① 偵測率 → Z-score</a></li><li class="lv3"><a href="#poisson-幾何-偵測機率模型">② Poisson／幾何 偵測機率模型</a></li><li class="lv3"><a href="#依-variant-type-分層的二項式對數概似">③ 依 variant type 分層的二項式對數概似</a></li><li class="lv3"><a href="#廣義概似比-glrt">④ 廣義概似比（GLRT）</a></li><li class="lv4"><a href="#先寫出單一位點觀測到-mutant-read-的機率">先寫出單一位點觀測到 mutant read 的機率</a></li><li class="lv4"><a href="#再把所有位點的對數概似加起來">再把所有位點的對數概似加起來</a></li><li class="lv4"><a href="#ctdna-水準-p-以-em-演算法估計">ctDNA 水準 p 以 EM 演算法估計</a></li><li class="lv4"><a href="#最後取兩個假設的差">最後取兩個假設的差</a></li><li class="lv3"><a href="#monte-carlo-模擬">⑤ Monte Carlo 模擬</a></li><li class="lv3"><a href="#hmm-student-s-t-em">⑥ HMM + Student's t + EM</a></li><li class="lv3"><a href="#樣本層級-ml-分類器">⑦ 樣本層級 ML 分類器</a></li><li class="lv3"><a href="#stouffer-合併">⑧ Stouffer 合併</a></li><li class="lv2"><a href="#怎麼選">怎麼選</a></li><li class="lv3"><a href="#關鍵分歧只有一個">關鍵分歧只有一個</a></li><li class="lv2"><a href="#小結">小結</a></li></ol></nav>
 </div>
 
 <footer class="site-footer">

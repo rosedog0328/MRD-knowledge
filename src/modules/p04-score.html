@@ -1,0 +1,319 @@
+<!--tw
+{
+  "objectives": [
+    "說明八種把多位點觀測聚合成單一分數的做法各自把什麼當證據、輸出代表什麼",
+    "區分四種不同性質的輸出，並說明它們為何不能直接比大小",
+    "指出哪些做法需要陰性樣本世代、哪些不需要，以及原因",
+    "依 INVAR2 開源實作，陳述廣義概似比檢定的完整計算流程"
+  ]
+}
+-->
+
+<section data-part="why">
+<h2>為什麼重要</h2>
+
+<p class="prose">前一步（<a href="p03.html">p03</a>）處理的是<b>單一觀測的可信度</b>：
+這一條 read 是真的還是讀錯的。</p>
+
+<p class="prose">但一條 read 說明不了什麼。真正的判定要靠<b>累加</b> ——
+把幾萬個位點各自的微弱觀測，合成一個「這份檢體有多像含有腫瘤」的數字。
+這就是第四步。</p>
+
+<p class="prose">11 篇論文用了八種不同的統計方法做這件事。
+它們的差別不只是「公式不同」，
+而是<b>輸出的東西根本不是同一種</b> —— 有的給標準差、有的給機率、
+有的直接給 [[TF]] 估計值。這一頁先講清楚這件事，
+再逐一說明每一種<b>把什麼當證據</b>。</p>
+</section>
+
+
+<section data-part="concept">
+<h2>先分清楚：輸出有四種</h2>
+
+<p class="prose">八種方法都在做同一件事，但合出來的「數」代表什麼，分成四類。
+搞混會直接導致誤讀 —— 例如把一個概似值當成標準差來解釋。</p>
+
+{{svg:score-output-types | 八種聚合方法依輸出性質分成四類。四類的輸出不是同一種東西，不能直接比大小。}}
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>輸出的種類</th><th>它在說什麼</th><th>誰用</th><th>需要陰性樣本世代？</th></tr></thead>
+<tbody>
+<tr><td><b>一 · 標準化分數</b></td><td>比正常人高幾個標準差</td>
+    <td>[[MRDetect]]、[[MRD-EDGE]]</td><td><b>是</b>（估 μ、σ）</td></tr>
+<tr><td><b>二 · 機率／概似</b></td><td>若真的沒有腫瘤，看到這筆資料有多不可能</td>
+    <td>[[iDES]]、[[PhasED-seq]]、[[AccuScan]]、[[INVAR]]</td><td><b>否</b></td></tr>
+<tr><td><b>三 · 直接估 [[TF]]</b></td><td>哪個腫瘤分數最能解釋觀測</td>
+    <td>[[NanoRCS]]、[[ichorCNA]]</td><td>視方法而定</td></tr>
+<tr><td><b>四 · 學出來的機率</b></td><td>模型認為含腫瘤的可能性（0–1）</td>
+    <td>[[Lung-CLiP]]</td><td>是（訓練集）</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="prose">這個分類最實用的地方在最後一欄：<b>只有第一類（與部分第三、四類）需要陰性樣本世代</b>。
+陰性樣本是稀缺資源（詳見 <a href="p05.html">p05</a>），
+因此這一欄往往才是實務上的第一個判準。</p>
+</section>
+
+
+<section data-part="evidence">
+<h2>八種做法</h2>
+
+<h3>① [[detection rate|偵測率]] → [[Z-score]]</h3>
+
+<p class="prose"><b>把什麼當證據</b>：帶到突變的 read 佔全部檢查過的 read 的<b>比例</b>。</p>
+
+<p class="prose">最直觀的一種。先算出這份檢體的[[detection rate|偵測率]]，
+再問「這個比例比陰性樣本的平均高出幾個標準差」。</p>
+
+{{eq}}
+Z = \frac{\text{det rate} − μ}{σ}
+{{note}}
+{{m: μ}}、{{m: σ}} 來自陰性樣本世代 —— 把<b>同一份</b>病人的變異清單套到那些樣本上算出的分數分布。
+{{/eq}}
+
+<p class="prose">[[MRDetect]] 另有一個二項模型可從偵測數反推 [[TF]]：</p>
+
+{{eq}}
+M = N·(1 − (1 − TF)^{cov}) + μ·R
+{{note}}
+{{m: M}} 為偵測到的 SNV 數、{{m: N}} 為清單上的位點數、
+{{m: cov}} 為局部覆蓋、{{m: R}} 為檢查過的 read 數。
+右邊第二項 {{m: μ·R}} 就是預期的背景貢獻。
+{{/eq}}
+
+<p class="prose"><b>代價</b>：{{m: μ}} 與 {{m: σ}} 必須從陰性樣本估。
+[[MRDetect]] 用了 <b>30 個</b>對照血漿。
+這批樣本一旦拿去估參數，就不能再用來算[[specificity|特異度]]。</p>
+
+<h3>② Poisson／幾何 偵測機率模型</h3>
+
+<p class="prose"><b>把什麼當證據</b>：不算分數 —— 直接問「以這個位點數與深度，<b>能測到的機率</b>是多少」。</p>
+
+<p class="prose">這是八種裡最簡潔的。假設每個位點偵測到 ctDNA 分子的次數服從 Poisson，
+{{m: k}} 個獨立位點至少命中一個的機率即為：</p>
+
+{{eq}}
+p = 1 − e^{−n·d·k}
+{{note}}
+{{m: n}} 為基因組當量數、{{m: d}} 為偵測極限、{{m: k}} 為追蹤位點數。
+這正是 <a href="p01.html">p01</a> 建立的那條式子。
+{{/eq}}
+
+<p class="prose">它的威力在於<b>三個參數皆可反解</b>。
+[[iDES]] 用它反推 read support 門檻；也可以反過來給定位點數與目標偵測率，
+反推所需的錯誤率。[[PhasED-seq]] 用的是同一原理的二項式抽樣版本。</p>
+
+<p class="prose"><b>代價</b>：模型較粗，<b>未區分不同位點的背景差異</b> ——
+它假設所有位點一樣吵，但實測上最吵與最靜的位點可以差兩個數量級。</p>
+
+<h3>③ 依 variant type 分層的二項式對數概似</h3>
+
+<p class="prose"><b>把什麼當證據</b>：每個位點是一次二項抽樣；把各位點的對數概似<b>加總</b>。</p>
+
+<p class="prose">[[AccuScan]] 把每個變異的觀測看成一個二項隨機變數，成功機率為</p>
+
+{{eq}}
+p_v = VAF + e_v
+{{note}}
+{{m: e_v}} 是<b>該 variant type 的錯誤率</b>（C→T、C→A… 各自不同）。
+把各 type 的獨立二項對數概似加總，即得樣本層分數。
+{{/eq}}
+
+<p class="prose">關鍵設計在 {{m: e_v}} 的來源：<b>背景錯誤模型由該血漿樣本自己量測</b>，
+不是來自對照世代 —— 對隨機選取的約 200 Mb 位置就地估計。
+這是它與 ① 最大的分歧。</p>
+
+<p class="prose">另有一條配套規則：<b>低腫瘤負荷時，排除支持分子數 &gt;1 的位點</b>。
+理由與 <a href="p03.html">p03</a> 的[[outlier suppression|離群抑制]]相同 ——
+低 [[cVAF]] 下真 somatic 變異幾乎都只出現在單一分子上。
+高負荷樣本（cVAF &gt; 15%）則不套用此規則。</p>
+
+<h3>④ [[likelihood ratio|廣義概似比]]（GLRT）</h3>
+
+<p class="prose"><b>把什麼當證據</b>：讓「含 ctDNA」與「不含」<b>兩個假設各自去解釋同一筆資料</b>，看誰解釋得比較好。</p>
+
+{{svg:likelihood-ratio | INVAR 廣義概似比的直覺。基準不是別人的樣本長什麼樣，而是同一筆資料在虛無假設下的概似。}}
+
+<p class="prose">這是八種裡機制最完整、且<b>有開源實作可直接對照</b>的一種。
+論文僅稱「INVAR likelihood ratio」，以下取自 INVAR2 原始碼
+（<code>R/shared/detectionFunctions.R</code>）。</p>
+
+<h4>先寫出單一位點觀測到 mutant read 的機率</h4>
+
+<p class="prose">令 {{m: AF}} 為該位點在腫瘤中的 [[VAF]]、
+{{m: e}} 為背景錯誤率、{{m: p}} 為樣本的 ctDNA 水準：</p>
+
+{{eq}}
+q = AF·(1−e)·p + (1−AF)·e·p + e·(1−p)
+{{note}}
+三項分別對應「真訊號被正確讀出」「真訊號被讀錯」「野生型被讀錯」——
+把所有能產生一條 mutant read 的途徑都算進去。
+{{/eq}}
+
+<h4>再把所有位點的對數概似加起來</h4>
+
+{{eq}}
+\log L = \frac{1}{n} \sum ( \text{lchoose}(R, M) + M · \log q + (R − M) · \log (1 − q) )
+{{note}}
+{{m: M}} 為該位點的 mutant read 數、{{m: R}} 為深度、{{m: n}} 為位點數。
+原始碼中此式除以 {{m: \text{length}(R)}}，即對位點數取平均。
+{{/eq}}
+
+<h4>ctDNA 水準 p 以 EM 演算法估計</h4>
+
+{{cli}}
+# estimate_p_EM(M, R, AF, e, initial_p = 0.01, iterations = 200)
+g = AF*(1-e) + (1-AF)*e
+
+for (i in 1:200) {
+  # E 步
+  Z_0 <- (1-g)*p / ((1-g)*p + (1-e)*(1-p))
+  Z_1 <- g*p     / (g*p     + e*(1-p))
+  # M 步
+  p <- sum(M*Z_1 + (R-M)*Z_0) / sum(R)
+}
+{{/cli}}
+
+<h4>最後取兩個假設的差</h4>
+
+{{eq}}
+LR = \log L(p = \hat{p}_{MLE}) − \log L(p = 0)
+{{note}}
+虛無假設為 {{m: p = 0}}（樣本不含 ctDNA）。
+{{m: LR}} 越大，「含 ctDNA」的解釋越優於「不含」。
+{{/eq}}
+
+<p class="prose"><b>為什麼它不需要陰性樣本世代</b>：
+它的基準不是「別人的樣本長什麼樣」，
+而是<b>同一筆資料在虛無假設下的概似</b> —— 基準完全由這份樣本自己提供。</p>
+
+<div class="guardrail guardrail--warn">
+<p class="guardrail__hd">原始碼有兩個版本，選錯會用到不適用的假設</p>
+<p class="prose">INVAR2 另有 <code>*_with_RL</code> 版本，把<b>片段長度分布</b>納入概似式
+（腫瘤來源的 cfDNA 片段較短，可作為額外證據）。</p>
+<p class="prose">該版本假設樣本是 [[cfDNA]]。
+若樣本並非 cfDNA（例如細胞株的基因體 DNA），片段長度分布不具代表性，
+<b>應使用無片段長度的版本</b>。</p>
+</div>
+
+<h3>⑤ [[Monte Carlo]] 模擬</h3>
+
+<p class="prose"><b>把什麼當證據</b>：反過來做 —— <b>模擬各種 TF 下會看到什麼</b>，找出最像實際觀測的那個 TF。</p>
+
+<p class="prose">[[NanoRCS]] 的做法：輸入三個量 ——
+① 觀測到的 tumor-informed SNV 數、
+② 每個 SNV 在腫瘤中的 [[VAF]]、
+③ 定序錯誤率 —— 然後大量模擬，推估最可能的 [[TF]]。</p>
+
+<p class="prose">好處是<b>輸出本身就有物理意義</b>（不是抽象分數，而是一個 TF 估計值），
+且不需要對背景分布做參數假設。代價是計算量大。</p>
+
+<h3>⑥ [[HMM]] + Student's t + [[EM algorithm|EM]]</h3>
+
+<p class="prose"><b>把什麼當證據</b>：不看點突變 —— 看<b>沿著染色體走時，深度在哪裡發生系統性偏移</b>。</p>
+
+<p class="prose">[[ichorCNA]] 處理的是 CNA 而非 SNV，因此聚合方式完全不同。
+它把基因體切成 1 Mb 的 bin，用隱藏馬可夫模型沿染色體推論每一段的拷貝數狀態，
+同時估出 [[TF]]。</p>
+
+<p class="prose">兩個值得記的設計選擇：</p>
+
+<ul class="prose">
+<li>觀測值用 <b>Student's t 分布</b>而非高斯 —— t 分布的尾部較厚，對離群值更穩健。</li>
+<li>均值採<b>三成分混合</b>，同時容納 normal fraction、腫瘤倍體與 subclonal fraction；
+clonal 時退化為二成分。</li>
+</ul>
+
+<h3>⑦ 樣本層級 ML 分類器</h3>
+
+<p class="prose"><b>把什麼當證據</b>：不預設用哪個統計量 —— <b>把多種特徵一起餵給模型</b>，讓它學。</p>
+
+<p class="prose">[[Lung-CLiP]] 是三層架構的最後一層：
+把第一層的 SNV model 輸出（每個突變是腫瘤來源的機率）
+與第二層的全基因體 CNA 判讀<b>整合</b>，
+輸出「這份血液樣本含有肺癌來源 cfDNA 的可能性」。</p>
+
+<p class="prose">這是<b>最貼近「MRD 是分類問題」這個框架</b>的一種做法 ——
+一個檢體就是一列資料，輸出直接是機率。
+代價是需要訓練資料，而且訓練與測試必須依<b>病人</b>切分。</p>
+
+<h3>⑧ [[Stouffer's method|Stouffer 合併]]</h3>
+
+<p class="prose"><b>把什麼當證據</b>：已經有好幾個獨立的分數了 —— <b>怎麼合成一個</b>。</p>
+
+<p class="prose">嚴格說這不是一種聚合方法，而是<b>聚合之後的再聚合</b>。
+[[MRD-EDGE]] 的 CNV 訊號來自三個獨立來源（read-depth、BAF／cnLOH、片段特徵），
+各自得到一個 Z，再合併：</p>
+
+{{eq}}
+Z = ( \sum Z_i ) / \text{根號 k}
+{{note}}
+{{m: k}} 為來源數。分母取 {{m: k}} 的平方根，
+是因為 {{m: k}} 個獨立標準常態變數之和的標準差正好等於 {{m: k}} 的平方根。
+{{/eq}}
+
+<p class="prose"><b>前提是各來源彼此獨立</b> —— 若三個來源其實高度相關，合併會高估顯著性。</p>
+</section>
+
+
+<section data-part="predict">
+<h2>怎麼選</h2>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>做法</th><th>把什麼當證據</th><th>輸出</th><th>陰性世代</th></tr></thead>
+<tbody>
+<tr><td><b>① [[detection rate|偵測率]] → [[Z-score]]</b></td><td>帶到突變的 read 比例</td>
+    <td>標準差</td><td><b>30 個</b></td></tr>
+<tr><td><b>② Poisson／幾何機率模型</b></td><td>位點數 × 深度 × 錯誤率</td>
+    <td>偵測機率</td><td>0</td></tr>
+<tr><td><b>③ 二項式對數概似</b></td><td>每位點一次二項抽樣</td>
+    <td>對數概似</td><td><b>0</b>（背景由樣本自身量測）</td></tr>
+<tr><td><b>④ [[likelihood ratio|廣義概似比]]</b></td><td>兩個假設誰解釋得好</td>
+    <td>LR 與 [[IMAF]]</td><td>0</td></tr>
+<tr><td><b>⑤ [[Monte Carlo]]</b></td><td>模擬比對觀測</td>
+    <td>最可能的 [[TF]]</td><td>0</td></tr>
+<tr><td><b>⑥ [[HMM]]</b></td><td>沿染色體的深度偏移</td>
+    <td>CNA 片段 + TF</td><td>27 個</td></tr>
+<tr><td><b>⑦ 樣本層 ML 分類器</b></td><td>多種特徵一起</td>
+    <td>0–1 機率</td><td>訓練集</td></tr>
+<tr><td><b>⑧ [[Stouffer's method|Stouffer]]</b></td><td>多個獨立分數</td>
+    <td>合併後的 Z</td><td>隨來源而定</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>關鍵分歧只有一個</h3>
+
+<p class="prose">八種方法的共同點是<b>全部都在把 N 個弱觀測合成一個數</b>，
+差別只在使用哪個機率模型。真正影響實務選擇的分歧只有一條：</p>
+
+<p class="prose"><b>只有 ① 這一系需要對照世代來估 {{m: μ}} 與 {{m: σ}}。</b>
+其餘做法或用統計模型直接推導（②④），
+或由樣本自身量測背景（③），或用模擬（⑤）——
+<b>不消耗稀缺的陰性樣本</b>。</p>
+
+<p class="prose">為什麼這件事這麼重要，見下一頁 <a href="p05.html">p05</a>：
+陰性樣本同時是「定門檻用」與「算特異度用」的唯一來源，
+一份樣本只能有一個角色。</p>
+</section>
+
+
+<section data-part="practice">
+<h2>小結</h2>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>觀察</th><th>依據</th></tr></thead>
+<tbody>
+<tr><td>八種聚合方法都在做同一件事，差別只在機率模型</td><td>11 篇 s4</td></tr>
+<tr><td><b>輸出分四種性質，不能直接比大小</b></td><td>各篇 s4</td></tr>
+<tr><td><b>只有 Z-score 這一系需要對照世代估 μ／σ</b></td><td>各篇 s4</td></tr>
+<tr><td>AccuScan 的背景由樣本自身量測，是與 MRDetect 最大的分歧</td><td>AccuScan s4</td></tr>
+<tr><td>INVAR 的 GLRT 有開源實作，輸入僅需 M、R、AF、e 四個量</td><td>INVAR2 <code>detectionFunctions.R</code></td></tr>
+</tbody>
+</table>
+</div>
+</section>

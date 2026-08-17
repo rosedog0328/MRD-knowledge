@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 540">
+  <title>門檻的基準有三種來源</title>
+  <desc>本圖說明六種決定門檻的方式，依基準的來源可以分成三類。
+        第一類是從專用的陰性樣本量出來：
+        收一批確定不含腫瘤的樣本，用完全相同的流程算出分數，
+        門檻畫在這個分布的上緣。
+        這一類最直觀，也是論文中最常見的，
+        但需要的樣本數很多：MRDetect 用三十個對照血漿，
+        ichorCNA 用二十七個健康捐贈者參考集，
+        iDES 的背景拋光訓練世代用十二個，
+        NanoRCS 與健康對照背景比較用七個。
+        代價是這些樣本一旦用來定門檻，就不能再拿去計算特異度。
+        第二類是借用其他病人的樣本：
+        把甲病人的突變清單套到乙病人的血漿資料上，
+        因為任兩個人的體細胞突變幾乎不重疊，
+        乙的樣本天然就是甲的陰性對照。
+        這樣不需要專門收集陰性樣本，
+        INVAR 以此做受試者操作特徵曲線分析定門檻，
+        要求特異度至少百分之九十，實測中位數達百分之九十五，
+        MRD-EDGE 也採用同樣的做法。
+        第三類是完全不用陰性樣本，改由統計模型直接推導：
+        先設定一個名目特異度，例如百分之九十九，
+        再由背景錯誤模型反推對應的門檻。
+        AccuScan 採用這個做法，其背景錯誤模型由該樣本自己量測，
+        實測特異度在所有條件下都達到百分之九十九以上。
+        圖最下方指出三類的取捨：
+        第一類最直觀但最耗樣本，第二類不需專用樣本但需要多位病人的資料，
+        第三類完全不需樣本但完全依賴模型假設是否成立。</desc>
+
+  <text class="ttl bold zh" x="20" y="34">門檻的基準有三種來源</text>
+
+  <rect class="box plain" x="20" y="52" width="960" height="44" rx="8"/>
+  <text class="tick zh" x="44" y="80">六種決定方式，差別不在統計手法，而在<tspan class="bold">「沒有腫瘤時分數長什麼樣」這個基準是從哪裡來的</tspan>。</text>
+
+  <!-- ══ 一：專用陰性樣本 ══ -->
+  <rect class="box" x="20" y="110" width="960" height="128" rx="10"/>
+  <text class="anno bold accent zh" x="44" y="140">一 · 從專用的陰性樣本量出來</text>
+  <text class="tick zh" x="44" y="166">收一批確定不含腫瘤的樣本，</text>
+  <text class="tick zh" x="44" y="188">用相同流程算分數，</text>
+  <text class="tick zh" x="44" y="210">門檻畫在分布的上緣</text>
+
+  <rect class="box plain" x="360" y="126" width="290" height="96" rx="7"/>
+  <text class="tick zh" x="380" y="152">MRDetect　　30 個對照血漿</text>
+  <text class="tick zh" x="380" y="174">ichorCNA　　27 個健康捐贈者</text>
+  <text class="tick zh" x="380" y="196">iDES　　　　12 個</text>
+  <text class="tick zh" x="380" y="216">NanoRCS　　　7 個</text>
+
+  <text class="anno bold somatic zh" x="680" y="152">代價</text>
+  <text class="tick zh" x="680" y="178">最直觀，但最耗樣本；</text>
+  <text class="tick zh" x="680" y="200">而且用來定門檻的樣本</text>
+  <text class="tick zh" x="680" y="222">不能再拿去算特異度</text>
+
+  <!-- ══ 二：借別人的樣本 ══ -->
+  <rect class="box" x="20" y="250" width="960" height="128" rx="10"/>
+  <text class="anno bold accent zh" x="44" y="280">二 · 借用其他病人的樣本</text>
+  <text class="tick zh" x="44" y="306">把 A 的突變清單</text>
+  <text class="tick zh" x="44" y="328">套到 B 的血漿資料上</text>
+
+  <rect class="box plain" x="360" y="266" width="290" height="96" rx="7"/>
+  <text class="tick zh" x="380" y="292">任兩人的體細胞突變</text>
+  <text class="anno bold zh" x="380" y="316">幾乎不重疊</text>
+  <text class="tick zh" x="380" y="342">→ B 天然是 A 的陰性對照</text>
+
+  <text class="anno bold ok zh" x="680" y="292">0 個專用樣本</text>
+  <text class="tick zh" x="680" y="318">INVAR：ROC 定門檻，</text>
+  <text class="tick zh" x="680" y="340">要求特異度 ≥90%，實測中位 95%</text>
+  <text class="tick zh" x="680" y="362">MRD-EDGE 亦採此法</text>
+
+  <!-- ══ 三：統計模型 ══ -->
+  <rect class="box" x="20" y="390" width="960" height="128" rx="10"/>
+  <text class="anno bold accent zh" x="44" y="420">三 · 由統計模型直接推導</text>
+  <text class="tick zh" x="44" y="446">完全不用陰性樣本</text>
+
+  <rect class="box plain" x="360" y="406" width="290" height="96" rx="7"/>
+  <text class="tick zh" x="380" y="432">先設定名目特異度</text>
+  <text class="anno bold zh" x="380" y="456">（例如 99%）</text>
+  <text class="tick zh" x="380" y="482">再由背景錯誤模型反推門檻</text>
+
+  <text class="anno bold ok zh" x="680" y="432">0 個樣本</text>
+  <text class="tick zh" x="680" y="458">AccuScan：背景由樣本自己量測，</text>
+  <text class="tick zh" x="680" y="480">實測特異度全數 ≥99%</text>
+  <text class="anno bold somatic zh" x="680" y="504">⚠ 完全依賴模型假設成立</text>
+</svg>

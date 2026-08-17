@@ -36,7 +36,8 @@ window.TW_GLOSSARY = {
   "modules": [
    "p00",
    "p01",
-   "p02"
+   "p02",
+   "p04"
   ]
  },
  "ctDNA": {
@@ -76,9 +77,9 @@ window.TW_GLOSSARY = {
    "p01",
    "p02",
    "p03",
-   "p05",
    "p06",
-   "p07"
+   "p07",
+   "p08"
   ]
  },
  "genomic equivalents": {
@@ -100,7 +101,7 @@ window.TW_GLOSSARY = {
    "p01",
    "p02",
    "p03",
-   "p08"
+   "p09"
   ]
  },
  "breadth supplants depth": {
@@ -137,7 +138,8 @@ window.TW_GLOSSARY = {
    "p02",
    "p03",
    "p05",
-   "p08"
+   "p06",
+   "p09"
   ]
  },
  "limit of blank": {
@@ -167,9 +169,9 @@ window.TW_GLOSSARY = {
   "slug": "tumor-informed",
   "modules": [
    "p03",
-   "p05",
-   "p07",
-   "p08"
+   "p06",
+   "p08",
+   "p09"
   ]
  },
  "tumor-naive": {
@@ -188,7 +190,7 @@ window.TW_GLOSSARY = {
   ],
   "slug": "tumor-naive",
   "modules": [
-   "p07"
+   "p08"
   ]
  },
  "compendium": {
@@ -209,8 +211,8 @@ window.TW_GLOSSARY = {
    "p01",
    "p02",
    "p03",
-   "p06",
-   "p08"
+   "p07",
+   "p09"
   ]
  },
  "reporter": {
@@ -238,8 +240,8 @@ window.TW_GLOSSARY = {
   "modules": [
    "p01",
    "p03",
-   "p05",
-   "p07"
+   "p06",
+   "p08"
   ]
  },
  "selector": {
@@ -272,7 +274,7 @@ window.TW_GLOSSARY = {
   "modules": [
    "p00",
    "p02",
-   "p05"
+   "p06"
   ]
  },
  "informative reads": {
@@ -287,8 +289,8 @@ window.TW_GLOSSARY = {
   "slug": "informative-reads",
   "modules": [
    "p02",
-   "p05",
-   "p06"
+   "p06",
+   "p07"
   ]
  },
  "blacklist": {
@@ -303,7 +305,7 @@ window.TW_GLOSSARY = {
   "slug": "blacklist",
   "modules": [
    "p02",
-   "p06"
+   "p07"
   ]
  },
  "detection rate": {
@@ -321,7 +323,7 @@ window.TW_GLOSSARY = {
   "slug": "detection-rate",
   "modules": [
    "p04",
-   "p06"
+   "p07"
   ]
  },
  "cVAF": {
@@ -341,7 +343,8 @@ window.TW_GLOSSARY = {
    "p00",
    "p01",
    "p03",
-   "p07"
+   "p04",
+   "p08"
   ]
  },
  "IMAF": {
@@ -360,7 +363,7 @@ window.TW_GLOSSARY = {
   "modules": [
    "p02",
    "p04",
-   "p05"
+   "p06"
   ]
  },
  "nDR": {
@@ -417,7 +420,7 @@ window.TW_GLOSSARY = {
   "modules": [
    "p01",
    "p03",
-   "p06"
+   "p07"
   ]
  },
  "error suppression": {
@@ -450,8 +453,8 @@ window.TW_GLOSSARY = {
   "slug": "umi",
   "modules": [
    "p03",
-   "p06",
-   "p08"
+   "p07",
+   "p09"
   ]
  },
  "read family": {
@@ -479,8 +482,8 @@ window.TW_GLOSSARY = {
   "modules": [
    "p00",
    "p03",
-   "p07",
-   "p08"
+   "p08",
+   "p09"
   ]
  },
  "single-strand consensus": {
@@ -511,10 +514,10 @@ window.TW_GLOSSARY = {
   "modules": [
    "p00",
    "p03",
-   "p05",
    "p06",
    "p07",
-   "p08"
+   "p08",
+   "p09"
   ]
  },
  "concatemer": {
@@ -529,8 +532,8 @@ window.TW_GLOSSARY = {
   "slug": "concatemer",
   "modules": [
    "p03",
-   "p06",
-   "p08"
+   "p07",
+   "p09"
   ]
  },
  "subread": {
@@ -584,9 +587,9 @@ window.TW_GLOSSARY = {
   "modules": [
    "p00",
    "p03",
-   "p04",
-   "p06",
-   "p08"
+   "p05",
+   "p07",
+   "p09"
   ]
  },
  "position-specific error": {
@@ -617,7 +620,7 @@ window.TW_GLOSSARY = {
   "slug": "trinucleotide-context",
   "modules": [
    "p03",
-   "p08"
+   "p09"
   ]
  },
  "outlier suppression": {
@@ -633,8 +636,9 @@ window.TW_GLOSSARY = {
   "modules": [
    "p01",
    "p03",
-   "p06",
-   "p08"
+   "p04",
+   "p07",
+   "p09"
   ]
  },
  "single-molecule rule": {
@@ -650,7 +654,7 @@ window.TW_GLOSSARY = {
   "modules": [
    "p01",
    "p03",
-   "p08"
+   "p09"
   ]
  },
  "phased variant": {
@@ -672,9 +676,9 @@ window.TW_GLOSSARY = {
    "p00",
    "p02",
    "p03",
-   "p05",
-   "p07",
-   "p08"
+   "p06",
+   "p08",
+   "p09"
   ]
  },
  "read length advantage": {
@@ -689,7 +693,7 @@ window.TW_GLOSSARY = {
   "slug": "read-length-advantage",
   "modules": [
    "p03",
-   "p08"
+   "p09"
   ]
  },
  "fragmentomics": {
@@ -703,7 +707,7 @@ window.TW_GLOSSARY = {
   ],
   "slug": "fragmentomics",
   "modules": [
-   "p07"
+   "p08"
   ]
  },
  "fragment length entropy": {
@@ -771,8 +775,8 @@ window.TW_GLOSSARY = {
   ],
   "slug": "cna",
   "modules": [
-   "p07",
-   "p08"
+   "p08",
+   "p09"
   ]
  },
  "BAF": {
@@ -813,9 +817,7 @@ window.TW_GLOSSARY = {
    "binomial detection model"
   ],
   "slug": "detection-probability-model",
-  "modules": [
-   "p04"
-  ]
+  "modules": []
  },
  "binomial detection model": {
   "zh_gloss": "二項偵測模型",
@@ -841,7 +843,8 @@ window.TW_GLOSSARY = {
   "slug": "z-score",
   "modules": [
    "p04",
-   "p06"
+   "p05",
+   "p07"
   ]
  },
  "likelihood ratio": {
@@ -855,8 +858,8 @@ window.TW_GLOSSARY = {
   "slug": "likelihood-ratio",
   "modules": [
    "p04",
-   "p06",
-   "p08"
+   "p07",
+   "p09"
   ]
  },
  "Stouffer's method": {
@@ -967,7 +970,8 @@ window.TW_GLOSSARY = {
    "p05",
    "p06",
    "p07",
-   "p08"
+   "p08",
+   "p09"
   ]
  },
  "sensitivity": {
@@ -995,8 +999,8 @@ window.TW_GLOSSARY = {
   ],
   "slug": "nominal-specificity",
   "modules": [
-   "p04",
-   "p08"
+   "p05",
+   "p09"
   ]
  },
  "control cohort": {
@@ -1011,8 +1015,8 @@ window.TW_GLOSSARY = {
   "slug": "control-cohort",
   "modules": [
    "p01",
-   "p04",
-   "p08"
+   "p05",
+   "p09"
   ]
  },
  "cross-patient control": {
@@ -1026,8 +1030,8 @@ window.TW_GLOSSARY = {
   ],
   "slug": "cross-patient-control",
   "modules": [
-   "p04",
-   "p08"
+   "p05",
+   "p09"
   ]
  },
  "held-out": {
@@ -1040,8 +1044,8 @@ window.TW_GLOSSARY = {
   ],
   "slug": "held-out",
   "modules": [
-   "p05",
-   "p08"
+   "p06",
+   "p09"
   ]
  },
  "cross-validation leakage": {
@@ -1066,7 +1070,7 @@ window.TW_GLOSSARY = {
   ],
   "slug": "sample-level-evaluation",
   "modules": [
-   "p05"
+   "p06"
   ]
  },
  "prevalence": {
@@ -1092,7 +1096,7 @@ window.TW_GLOSSARY = {
   "slug": "ont-simplex",
   "modules": [
    "p00",
-   "p08"
+   "p09"
   ]
  },
  "Q-score": {
@@ -1117,7 +1121,7 @@ window.TW_GLOSSARY = {
   "slug": "r1-r2-concordance",
   "modules": [
    "p03",
-   "p08"
+   "p09"
   ]
  },
  "hybrid capture": {
@@ -1161,7 +1165,7 @@ window.TW_GLOSSARY = {
   "slug": "in-silico-admixture",
   "modules": [
    "p02",
-   "p08"
+   "p09"
   ]
  },
  "dilution series": {
@@ -1201,8 +1205,7 @@ window.TW_GLOSSARY = {
   ],
   "slug": "cross-sample-normal",
   "modules": [
-   "p04",
-   "p08"
+   "p09"
   ]
  },
  "germline filtering ladder": {
@@ -1253,7 +1256,8 @@ window.TW_GLOSSARY = {
    "p05",
    "p06",
    "p07",
-   "p08"
+   "p08",
+   "p09"
   ]
  },
  "MRD-EDGE": {
@@ -1272,8 +1276,9 @@ window.TW_GLOSSARY = {
    "p03",
    "p04",
    "p05",
-   "p07",
-   "p08"
+   "p06",
+   "p08",
+   "p09"
   ]
  },
  "Landau gen3": {
@@ -1294,9 +1299,9 @@ window.TW_GLOSSARY = {
    "p00",
    "p02",
    "p03",
-   "p05",
-   "p07",
-   "p08"
+   "p06",
+   "p08",
+   "p09"
   ]
  },
  "CAPP-Seq": {
@@ -1313,9 +1318,9 @@ window.TW_GLOSSARY = {
    "p00",
    "p01",
    "p02",
-   "p05",
    "p06",
-   "p08"
+   "p07",
+   "p09"
   ]
  },
  "iDES": {
@@ -1338,7 +1343,8 @@ window.TW_GLOSSARY = {
    "p03",
    "p04",
    "p05",
-   "p08"
+   "p06",
+   "p09"
   ]
  },
  "INVAR": {
@@ -1363,7 +1369,8 @@ window.TW_GLOSSARY = {
    "p05",
    "p06",
    "p07",
-   "p08"
+   "p08",
+   "p09"
   ]
  },
  "PhasED-seq": {
@@ -1381,9 +1388,9 @@ window.TW_GLOSSARY = {
    "p02",
    "p03",
    "p04",
-   "p05",
-   "p07",
-   "p08"
+   "p06",
+   "p08",
+   "p09"
   ]
  },
  "Lung-CLiP": {
@@ -1402,7 +1409,8 @@ window.TW_GLOSSARY = {
    "p03",
    "p04",
    "p05",
-   "p08"
+   "p06",
+   "p09"
   ]
  },
  "ichorCNA": {
@@ -1423,7 +1431,8 @@ window.TW_GLOSSARY = {
    "p05",
    "p06",
    "p07",
-   "p08"
+   "p08",
+   "p09"
   ]
  },
  "AccuScan": {
@@ -1443,8 +1452,9 @@ window.TW_GLOSSARY = {
    "p03",
    "p04",
    "p05",
-   "p07",
-   "p08"
+   "p06",
+   "p08",
+   "p09"
   ]
  },
  "NanoRCS": {
@@ -1463,8 +1473,9 @@ window.TW_GLOSSARY = {
    "p03",
    "p04",
    "p05",
-   "p07",
-   "p08"
+   "p06",
+   "p08",
+   "p09"
   ]
  },
  "SNV": {
@@ -1607,7 +1618,7 @@ window.TW_GLOSSARY = {
   "slug": "cpg",
   "modules": [
    "p02",
-   "p08"
+   "p09"
   ]
  },
  "ONT": {
@@ -1693,9 +1704,9 @@ window.TW_GLOSSARY = {
    "p02",
    "p03",
    "p04",
-   "p05",
-   "p07",
-   "p08"
+   "p06",
+   "p08",
+   "p09"
   ]
  },
  "panel": {
@@ -1777,6 +1788,20 @@ window.TW_GLOSSARY = {
   "slug": "molecule",
   "modules": [
    "p03"
+  ]
+ },
+ "recall": {
+  "zh_gloss": "敏感度／召回率",
+  "zh": "實際含腫瘤的檢體中，被正確判為陽性的比例 —— <code>TP / (TP + FN)</code>。本專案要求<b>依 TF 分層報告</b>：把 TF 1e-2 與 1e-4 的檢體混在一起算一個 recall，數字會被兩者的組成比例綁架，也會把「TF 越低越難」這個重點藏起來。與 <code>specificity</code> 互相交換 —— 放寬門檻可提高 recall，但同時降低特異度。",
+  "en": "The proportion of truly tumour-bearing samples correctly called positive, TP/(TP+FN). This project requires it to be reported stratified by tumour fraction: pooling samples at 1e-2 and 1e-4 into a single recall lets the mix of the two drive the number and hides the central point that lower tumour fractions are harder. It trades off against specificity: loosening the threshold raises recall and lowers specificity.",
+  "see": [
+   "specificity",
+   "LLOD",
+   "TF"
+  ],
+  "slug": "recall",
+  "modules": [
+   "p05"
   ]
  }
 };

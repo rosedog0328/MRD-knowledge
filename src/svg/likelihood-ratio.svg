@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 520">
+  <title>概似比：讓兩個假設各自解釋同一筆資料，看誰解釋得比較好</title>
+  <desc>本圖說明 INVAR 的廣義概似比檢定的直覺。
+        輸入是同一筆觀測資料：追蹤清單上的每個位點各自有幾條支持讀取、總深度多少、
+        該位點在腫瘤中的變異等位基因分率是多少、以及該位點的背景錯誤率。
+        接著讓兩個互相競爭的假設各自去解釋這同一筆資料。
+        左邊的假設是這份檢體完全不含循環腫瘤去氧核醣核酸，
+        亦即腫瘤含量參數為零，此時所有觀察到的支持讀取都必須由背景錯誤來解釋。
+        右邊的假設是這份檢體含有某個量的循環腫瘤去氧核醣核酸，
+        該量以最大概似估計求得，實際上用期望最大化演算法迭代兩百次。
+        兩個假設各自算出一個對數概似值，代表在該假設下觀測到這筆資料的可能性有多高。
+        概似比即為兩者相減：有腫瘤假設的對數概似減去無腫瘤假設的對數概似。
+        判讀方式是：概似比越大，代表含有循環腫瘤去氧核醣核酸這個解釋，
+        比不含這個解釋要好得越多。
+        圖右側說明這個做法為何不需要陰性樣本世代：
+        它的基準不是別人的樣本長什麼樣，而是同一筆資料在虛無假設下的概似，
+        因此基準完全由這份樣本自己提供。
+        圖下方另標出一個實作注意事項：
+        INVAR2 的原始碼另有一個把片段長度分布納入概似式的版本，
+        該版本假設樣本為游離去氧核醣核酸，對細胞株的基因體去氧核醣核酸並不適用。</desc>
+
+  <text class="ttl bold zh" x="20" y="34">概似比：讓兩個假設解釋同一筆資料，看誰解釋得比較好</text>
+
+  <defs>
+    <marker id="lr-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path class="conn" d="M0 0 L10 5 L0 10 z"/>
+    </marker>
+  </defs>
+
+  <!-- 輸入 -->
+  <rect class="box" x="20" y="56" width="620" height="86" rx="10"/>
+  <text class="anno bold zh" x="44" y="84">同一筆觀測資料</text>
+  <text class="tick zh" x="44" y="110">清單上每個位點：支持 read 數 M、深度 R、</text>
+  <text class="tick zh" x="44" y="132">該位點在腫瘤中的 VAF、該位點的背景錯誤率 e</text>
+
+  <path class="conn thick" d="M240 144 L190 176" marker-end="url(#lr-a)"/>
+  <path class="conn thick" d="M420 144 L470 176" marker-end="url(#lr-a)"/>
+
+  <!-- 假設 A -->
+  <rect class="box" x="20" y="184" width="290" height="160" rx="10"/>
+  <text class="anno bold mid zh" x="165" y="214">假設 A：沒有 ctDNA</text>
+  <text class="tick mid zh" x="165" y="242">腫瘤含量 p = 0</text>
+  <text class="tick mid zh" x="165" y="270">所有支持 read 都得</text>
+  <text class="tick mid zh" x="165" y="292">由背景錯誤來解釋</text>
+  <rect class="box plain" x="44" y="304" width="242" height="30" rx="6"/>
+  <text class="anno bold mid zh" x="165" y="326">算出 log L(p = 0)</text>
+
+  <!-- 假設 B -->
+  <rect class="box" x="350" y="184" width="290" height="160" rx="10"/>
+  <text class="anno bold mid zh" x="495" y="214">假設 B：含有 ctDNA</text>
+  <text class="tick mid zh" x="495" y="242">腫瘤含量 p = 最可能的值</text>
+  <text class="tick mid zh" x="495" y="270">以 EM 演算法迭代 200 次</text>
+  <text class="tick mid zh" x="495" y="292">求最大概似估計</text>
+  <rect class="box plain" x="374" y="304" width="242" height="30" rx="6"/>
+  <text class="anno bold mid zh" x="495" y="326">算出 log L(p = p̂)</text>
+
+  <!-- 相減 -->
+  <path class="conn thick" d="M165 346 L165 372"/>
+  <path class="conn thick" d="M495 346 L495 372"/>
+  <path class="conn thick" d="M165 372 L495 372"/>
+  <path class="conn thick" d="M330 372 L330 394" marker-end="url(#lr-a)"/>
+
+  <rect class="box" x="20" y="402" width="620" height="94" rx="10"/>
+  <text class="anno bold accent mid zh" x="330" y="432">概似比 LR = log L(p = p̂) − log L(p = 0)</text>
+  <text class="tick mid zh" x="330" y="460">LR 越大 = 「含有 ctDNA」比「不含」解釋得越好</text>
+  <text class="tick mid zh" x="330" y="484">判定就是拿 LR 跟門檻比</text>
+
+  <!-- 右欄 -->
+  <rect class="box" x="660" y="56" width="320" height="180" rx="10"/>
+  <text class="anno bold ok zh" x="684" y="86">為何不需要陰性樣本世代</text>
+  <text class="tick zh" x="684" y="118">它的基準不是「別人的樣本</text>
+  <text class="tick zh" x="684" y="140">長什麼樣」，</text>
+  <text class="anno bold zh" x="684" y="172">而是同一筆資料在</text>
+  <text class="anno bold zh" x="684" y="196">虛無假設下的概似</text>
+  <text class="tick zh" x="684" y="222">→ 基準由這份樣本自己提供</text>
+
+  <rect class="box" x="660" y="252" width="320" height="140" rx="10"/>
+  <text class="anno bold zh" x="684" y="282">輸入只需要四個量</text>
+  <text class="tick zh" x="684" y="312">M（支持 read 數）</text>
+  <text class="tick zh" x="684" y="336">R（深度）</text>
+  <text class="tick zh" x="684" y="360">AF（腫瘤中的 VAF）</text>
+  <text class="tick zh" x="684" y="384">e（背景錯誤率）</text>
+
+  <rect class="box plain" x="660" y="402" width="320" height="94" rx="10"/>
+  <text class="anno bold somatic zh" x="684" y="430">⚠ 實作注意</text>
+  <text class="tick zh" x="684" y="456">原始碼另有納入片段長度的</text>
+  <text class="tick zh" x="684" y="478">版本 —— 那版假設樣本是</text>
+  <text class="tick zh" x="684" y="500">cfDNA，對細胞株 gDNA 不適用</text>
+</svg>

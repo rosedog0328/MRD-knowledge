@@ -1,0 +1,226 @@
+<!--tw
+{
+  "objectives": [
+    "說明六種決定門檻的方式各自把基準建立在什麼上",
+    "依「基準從哪裡來」把六種方式歸為三類，並說明各自需要幾個陰性樣本",
+    "說明陰性樣本為何是稀缺資源，以及一份樣本只能有一個角色的理由",
+    "陳述在陰性樣本稀缺時可用的兩條路徑及其一線期刊先例"
+  ]
+}
+-->
+
+<section data-part="why">
+<h2>為什麼重要</h2>
+
+<p class="prose">上一步算出了一個分數。但<b>分數本身不是判定</b> ——
+還要決定「高到多少才算有腫瘤」。這條線畫在哪裡，直接決定了
+[[specificity|特異度]]、[[recall|敏感度]]，以及最後報出來的[[LLOD|偵測極限]]。</p>
+
+<p class="prose">這一步的難處不在統計，而在<b>資源</b>。
+要知道門檻該畫在哪，必須先知道「沒有腫瘤時分數長什麼樣」——
+而這需要[[control cohort|陰性樣本]]。</p>
+
+<p class="prose">陰性樣本是<b>稀缺資源</b>，而且有一條嚴格的紀律：
+<b>用來定門檻的樣本，不能再拿去算特異度</b>。
+所以「要花幾個陰性樣本」往往才是選擇門檻方式時的第一個判準。</p>
+</section>
+
+
+<section data-part="concept">
+<h2>基準從哪裡來：三類、六種</h2>
+
+<p class="prose">六種決定門檻的方式，差別不在統計手法，
+而在<b>「沒有腫瘤時分數長什麼樣」這個基準是從哪裡來的</b>。</p>
+
+{{svg:threshold-sources | 六種門檻決定方式依基準來源分成三類。第一類最直觀但最耗樣本，第三類完全不需樣本但完全依賴模型假設。}}
+
+<h3>一 · 從專用的陰性樣本量出來</h3>
+
+<p class="prose">最直觀，也是論文中最常見的：
+收一批確定不含腫瘤的樣本，用<b>完全相同的流程</b>各自算出分數，
+得到一個分布，門檻畫在這個分布的上緣。</p>
+
+{{svg:negative-control | 沒有基準時單一個分數無法解讀。先用確定不含腫瘤的樣本量出分布，門檻才有依據。}}
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>方法</th><th>基準怎麼建</th><th>要幾個陰性樣本</th></tr></thead>
+<tbody>
+<tr><td>[[MRDetect]]、[[MRD-EDGE]]</td>
+    <td>對照血漿的 [[Z-score]] 分布，取 95% [[specificity|特異度]]對應的 Z</td>
+    <td><b>30</b></td></tr>
+<tr><td>[[ichorCNA]]</td>
+    <td>27 位健康捐贈者的逐 bin 中位數當參考集</td>
+    <td><b>27</b></td></tr>
+<tr><td>[[iDES]]</td>
+    <td>[[background polishing|背景拋光]]的訓練世代</td>
+    <td><b>12</b></td></tr>
+<tr><td>[[NanoRCS]]</td>
+    <td>與健康對照的背景水準比（Fisher's exact test）</td>
+    <td><b>7</b></td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="prose"><b>代價</b>：樣本數要求高，而且這些樣本一旦拿去定門檻，
+就<b>不能再充當測試集的陰性樣本</b>去算特異度。</p>
+
+<h3>二 · 借用其他病人的樣本</h3>
+
+<p class="prose">這一類利用了一個生物學事實：<b>任兩個人的體細胞突變幾乎不重疊</b>。</p>
+
+<p class="prose">所以把 A 病人的變異清單套到 B 病人的血漿資料上時，
+理論上不該找到任何訊號 —— <b>B 的樣本天然就是 A 的陰性對照</b>，
+不必另外收集健康人的樣本。</p>
+
+<p class="prose">[[INVAR]] 以此做 ROC 分析決定 likelihood ratio 門檻，
+硬性要求[[specificity|特異度]] <b>≥ 90%</b>，實測中位達 <b>95.0%</b>；
+另用打亂的突變清單重跑，特異度 97%。[[MRD-EDGE]] 亦採用同樣的做法。</p>
+
+<p class="prose"><b>代價</b>：不需要專用的陰性樣本，
+但需要<b>多位病人的資料</b>；而且它借的是「其他病人」而非「健康人」，
+若那些病人本身帶有 ctDNA，仍可能貢獻少量背景。</p>
+
+<h3>三 · 由統計模型直接推導</h3>
+
+<p class="prose">完全不用陰性樣本。做法是<b>先設定一個[[nominal specificity|名目特異度]]</b>
+（例如 99%），再由背景錯誤模型<b>反推</b>對應的門檻在哪裡。</p>
+
+<p class="prose">[[AccuScan]] 採用這條路，而它能這樣做的關鍵在於
+<b>背景錯誤模型由該樣本自己量測</b>（見 <a href="p04.html">p04</a> 的 ③）——
+既然背景是就地量出來的，門檻自然也能就地推出來。</p>
+
+<p class="prose">驗證結果：cVAF = 0 時實測特異度在所有條件下 ≥ 98.8%（模擬）
+與 ≥ 99%（實測 21 個混合樣本，2K／5K／10K／20K 標的皆是）。
+[[iDES]] 的 read support 門檻也是由 {{m: p = 1 − e^{−n·d·k}}} 直接推導。</p>
+
+<p class="prose"><b>代價</b>：<b>完全依賴模型假設是否成立</b>。
+名目特異度 99% 只有在背景錯誤模型正確時才等於實際特異度 99%。</p>
+
+<h3>六種一覽</h3>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>類</th><th>方式</th><th>方法</th><th>要幾個陰性樣本</th></tr></thead>
+<tbody>
+<tr><td rowspan="4"><b>一</b><br>專用陰性樣本</td>
+    <td>對照世代的 [[Z-score]]（spec 95%）</td><td>[[MRDetect]]、[[MRD-EDGE]]</td><td><b>30</b></td></tr>
+<tr><td>健康捐贈者參考集</td><td>[[ichorCNA]]</td><td><b>27</b></td></tr>
+<tr><td>[[background polishing|背景拋光]]的訓練世代</td><td>[[iDES]]</td><td><b>12</b></td></tr>
+<tr><td>與健康對照背景比（Fisher's exact）</td><td>[[NanoRCS]]</td><td>7</td></tr>
+<tr><td><b>二</b><br>借別人的樣本</td>
+    <td><b>[[cross-patient control|跨病人陰性對照]] + ROC</b></td><td><b>[[INVAR]]</b>、[[MRD-EDGE]]</td>
+    <td><b>0 個專用</b></td></tr>
+<tr><td><b>三</b><br>統計模型</td>
+    <td><b>[[nominal specificity|設定名目特異度]]反推</b></td><td><b>[[AccuScan]]</b>、[[iDES]]</td>
+    <td><b>0</b></td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+
+<section data-part="evidence">
+<h2>為什麼「花幾個陰性樣本」是關鍵</h2>
+
+<h3>一份樣本只能有一個角色</h3>
+
+{{guard:11 | 提供過任何擬合量的樣本，不得再充當測試集的陰性樣本}}
+<p class="prose">凡是<b>從資料學出來的量都算擬合</b>，不只是模型權重 ——
+還包括<b>判定門檻</b>、標準化參數、以及（若沿用 [[Z-score]]）{{m: μ}} 與 {{m: σ}}。</p>
+<p class="prose">用來提供這些量的陰性樣本，若又拿去算[[specificity|特異度]]，
+等於<b>用訓練資料證明自己不會誤判</b>——
+那個特異度數字再漂亮也沒有意義。</p>
+<p class="prose">這條紀律與論文無關，不因換掉 Z-score 而消失。
+但<b>哪些樣本拿去擬合是自由的設計選擇</b> ——
+若改用不需陰性樣本的門檻（上表的二、三類），
+原本綁在估參數上的樣本即可釋出，改派為測試集的陰性樣本。</p>
+{{/guard}}
+
+<p class="prose">這就是為什麼「要花幾個陰性樣本」不是成本問題，而是<b>設計問題</b>：
+陰性樣本同時是「定門檻用」與「算特異度用」的唯一來源。
+花在前者，後者就沒有了。</p>
+
+<h3>作者自己也承認逐世代定門檻不是長久之計</h3>
+
+{{guard:10 | INVAR 作者自承：逐 cohort 定門檻不是長久之計}}
+<p class="prose">[[INVAR]] 在 Discussion 中寫道，其效能是以
+「ROC analysis <b>across individual cohorts</b>」評估的，
+但「when applied at scale, it would be <b>desirable to set a fixed
+specificity threshold</b>」。</p>
+<p class="prose">換言之，作者自己認為<b>逐世代重新畫 ROC 定門檻只是權宜之計</b>，
+規模化時應改為固定特異度門檻。</p>
+<p class="prose">這對應到一條通則：門檻只能用訓練／驗證樣本決定，
+決定後<b>凍結並寫入報告</b>，再跑測試集 —— 詳見 <a href="p06.html">p06</a>。</p>
+{{/guard}}
+
+<h3>Lung-CLiP 的多工作點報告法</h3>
+
+<p class="prose">[[Lung-CLiP]] 沒有只報一個門檻，而是<b>依臨床用途報告兩個工作點</b>：</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>工作點</th><th>用途</th><th>stage I</th><th>stage II</th><th>stage III</th></tr></thead>
+<tbody>
+<tr><td><b>98% [[specificity|特異度]]</b></td><td>獨立篩檢工具，須最小化偽陽性</td><td>41%</td><td>54%</td><td>67%</td></tr>
+<tr><td><b>80% 特異度</b></td><td>影像檢查前的初篩，偽陽性可接受</td><td>63%</td><td>69%</td><td>75%</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="prose">同一個模型、同一批資料，只是門檻不同 —— stage I 的敏感度就從 41% 變成 63%。
+這說明<b>只報一個數字很容易誤導</b>。</p>
+
+<p class="prose">作者的作法比只挑一個最漂亮的數字誠實，
+且明確把門檻的選擇與<b>使用情境</b>綁定：
+當作獨立篩檢工具時偽陽性代價高，門檻要嚴；
+當作影像檢查前的初篩時偽陽性可接受，門檻可鬆。</p>
+</section>
+
+
+<section data-part="predict">
+<h2>陰性樣本稀缺時的兩條路</h2>
+
+<p class="prose">若手上只有個位數的獨立陰性個體，第一類的四種方式（需要 7–30 個）全都用不了。
+但第二、三類不受此限：</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>解法</th><th>作法</th><th>先例</th></tr></thead>
+<tbody>
+<tr>
+  <td><b>用其他個體的樣本當陰性對照</b></td>
+  <td>把 A 的變異清單套到 B 的樣本上 —— 任兩個個體的 somatic 變異幾乎不重疊，故 B 自然是 A 的陰性對照</td>
+  <td>[[INVAR]]（Science Translational Medicine）：要求[[specificity|特異度]] ≥90%，實測中位 95%<br>[[MRD-EDGE]] 亦採此法</td>
+</tr>
+<tr>
+  <td><b>完全不用陰性樣本</b></td>
+  <td>設定[[nominal specificity|名目特異度]]（如 99%），由背景錯誤模型直接反推門檻</td>
+  <td>[[AccuScan]]（Nature Communications）：背景由樣本自身量測；實測特異度 ≥99%</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<p class="prose">兩條路都有一線期刊的先例，不是權宜之計。
+但它們付的代價不同：第二條需要多位病人的資料，
+第三條把風險全押在背景錯誤模型的正確性上。</p>
+</section>
+
+
+<section data-part="practice">
+<h2>小結</h2>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>觀察</th><th>依據</th></tr></thead>
+<tbody>
+<tr><td>六種門檻方式的差別在「基準從哪裡來」，可歸為三類</td><td>11 篇 s5</td></tr>
+<tr><td>第一類需 7–30 個陰性樣本，且那些樣本不能再算特異度</td><td>MRDetect 30、ichorCNA 27、iDES 12、NanoRCS 7</td></tr>
+<tr><td><b>陰性樣本稀缺有兩條解法，皆有一線期刊先例</b></td><td>INVAR s5、AccuScan s5</td></tr>
+<tr><td>INVAR 作者自承逐 cohort 定門檻不是長久之計</td><td>INVAR Discussion</td></tr>
+<tr><td>門檻應與使用情境綁定，並報告多個工作點</td><td>Lung-CLiP s5（98% vs 80% 特異度）</td></tr>
+</tbody>
+</table>
+</div>
+</section>

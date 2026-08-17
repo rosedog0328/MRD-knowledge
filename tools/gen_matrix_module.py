@@ -3,7 +3,7 @@
 
 用法：python3 tools/gen_matrix_module.py
 
-輸出：src/modules/p06-matrix.html
+輸出：src/modules/p07-matrix.html
 **不要手改該檔** —— 改 dissection 的 JSON 後重跑本腳本，再跑 build.mjs。
 """
 import json
@@ -13,7 +13,7 @@ from pathlib import Path
 
 BASE = Path(__file__).resolve().parent.parent
 SRC = Path("/big8_disk/pingting114/MRD_detection/docs/paper/dissection")
-OUT = BASE / "src" / "modules" / "p06-matrix.html"
+OUT = BASE / "src" / "modules" / "p07-matrix.html"
 
 STEPS = [
     ("s1_compendium",      "① 追蹤標的"),

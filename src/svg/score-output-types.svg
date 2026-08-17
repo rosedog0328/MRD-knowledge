@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560">
+  <title>八種聚合方法輸出的是四種不同的東西</title>
+  <desc>本圖說明八種把多位點觀測聚合成單一分數的方法，
+        它們的輸出可以分成四類，彼此的解讀方式完全不同。
+        第一類是標準化分數，代表這份檢體比正常人高出幾個標準差，
+        使用者為 MRDetect 與 MRD-EDGE，
+        其中 MRD-EDGE 另以 Stouffer 方法合併多個獨立的標準化分數。
+        這一類需要陰性樣本世代才能估出平均值與標準差。
+        第二類是機率或概似，代表在統計模型下，
+        觀測到的資料有多不可能只是背景造成的。
+        使用者為 iDES 與 PhasED-seq 的偵測機率模型、
+        AccuScan 的二項式對數概似、以及 INVAR 的廣義概似比。
+        這一類不需要陰性樣本世代，因為基準由統計模型或樣本自身提供。
+        第三類是直接估計腫瘤分數，
+        亦即反推哪一個腫瘤分數最能解釋觀測到的資料，
+        使用者為 NanoRCS 的蒙地卡羅模擬與 ichorCNA 的隱藏馬可夫模型。
+        ichorCNA 需要健康捐贈者參考集，蒙地卡羅則不需要。
+        第四類是學習得到的機率，由分類器輸出零到一之間的數值，
+        使用者為 Lung-CLiP，需要訓練資料。
+        圖最下方指出這個分類的用途：
+        四類的輸出不是同一種東西，不能直接比大小，
+        選哪一類的第一個判準是手上有沒有陰性樣本可用。</desc>
+
+  <text class="ttl bold zh" x="20" y="34">八種聚合方法，輸出的是四種不同的東西</text>
+
+  <rect class="box plain" x="20" y="52" width="960" height="44" rx="8"/>
+  <text class="tick zh" x="44" y="80">八種都在做同一件事 —— 把成千上萬個弱觀測合成一個數。但合出來的「數」代表什麼，分成四類。</text>
+
+  <!-- ══ 一 ══ -->
+  <rect class="box" x="20" y="110" width="960" height="100" rx="10"/>
+  <text class="anno bold accent zh" x="44" y="140">一 · 標準化分數</text>
+  <text class="tick zh" x="44" y="166">比正常人高幾個</text>
+  <text class="tick zh" x="44" y="188">標準差</text>
+
+  <text class="tick zh" x="270" y="140">解讀：Z = 2 代表比陰性樣本的平均高兩個標準差</text>
+  <text class="tick zh" x="270" y="166">MRDetect · MRD-EDGE（另用 Stouffer 合併多個獨立 Z）</text>
+  <text class="anno bold somatic zh" x="270" y="194">⚠ 需要陰性樣本世代才能估 μ、σ</text>
+
+  <!-- ══ 二 ══ -->
+  <rect class="box" x="20" y="222" width="960" height="100" rx="10"/>
+  <text class="anno bold accent zh" x="44" y="252">二 · 機率／概似</text>
+  <text class="tick zh" x="44" y="278">在統計模型下，</text>
+  <text class="tick zh" x="44" y="300">有多不像純背景</text>
+
+  <text class="tick zh" x="270" y="252">解讀：「若真的沒有腫瘤，看到這筆資料有多不可能」</text>
+  <text class="tick zh" x="270" y="278">iDES · PhasED-seq（偵測機率）· AccuScan（二項對數概似）· INVAR（概似比）</text>
+  <text class="anno bold ok zh" x="270" y="306">✓ 不需要陰性樣本世代 —— 基準由模型或樣本自身提供</text>
+
+  <!-- ══ 三 ══ -->
+  <rect class="box" x="20" y="334" width="960" height="100" rx="10"/>
+  <text class="anno bold accent zh" x="44" y="364">三 · 直接估 TF</text>
+  <text class="tick zh" x="44" y="390">反推哪個腫瘤分數</text>
+  <text class="tick zh" x="44" y="412">最能解釋觀測</text>
+
+  <text class="tick zh" x="270" y="364">解讀：輸出本身就有物理意義（這份檢體的 TF 大約是多少）</text>
+  <text class="tick zh" x="270" y="390">NanoRCS（蒙地卡羅模擬）· ichorCNA（HMM）</text>
+  <text class="tick zh" x="270" y="418">蒙地卡羅不需陰性樣本；ichorCNA 需 27 個健康捐贈者參考集</text>
+
+  <!-- ══ 四 ══ -->
+  <rect class="box" x="20" y="446" width="960" height="76" rx="10"/>
+  <text class="anno bold accent zh" x="44" y="476">四 · 學出來的機率</text>
+  <text class="tick zh" x="44" y="502">分類器輸出 0–1</text>
+
+  <text class="tick zh" x="270" y="476">解讀：模型認為「這份檢體含腫瘤」的可能性</text>
+  <text class="tick zh" x="270" y="502">Lung-CLiP（樣本層級 ensemble）　⚠ 需要訓練資料</text>
+
+  <text class="tick zh" x="44" y="546">四類的輸出不是同一種東西，不能直接比大小。選哪一類，第一個判準是<tspan class="bold">手上有沒有陰性樣本可用</tspan>。</text>
+</svg>
