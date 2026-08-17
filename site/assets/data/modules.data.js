@@ -69,11 +69,11 @@ window.TW_MODULES = [
  {
   "id": "p06",
   "num": "6",
-  "title_zh": "⑥ 評估與切分紀律",
-  "title_en": "Evaluation and split discipline",
-  "short": "評估紀律",
+  "title_zh": "⑥ 報出來的數字能不能相信",
+  "title_en": "Can the reported numbers be trusted",
+  "short": "⑥ 能不能相信",
   "q": "怎麼證明報出來的數字不是過度擬合？",
-  "sub": "11 篇的切分紀律分級、LLOD 總表與不可比較的前提，以及作者自承限制的彙整。",
+  "sub": "同一組結果，換個訓練／測試的切法就會變。本頁看 11 篇各自怎麼證明自己沒有過度擬合，以及偵測極限為何不能跨方法比較。",
   "est_min": 35,
   "group": "方法細節"
  },

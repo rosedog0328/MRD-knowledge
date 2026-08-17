@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>⑥ 評估與切分紀律 · MRD 偵測方法知識庫</title>
-<meta name="description" content="11 篇的切分紀律分級、LLOD 總表與不可比較的前提，以及作者自承限制的彙整。">
+<title>⑥ 報出來的數字能不能相信 · MRD 偵測方法知識庫</title>
+<meta name="description" content="同一組結果，換個訓練／測試的切法就會變。本頁看 11 篇各自怎麼證明自己沒有過度擬合，以及偵測極限為何不能跨方法比較。">
 <link rel="stylesheet" href="assets/css/tokens.css">
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/layout.css">
@@ -54,7 +54,7 @@
 
 <div class="wrap ">
   <main class="main" id="main">
-    <header class="mhead"><p class="mhead__kicker">模組 6 · Evaluation and split discipline</p><h1>⑥ 評估與切分紀律</h1><p class="mhead__sub">11 篇的切分紀律分級、LLOD 總表與不可比較的前提，以及作者自承限制的彙整。</p><p class="mhead__meta"><span class="chip">約 35 分鐘</span><a class="chip" href="p04.html">建議先修：④ 樣本層分數</a></p></header><section class="objectives"><h2>本模組學習目標</h2><ul><li>區分 read 層級與樣本層級的判定單元，並說明兩者的指標為何不可互相取代</li><li>依切分紀律的嚴謹程度為 11 篇分級，並指出多數論文未明確聲明的部分</li><li>陳述偵測極限不可跨方法直接比較的三個前提</li><li>彙整 11 篇作者自承的限制，作為評估各方法適用範圍的依據</li></ul></section>
+    <header class="mhead"><p class="mhead__kicker">模組 6 · Can the reported numbers be trusted</p><h1>⑥ 報出來的數字能不能相信</h1><p class="mhead__sub">同一組結果，換個訓練／測試的切法就會變。本頁看 11 篇各自怎麼證明自己沒有過度擬合，以及偵測極限為何不能跨方法比較。</p><p class="mhead__meta"><span class="chip">約 35 分鐘</span><a class="chip" href="p05.html">建議先修：⑤ 門檻</a></p></header><section class="objectives"><h2>本模組學習目標</h2><ul><li>區分 read 層級與樣本層級的判定單元，並說明兩者的指標為何不可互相取代</li><li>依「訓練與測試是否分開」的嚴謹程度為 11 篇分級，並指出多數論文未明確聲明的部分</li><li>陳述偵測極限不可跨方法直接比較的三個前提</li><li>彙整 11 篇作者自承的限制，作為評估各方法適用範圍的依據</li></ul></section>
 
 <section data-part="why" class="part" id="part-why">
 <h2 data-num="①" id="為什麼重要">為什麼重要</h2>
@@ -72,7 +72,7 @@
 
 
 <section data-part="concept" class="part" id="part-concept">
-<h2 data-num="②" id="兩個判定層級">兩個判定層級</h2>
+<h2 data-num="②" id="先分清楚-你在判定什麼">先分清楚：你在判定什麼</h2>
 
 <figure class="dia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 420" class="dia-svg" role="img" aria-labelledby="sample-vs-read-level__title" aria-describedby="sample-vs-read-level__desc">
   <title id="sample-vs-read-level__title">樣本層級與 read 層級的判定單元不同，兩者的指標不可互相取代</title>
@@ -190,7 +190,7 @@ normal-only 判有癌為 FP。</p>
 
 
 <section data-part="evidence" class="part" id="part-evidence">
-<h2 data-num="③" id="切分紀律-11-篇的分級">切分紀律：11 篇的分級</h2>
+<h2 data-num="③" id="訓練與測試有沒有分開-11-篇的分級">訓練與測試有沒有分開：11 篇的分級</h2>
 
 <div class="table-wrap">
 <table>
@@ -358,7 +358,7 @@ WGS 方法僅 20–120 倍。同樣的 LLOD 在兩者代表完全不同的技術
     <nav class="pager" aria-label="模組導覽"><a class="prev" href="p05.html"><small>← 上一模組</small>⑤ 分數要多高才算「有」</a><a class="next" href="p07.html"><small>下一模組 →</small>逐篇完整規格矩陣</a></nav>
     <section class="glossary-appendix"><h2>本模組術語</h2><dl><dt>AccuScan（AccuScan）</dt><dd>2024 年的 WGS MRD 方法（EMBO Mol Med）。用 <b>RCA concatemer</b> 讓錯誤校正在單一 read 內完成，錯誤率 4.2e-7、LOD 達 cVAF 1e-6。<b>背景錯誤率由樣本自身量測、門檻由統計模型反推，皆不需 control 世代。</b></dd><dt>CAPP-Seq（CAPP-Seq）</dt><dd>Stanford 2014 年的方法（Nat Med），整個 patient-specific panel 家族的共同祖先。用演算法設計 selector 使每位病人都被覆蓋到多個突變。LLOD 約 0.02%。⚠️ stage I 敏感度僅 50% —— 這個限制催生了後續十年的方法演進。</dd><dt>IMAF（整合突變等位基因分率）</dt><dd>INVAR 的量化輸出：跨所有病人專屬位點取<b>背景扣除後、深度加權</b>的平均 allele fraction。用整合取代單點量測，以降低抽樣噪音。</dd><dt>INVAR（INVAR）</dt><dd>劍橋 Rosenfeld lab 2020 年的方法（Sci Transl Med）。與 MRDetect 同期同目標但<b>走純統計路線不用 ML</b>：四層誤差抑制疊加（背景降 131×），以 likelihood ratio 判定，並<b>用其他病人的樣本當陰性對照定門檻</b>。有開源碼（INVAR2）。</dd><dt>LLOD（偵測極限）</dt><dd>能被可靠偵測到的最低 TF。<b>報告時必須附條件</b>：定序深度、位點數、以及對應的 specificity。不同方法的 LLOD 若深度與位點數不同，不可直接比較。</dd><dt>Landau gen3（Landau 第三代）</dt><dd>Landau lab 2025 年的第三代（Nat Methods）。改從<b>定序化學</b>解決：低成本 Ultima 平台做 ~120X 深度，加上全基因體 duplex 錯誤校正，錯誤率達 7.7e-7。<b>三代中唯一開源。</b> ⚠️ 作者自承 tumor-informed 情境下標準 WGS + 高輸入量可能更好。</dd><dt>Lung-CLiP（Lung-CLiP）</dt><dd>Stanford 2020 年的 tumor-naive 早期肺癌偵測（Nature）。<b>多層級 ML</b>：先估每個變異是腫瘤來源的機率，再與全基因體 CNA 整合成<b>病人層級分類器</b>。<b>切分紀律最嚴謹的一篇</b> —— 用不同機構前瞻收案的獨立驗證世代，並明文批評同世代交叉驗證。</dd><dt>MRD-EDGE（MRD-EDGE（第二代））</dt><dd>Landau lab 2024 年的續作（Nat Med）。把 SVM 換成 CNN + MLP ensemble，並加入 ctDNA 專屬生物特徵（SBS context、fragment length、regional epigenomics），訊噪比從 8.3× 提升到 118×。</dd><dt>MRDetect（MRDetect（第一代））</dt><dd>Landau lab 2020 年的方法（Nat Med），本專案的基準。核心是「廣度取代深度」：35X WGS + 全基因體數千個 SNV 累加，用線性 SVM 對單條 read 去噪（5 特徵）。LLOD 約 1e-5。⚠️ 程式碼未開源。</dd><dt>NanoRCS（NanoRCS）</dt><dd>UMC Utrecht 2025 年的方法（Genome Research）。<b>唯一一篇在 ONT 平台上做 cfDNA 腫瘤偵測的方法論文。</b> RCA + 長讀共識把 ONT 錯誤率從 Q21 降到 Q31（改善 9.4×），LOD 為 TF 0.24%。同時取 SNV、CNA、fragmentomics 三種訊號。</dd><dt>PhasED-seq（PhasED-seq）</dt><dd>Stanford 2021 年的方法（Nat Biotechnol）。<b>改變偵測單元</b>：不看單鹼基而看同一分子上的多個突變（phased variants），背景率降至 8.0e-7（2x）與 3.4e-8（3x），且不需分子條碼、不犧牲分子回收率。<b>其限制正好是 ONT 的優勢。</b></dd><dt>RCA（滾環擴增）</dt><dd>把 DNA 環化後沿環複製，產生含同一模板多份<b>串聯拷貝</b>的長分子（concatemer）。因此共識可以在<b>單一 read 之內</b>完成，不需要多條 read 或正反股配對。AccuScan 與 NanoRCS 皆採此法。</dd><dt>TF（腫瘤分數的縮寫）</dt><dd><code>tumor fraction</code>（腫瘤分數）的縮寫，本知識庫全篇使用。定義為樣本中源自腫瘤的 DNA 佔全部 DNA 的比例，代表<b>訊號的強度</b>。MRD 情境的量級為 10⁻⁵ – 10⁻⁶，與定序機本身的錯誤率同一個數量級 —— 這正是整個領域的核心困難。它由病人的疾病狀態決定，<b>不是可以由設計調整的參數</b>。</dd><dt>held-out（保留測試集）</dt><dd>完全不參與任何擬合步驟（模型、門檻、scaler、μ/σ）的樣本，凍結後只跑一次，用以產生對外報告的數字。<b>提供過任何擬合量的樣本不得再充當 held-out。</b></dd><dt>iDES（iDES）</dt><dd>Stanford 2016 年的 CAPP-Seq 改良（Nat Biotechnol）。整合分子條碼與 <b>background polishing</b>（逐位置逐取代類型建背景分布），兩者各約 3× 改善、合併達 ~15×，偵測極限降到 0.0025%。<b>其 background polishing 是本專案最可直接移植的降噪法。</b></dd><dt>ichorCNA（ichorCNA）</dt><dd>Broad Institute 2017 年的工具（Nat Commun）。從 <b>0.1× 超低深度 WGS</b> 估 tumor fraction，不需事先知道腫瘤變異。用 HMM 同時預測 CNA 片段與估 TF。<b>MRDetect 三代都在用它。</b> ⚠️ 偵測下限 TF 3%，遠高於 MRD 目標區間。</dd><dt>informative reads（有效讀取）</dt><dd>實際覆蓋到 compendium 位點、因而能提供資訊的 read 數。INVAR 用它作為分母，並據此<b>為每個樣本各自估計偵測極限</b>，而非全體共用一條線。</dd><dt>marker（標的）</dt><dd>與 reporter 同義，AccuScan 等論文使用的稱呼。實測顯示 marker 數對偵測率影響極大：在 cVAF 1e-5 下，2K/5K/10K/20K 個 marker 分別給出 38%/77%/96%/100% 的偵測率。</dd><dt>patient-specific panel（個人化探針組）</dt><dd>為單一病人客製的捕捉探針組，只針對該病人腫瘤的變異設計。INVAR、Signatera、PhasED-seq 皆屬此類。位點數少但每位點深度極高，與 WGS 路線形成對照。</dd><dt>phased variant（同相變異）</dt><dd>位於<b>同一條 DNA 分子上</b>的兩個以上體細胞突變。因為兩個特定位置同時出錯的機率是相乘的，PV 的背景率遠低於單鹼基：2x PV 為 8.0e-7、3x 為 3.4e-8，<b>且不需要分子條碼</b>。</dd><dt>sample-level evaluation（樣本層級評估）</dt><dd>本專案的硬性規定：TP/FP/FN/TN 的判斷單元是<b>一個檢體（一個 BAM）</b>，不是一條 read、不是一個位點。read 層去噪器的 F1/AUC 是內部品質指標，<b>不得</b>當成偵測效能報告。</dd><dt>specificity（特異度）</dt><dd>陰性樣本被正確判為陰性的比例：TN/(TN+FP)。<b>因為只由陰性樣本算出，不受陽性/陰性樣本組成比例影響</b>，是跨研究比較的主指標（Precision 與 F1 則會被 prevalence 綁架）。</dd><dt>tumor fraction（腫瘤分數）</dt><dd>樣本中源自腫瘤的 DNA 佔全部 DNA 的比例。MRD 情境常低至 10⁻⁵ 甚至 10⁻⁶。本專案因使用純細胞株（purity≈1），混合時的 tumor read 比例即等同 TF。</dd><dt>tumor-informed（腫瘤資訊導向）</dt><dd>先對病人的腫瘤定序，取得其專屬變異清單，再到血漿中專門搜尋這些位點。敏感度高，代價是必須取得腫瘤檢體。本專案走這條路線。</dd></dl></section>
   </main>
-  <nav class="toc--sticky" aria-label="本頁目錄"><h2>本頁目錄</h2><ol><li class="lv2"><a href="#為什麼重要">為什麼重要</a></li><li class="lv2"><a href="#兩個判定層級">兩個判定層級</a></li><li class="lv2"><a href="#切分紀律-11-篇的分級">切分紀律：11 篇的分級</a></li><li class="lv3"><a href="#lung-clip-的原文">Lung-CLiP 的原文</a></li><li class="lv3"><a href="#共同點-三件事-11-篇全部做到">共同點：三件事 11 篇全部做到</a></li><li class="lv2"><a href="#偵測極限總表">偵測極限總表</a></li><li class="lv3"><a href="#作者自承的限制">作者自承的限制</a></li><li class="lv2"><a href="#小結">小結</a></li></ol></nav>
+  <nav class="toc--sticky" aria-label="本頁目錄"><h2>本頁目錄</h2><ol><li class="lv2"><a href="#為什麼重要">為什麼重要</a></li><li class="lv2"><a href="#先分清楚-你在判定什麼">先分清楚：你在判定什麼</a></li><li class="lv2"><a href="#訓練與測試有沒有分開-11-篇的分級">訓練與測試有沒有分開：11 篇的分級</a></li><li class="lv3"><a href="#lung-clip-的原文">Lung-CLiP 的原文</a></li><li class="lv3"><a href="#共同點-三件事-11-篇全部做到">共同點：三件事 11 篇全部做到</a></li><li class="lv2"><a href="#偵測極限總表">偵測極限總表</a></li><li class="lv3"><a href="#作者自承的限制">作者自承的限制</a></li><li class="lv2"><a href="#小結">小結</a></li></ol></nav>
 </div>
 
 <footer class="site-footer">
