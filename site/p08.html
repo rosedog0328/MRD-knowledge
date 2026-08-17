@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>跨論文統整：三條主線 · MRD 偵測方法知識庫</title>
-<meta name="description" content="取捨三角、訊號模態的硬界線、以及同一實驗室三代方法的演進所揭示的天花板。">
+<title>一條時間軸與一條硬界線 · MRD 偵測方法知識庫</title>
+<meta name="description" content="有些東西的形狀不是「一個步驟」—— 三篇論文其實是同一個實驗室的連續嘗試，以及一條決定「哪種訊號在哪個 TF 區間會整個失效」的界線。">
 <link rel="stylesheet" href="assets/css/tokens.css">
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/layout.css">
@@ -54,218 +54,43 @@
 
 <div class="wrap ">
   <main class="main" id="main">
-    <header class="mhead"><p class="mhead__kicker">模組 8 · Three cross-cutting themes</p><h1>跨論文統整：三條主線</h1><p class="mhead__sub">取捨三角、訊號模態的硬界線、以及同一實驗室三代方法的演進所揭示的天花板。</p><p class="mhead__meta"><span class="chip">約 30 分鐘</span><a class="chip" href="p06.html">建議先修：⑥ 能不能相信</a></p></header><section class="objectives"><h2>本模組學習目標</h2><ul><li>說明降噪方法在錯誤率、可用分子數與涵蓋廣度之間的三向取捨</li><li>指出訊號模態在腫瘤分數三個百分點處的適用界線，及其兩個獨立來源</li><li>依三代方法的演進，說明錯誤抑制路線的轉折與作者自身留下的轉折</li><li>陳述 11 篇方法的共同結構，並說明其對本專案設計的意涵</li></ul></section>
+    <header class="mhead"><p class="mhead__kicker">模組 8 · A hidden timeline and a hard floor</p><h1>一條時間軸與一條硬界線</h1><p class="mhead__sub">有些東西的形狀不是「一個步驟」—— 三篇論文其實是同一個實驗室的連續嘗試，以及一條決定「哪種訊號在哪個 TF 區間會整個失效」的界線。</p><p class="mhead__meta"><span class="chip">約 30 分鐘</span><a class="chip" href="p06.html">建議先修：⑥ 能不能相信</a></p></header><section class="objectives"><h2>本模組學習目標</h2><ul><li>說明 MRDetect、MRD-EDGE 與第三代其實是同一實驗室的三次改寫，以及第三次的轉向意味著什麼</li><li>指出訊號模態在腫瘤分數 3% 處的硬界線，及其兩個獨立來源</li><li>陳述 11 篇在六個步驟上真正的共同點，並指出唯一多數論文未做到的一項</li></ul></section>
 
 <section data-part="why" class="part" id="part-why">
 <h2 data-num="①" id="為什麼重要">為什麼重要</h2>
 
-<p class="prose">前五頁逐步驟比較，本頁處理只有把 11 篇放在一起才看得出來的三件事。</p>
+<p class="prose">前六頁都是<b>同一步的橫向比較</b>：這一步有哪些做法、各自的代價是什麼。
+那個框架很有用，但它有一個結構性的盲點 ——
+<b>有些東西的形狀不是「一個步驟」</b>，因此在任何一頁都放不下。</p>
 
-<p class="prose">這三條主線不存在於任何單一論文中 ——
-<span class="term" data-term="PhasED-seq" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-phased-seq-0">PhasED-seq<span class="term__pop" id="gd-phased-seq-0" role="tooltip"><b class="term__hd">PhasED-seq <i>PhasED-seq</i></b><span class="term__def" data-lang="zh">Stanford 2021 年的方法（Nat Biotechnol）。<b>改變偵測單元</b>：不看單鹼基而看同一分子上的多個突變（phased variants），背景率降至 8.0e-7（2x）與 3.4e-8（3x），且不需分子條碼、不犧牲分子回收率。<b>其限制正好是 ONT 的優勢。</b></span><span class="term__def" data-lang="en" lang="en">The 2021 Stanford method (Nat Biotechnol) that changes the unit of detection: instead of single bases it tracks multiple mutations on the same molecule (phased variants), lowering background to 8.0e-7 for doublets and 3.4e-8 for triplets without molecular barcodes and without sacrificing molecule recovery. Its key limitation is precisely where ONT holds an advantage.</span><a class="term__more" href="glossary.html#phased-seq">完整條目 →</a></span></span> 不會提 <span class="term" data-term="NanoRCS" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-nanorcs-1">NanoRCS<span class="term__pop" id="gd-nanorcs-1" role="tooltip"><b class="term__hd">NanoRCS <i>NanoRCS</i></b><span class="term__def" data-lang="zh">UMC Utrecht 2025 年的方法（Genome Research）。<b>唯一一篇在 ONT 平台上做 cfDNA 腫瘤偵測的方法論文。</b> RCA + 長讀共識把 ONT 錯誤率從 Q21 降到 Q31（改善 9.4×），LOD 為 TF 0.24%。同時取 SNV、CNA、fragmentomics 三種訊號。</span><span class="term__def" data-lang="en" lang="en">The 2025 method from UMC Utrecht (Genome Research) and the only methods paper performing cfDNA tumour detection on the ONT platform. RCA plus long-read consensus lowers ONT error from Q21 to Q31, a 9.4-fold improvement, achieving an LOD of TF 0.24% while extracting SNV, CNA and fragmentomics signals simultaneously.</span><a class="term__more" href="glossary.html#nanorcs">完整條目 →</a></span></span>，<span class="term" data-term="NanoRCS" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-nanorcs-2">NanoRCS<span class="term__pop" id="gd-nanorcs-2" role="tooltip"><b class="term__hd">NanoRCS <i>NanoRCS</i></b><span class="term__def" data-lang="zh">UMC Utrecht 2025 年的方法（Genome Research）。<b>唯一一篇在 ONT 平台上做 cfDNA 腫瘤偵測的方法論文。</b> RCA + 長讀共識把 ONT 錯誤率從 Q21 降到 Q31（改善 9.4×），LOD 為 TF 0.24%。同時取 SNV、CNA、fragmentomics 三種訊號。</span><span class="term__def" data-lang="en" lang="en">The 2025 method from UMC Utrecht (Genome Research) and the only methods paper performing cfDNA tumour detection on the ONT platform. RCA plus long-read consensus lowers ONT error from Q21 to Q31, a 9.4-fold improvement, achieving an LOD of TF 0.24% while extracting SNV, CNA and fragmentomics signals simultaneously.</span><a class="term__more" href="glossary.html#nanorcs">完整條目 →</a></span></span> 也不會討論 <span class="term" data-term="duplex sequencing" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-duplex-sequencing-3">duplex<span class="term__pop" id="gd-duplex-sequencing-3" role="tooltip"><b class="term__hd">duplex sequencing <i>雙股定序</i></b><span class="term__def" data-lang="zh">同時定序同一 DNA 分子的<b>正反兩股</b>，只有兩股一致的變異才算真。能校正單股損傷（如氧化造成的 G>T），錯誤率可壓到 1e-7 級。⚠️ 代價極高：<b>只回收約 19% 的獨立分子</b>。</span><span class="term__def" data-lang="en" lang="en">Sequencing both strands of the same DNA molecule and accepting a variant only when both agree. This corrects single-strand damage such as oxidative G-to-T, reaching error rates around 1e-7. The cost is severe: only about 19% of unique molecules are recovered.</span><a class="term__more" href="glossary.html#duplex-sequencing">完整條目 →</a></span></span> 的分子回收率。
-它們是跨論文比對的產物。</p>
+<p class="prose">本頁只處理兩件這樣的事，加上一個總結：</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th scope="col"></th><th scope="col">它橫跨什麼</th><th scope="col">為什麼步驟頁裝不下</th></tr></thead>
+<tbody>
+<tr><td><b>一條被藏起來的時間軸</b></td><td><b>時間</b></td>
+    <td>步驟頁把 11 篇當成同時存在的並列選項，
+    藏住了其中三篇<b>是同一個實驗室的連續嘗試</b></td></tr>
+<tr><td><b>一條硬界線</b></td><td>① 與 ⑥</td>
+    <td>它說的是「你在 ① 選了哪種訊號，⑥ 就有一個地板」——
+    兩頁各自都看不到這個因果</td></tr>
+<tr><td><b>共同結構</b></td><td>全部六步</td>
+    <td>要把 66 格都掃過，才看得出哪些格子每一列都有東西</td></tr>
+</tbody>
+</table>
+</div>
 </section>
 
 
 <section data-part="concept" class="part" id="part-concept">
-<h2 data-num="②" id="主線一-所有方法都在同一組取捨上">主線一：所有方法都在同一組取捨上</h2>
+<h2 data-num="②" id="一-一條被藏起來的時間軸">一 · 一條被藏起來的時間軸</h2>
 
-<figure class="dia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 502" class="dia-svg" role="img" aria-labelledby="tradeoff-triangle__title" aria-describedby="tradeoff-triangle__desc">
-  <title id="tradeoff-triangle__title">降噪方法在錯誤率、可用分子數與涵蓋廣度之間的取捨</title>
-  <desc id="tradeoff-triangle__desc">本圖以二維座標呈現各方法的取捨位置。
-        橫軸為可用分子數，由左至右遞增；縱軸為錯誤率，由下至上遞增，
-        因此越靠右下角的位置越理想。
-        雙股定序位於左下：錯誤率極低，約十的負七次方，
-        但只回收百分之十九的獨立片段，可用分子數大幅減少。
-        滾環擴增共識位於其右上方：錯誤率同樣低，
-        但去重後僅三成五到五成一的原始讀取能貢獻共識。
-        同相變異位於右下角，是唯一同時具備低背景率與高分子保留率的位置，
-        因為它以同一分子上的巧合換取準確度，而非以分子數換取。
-        MRDetect 世系位於右上：分子數完整保留，但錯誤率較高，
-        改以全基因體的涵蓋廣度補償。
-        本專案以標準單股奈米孔定序，位於更右上方，
-        錯誤率比所有方法都高，但位點數多達三萬五千餘個。
-        圖下方標明第三個維度：涵蓋廣度，
-        亦即追蹤的位點數，由數十個到十萬個不等，
-        這是唯一可由設計自由決定的參數。</desc>
+<p class="prose">在 <a href="p03.html">p03</a> 讀到 <span class="term" data-term="MRDetect" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-mrdetect-0">MRDetect<span class="term__pop" id="gd-mrdetect-0" role="tooltip"><b class="term__hd">MRDetect <i>MRDetect（第一代）</i></b><span class="term__def" data-lang="zh">Landau lab 2020 年的方法（Nat Med），本專案的基準。核心是「廣度取代深度」：35X WGS + 全基因體數千個 SNV 累加，用線性 SVM 對單條 read 去噪（5 特徵）。LLOD 約 1e-5。⚠️ 程式碼未開源。</span><span class="term__def" data-lang="en" lang="en">The 2020 method from the Landau lab (Nat Med) and the baseline for this project. Its core is breadth supplanting depth: 35X WGS integrating thousands of genome-wide SNVs, with a linear SVM denoising individual reads on five features. LLOD about 1e-5. Code is not open source.</span><a class="term__more" href="glossary.html#mrdetect">完整條目 →</a></span></span> 的 <span class="term" data-term="SVM" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-svm-1">SVM<span class="term__pop" id="gd-svm-1" role="tooltip"><b class="term__hd">SVM <i>支援向量機</i></b><span class="term__def" data-lang="zh">一種監督式分類器，在特徵空間中找一個能把兩類分開、且與兩類邊界距離最大的超平面。本領域用它判斷單條 read 是真突變還是定序錯誤 —— <code>MRDetect</code> 使用線性核與五個特徵，選它的理由是特徵少、可解釋，且各特徵的權重可直接讀出。</span><span class="term__def" data-lang="en" lang="en">A supervised classifier that finds the hyperplane separating two classes with the largest margin to the boundary of each. In this field it is used to judge whether a single read carries a genuine mutation or a sequencing error; MRDetect uses a linear kernel with five features, chosen because the feature set is small, the model is interpretable, and per-feature weights can be read off directly.</span><a class="term__more" href="glossary.html#svm">完整條目 →</a></span></span>、
+<span class="term" data-term="MRD-EDGE" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-mrd-edge-2">MRD-EDGE<span class="term__pop" id="gd-mrd-edge-2" role="tooltip"><b class="term__hd">MRD-EDGE <i>MRD-EDGE（第二代）</i></b><span class="term__def" data-lang="zh">Landau lab 2024 年的續作（Nat Med）。把 SVM 換成 CNN + MLP ensemble，並加入 ctDNA 專屬生物特徵（SBS context、fragment length、regional epigenomics），訊噪比從 8.3× 提升到 118×。</span><span class="term__def" data-lang="en" lang="en">The Landau lab's 2024 successor (Nat Med), replacing the SVM with a CNN and MLP ensemble and adding ctDNA-specific biological features such as SBS context, fragment length and regional epigenomics, raising signal-to-noise enrichment from 8.3-fold to 118-fold.</span><a class="term__more" href="glossary.html#mrd-edge">完整條目 →</a></span></span> 的 CNN、<span class="term" data-term="Landau gen3" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-landau-gen3-3">第三代<span class="term__pop" id="gd-landau-gen3-3" role="tooltip"><b class="term__hd">Landau gen3 <i>Landau 第三代</i></b><span class="term__def" data-lang="zh">Landau lab 2025 年的第三代（Nat Methods）。改從<b>定序化學</b>解決：低成本 Ultima 平台做 ~120X 深度，加上全基因體 duplex 錯誤校正，錯誤率達 7.7e-7。<b>三代中唯一開源。</b> ⚠️ 作者自承 tumor-informed 情境下標準 WGS + 高輸入量可能更好。</span><span class="term__def" data-lang="en" lang="en">The Landau lab's 2025 third generation (Nat Methods), solving the problem through sequencing chemistry: about 120X depth on the low-cost Ultima platform plus genome-wide duplex error correction, reaching an error rate of 7.7e-7. The only open-source generation. The authors note that in the tumour-informed setting, standard WGS with higher input may achieve lower detection limits than duplex.</span><a class="term__more" href="glossary.html#landau-gen3">完整條目 →</a></span></span>的 <span class="term" data-term="duplex sequencing" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-duplex-sequencing-4">duplex<span class="term__pop" id="gd-duplex-sequencing-4" role="tooltip"><b class="term__hd">duplex sequencing <i>雙股定序</i></b><span class="term__def" data-lang="zh">同時定序同一 DNA 分子的<b>正反兩股</b>，只有兩股一致的變異才算真。能校正單股損傷（如氧化造成的 G>T），錯誤率可壓到 1e-7 級。⚠️ 代價極高：<b>只回收約 19% 的獨立分子</b>。</span><span class="term__def" data-lang="en" lang="en">Sequencing both strands of the same DNA molecule and accepting a variant only when both agree. This corrects single-strand damage such as oxidative G-to-T, reaching error rates around 1e-7. The cost is severe: only about 19% of unique molecules are recovered.</span><a class="term__more" href="glossary.html#duplex-sequencing">完整條目 →</a></span></span> 時，
+它們看起來是三個並列的選項。</p>
 
-  <text class="ttl bold zh" x="20" y="34">降噪方法的取捨：錯誤率 × 可用分子數 × 涵蓋廣度</text>
-  <text class="tick zh" x="20" y="58">越靠右下越理想（錯誤率低且分子保留多）—— 但沒有方法能同時佔滿兩軸</text>
-
-  <!-- 座標軸 -->
-  <path class="axis" d="M110 380 L920 380"/>
-  <path class="axis" d="M110 380 L110 90"/>
-  <text class="anno zh" x="515" y="412" text-anchor="middle">可用分子數 →</text>
-  <text class="anno zh" x="42" y="235" text-anchor="middle" transform="rotate(-90 42 235)">錯誤率 ↑</text>
-
-  <text class="tick zh" x="118" y="400">少</text>
-  <text class="tick zh" x="890" y="400">全部保留</text>
-  <text class="tick zh" x="72" y="106">高</text>
-  <text class="tick zh" x="72" y="374">低</text>
-
-  <!-- 理想區 -->
-  <rect class="region" x="640" y="290" width="270" height="82" rx="8"/>
-  <text class="tick zh" x="656" y="308">理想區</text>
-
-  <!-- 各方法定位 -->
-  <circle class="mark bad" cx="200" cy="336" r="12"/>
-  <text class="anno bold zh" x="150" y="316">duplex</text>
-  <text class="tick zh" x="130" y="364">7.7e-7｜僅回收 19%</text>
-
-  <circle class="mark warn" cx="340" cy="330" r="12"/>
-  <text class="anno bold zh" x="296" y="310">RCA 共識</text>
-  <text class="tick zh" x="272" y="358">4.2e-7｜可用 35–51%</text>
-
-  <circle class="mark ok" cx="800" cy="330" r="14"/>
-  <text class="anno bold ok zh" x="742" y="308">phased variants</text>
-  <text class="tick zh" x="716" y="358">8.0e-7｜幾乎不損失</text>
-
-  <circle class="mark accent" cx="820" cy="180" r="12"/>
-  <text class="anno bold zh" x="668" y="184">MRDetect 世系</text>
-  <text class="tick zh" x="700" y="212">4.96e-5｜分子完整</text>
-
-  <circle class="mark somatic" cx="860" cy="118" r="14"/>
-  <text class="anno bold somatic zh" x="656" y="112">本專案 ONT simplex</text>
-  <text class="tick zh" x="700" y="134">6.7e-3</text>
-
-  <!-- 第三維度 -->
-  <rect class="box" x="20" y="428" width="960" height="64" rx="8"/>
-  <text class="anno bold zh" x="44" y="454">第三個維度 · 涵蓋廣度（位點數）</text>
-  <text class="tick zh" x="44" y="478">iDES 30 個 → INVAR 10³ → MRDetect 10⁴–10⁵ → 本專案 35,603　—— 唯一可由設計自由決定的參數</text>
-</svg><figcaption>各方法在錯誤率與可用分子數兩軸上的位置。越靠右下越理想，但沒有方法能同時佔滿兩軸。</figcaption></figure>
-
-<p class="prose">降噪的手段各不相同，但代價的形式一致：
-<b>更低的錯誤率永遠用更少的可用分子換來</b>。</p>
-
-<div class="table-wrap">
-<table>
-<thead><tr><th scope="col">方法</th><th scope="col">買到什麼</th><th scope="col">賣掉什麼</th></tr></thead>
-<tbody>
-<tr><td><span class="term" data-term="duplex sequencing" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-duplex-sequencing-4">duplex 定序<span class="term__pop" id="gd-duplex-sequencing-4" role="tooltip"><b class="term__hd">duplex sequencing <i>雙股定序</i></b><span class="term__def" data-lang="zh">同時定序同一 DNA 分子的<b>正反兩股</b>，只有兩股一致的變異才算真。能校正單股損傷（如氧化造成的 G>T），錯誤率可壓到 1e-7 級。⚠️ 代價極高：<b>只回收約 19% 的獨立分子</b>。</span><span class="term__def" data-lang="en" lang="en">Sequencing both strands of the same DNA molecule and accepting a variant only when both agree. This corrects single-strand damage such as oxidative G-to-T, reaching error rates around 1e-7. The cost is severe: only about 19% of unique molecules are recovered.</span><a class="term__more" href="glossary.html#duplex-sequencing">完整條目 →</a></span></span></td><td>錯誤率 7.7e-7</td>
-    <td><b>只回收 19% 的獨立片段</b>；作者自承獨立分子數少一個數量級</td></tr>
-<tr><td><span class="term" data-term="RCA" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-rca-5">RCA<span class="term__pop" id="gd-rca-5" role="tooltip"><b class="term__hd">RCA <i>滾環擴增</i></b><span class="term__def" data-lang="zh">把 DNA 環化後沿環複製，產生含同一模板多份<b>串聯拷貝</b>的長分子（concatemer）。因此共識可以在<b>單一 read 之內</b>完成，不需要多條 read 或正反股配對。AccuScan 與 NanoRCS 皆採此法。</span><span class="term__def" data-lang="en" lang="en">Circularising DNA and replicating around the circle to produce a long molecule containing multiple tandem copies of the same template. Consensus can therefore be formed within a single read, without needing multiple reads or paired strands. Used by both AccuScan and NanoRCS.</span><a class="term__more" href="glossary.html#rca">完整條目 →</a></span></span> 共識</td><td>錯誤率 4.2e-7（Illumina）／7.2e-4（ONT）</td>
-    <td>去重後僅 35–51% 的原始 read 可用</td></tr>
-<tr><td><b><span class="term" data-term="phased variant" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-phased-variant-6">同分子多突變<span class="term__pop" id="gd-phased-variant-6" role="tooltip"><b class="term__hd">phased variant <i>同相變異</i></b><span class="term__def" data-lang="zh">位於<b>同一條 DNA 分子上</b>的兩個以上體細胞突變。因為兩個特定位置同時出錯的機率是相乘的，PV 的背景率遠低於單鹼基：2x PV 為 8.0e-7、3x 為 3.4e-8，<b>且不需要分子條碼</b>。</span><span class="term__def" data-lang="en" lang="en">Two or more somatic mutations located on the same DNA molecule. Because the probability of two specific positions erring simultaneously is multiplicative, PV background rates are far lower than single-base rates: 8.0e-7 for doublets and 3.4e-8 for triplets, without requiring molecular barcodes.</span><a class="term__more" href="glossary.html#phased-variant">完整條目 →</a></span></span></b></td><td>背景 8.0e-7（2×）／3.4e-8（3×）</td>
-    <td><b>幾乎不損失</b> —— 間距 &lt;20 bp 者深度等同全樣本</td></tr>
-<tr><td><span class="term" data-term="MRDetect" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-mrdetect-7">MRDetect<span class="term__pop" id="gd-mrdetect-7" role="tooltip"><b class="term__hd">MRDetect <i>MRDetect（第一代）</i></b><span class="term__def" data-lang="zh">Landau lab 2020 年的方法（Nat Med），本專案的基準。核心是「廣度取代深度」：35X WGS + 全基因體數千個 SNV 累加，用線性 SVM 對單條 read 去噪（5 特徵）。LLOD 約 1e-5。⚠️ 程式碼未開源。</span><span class="term__def" data-lang="en" lang="en">The 2020 method from the Landau lab (Nat Med) and the baseline for this project. Its core is breadth supplanting depth: 35X WGS integrating thousands of genome-wide SNVs, with a linear SVM denoising individual reads on five features. LLOD about 1e-5. Code is not open source.</span><a class="term__more" href="glossary.html#mrdetect">完整條目 →</a></span></span> 世系</td><td>涵蓋廣度（全基因體 10⁴–10⁵ 位點）</td>
-    <td>接受較高的錯誤率（4.96e-5）</td></tr>
-<tr><td><span class="term" data-term="ichorCNA" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-ichorcna-8">ichorCNA<span class="term__pop" id="gd-ichorcna-8" role="tooltip"><b class="term__hd">ichorCNA <i>ichorCNA</i></b><span class="term__def" data-lang="zh">Broad Institute 2017 年的工具（Nat Commun）。從 <b>0.1× 超低深度 WGS</b> 估 tumor fraction，不需事先知道腫瘤變異。用 HMM 同時預測 CNA 片段與估 TF。<b>MRDetect 三代都在用它。</b> ⚠️ 偵測下限 TF 3%，遠高於 MRD 目標區間。</span><span class="term__def" data-lang="en" lang="en">The 2017 Broad Institute tool (Nat Commun) estimating tumour fraction from 0.1x ultra-low-pass WGS without prior knowledge of tumour variants, using an HMM to jointly predict CNA segments and TF. All three MRDetect generations use it. Its detection floor of TF 3% is far above the MRD target range.</span><a class="term__more" href="glossary.html#ichorcna">完整條目 →</a></span></span></td><td>極低成本（0.1× 覆蓋）</td>
-    <td>偵測下限僅到 <span class="term" data-term="TF" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-tf-9">TF<span class="term__pop" id="gd-tf-9" role="tooltip"><b class="term__hd">TF <i>腫瘤分數的縮寫</i></b><span class="term__def" data-lang="zh"><code>tumor fraction</code>（腫瘤分數）的縮寫，本知識庫全篇使用。定義為樣本中源自腫瘤的 DNA 佔全部 DNA 的比例，代表<b>訊號的強度</b>。MRD 情境的量級為 10⁻⁵ – 10⁻⁶，與定序機本身的錯誤率同一個數量級 —— 這正是整個領域的核心困難。它由病人的疾病狀態決定，<b>不是可以由設計調整的參數</b>。</span><span class="term__def" data-lang="en" lang="en">Abbreviation for tumour fraction, used throughout this knowledge base. It is the proportion of DNA in a sample that originates from the tumour, and represents signal strength. In the MRD setting it is on the order of 1e-5 to 1e-6, the same order of magnitude as the sequencer's own error rate, which is the central difficulty of the whole field. It is set by the patient's disease state and is not a parameter the assay design can adjust.</span><a class="term__more" href="glossary.html#tf">完整條目 →</a></span></span> 3%</td></tr>
-</tbody>
-</table>
-</div>
-
-<div class="guardrail guardrail--info">
-<p class="guardrail__hd">PhasED-seq 是唯一宣稱可避開此取捨的方法</p>
-<p class="prose">其他方法都以「更少的分子」換準確度；
-<span class="term" data-term="phased variant" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-phased-variant-10">PV<span class="term__pop" id="gd-phased-variant-10" role="tooltip"><b class="term__hd">phased variant <i>同相變異</i></b><span class="term__def" data-lang="zh">位於<b>同一條 DNA 分子上</b>的兩個以上體細胞突變。因為兩個特定位置同時出錯的機率是相乘的，PV 的背景率遠低於單鹼基：2x PV 為 8.0e-7、3x 為 3.4e-8，<b>且不需要分子條碼</b>。</span><span class="term__def" data-lang="en" lang="en">Two or more somatic mutations located on the same DNA molecule. Because the probability of two specific positions erring simultaneously is multiplicative, PV background rates are far lower than single-base rates: 8.0e-7 for doublets and 3.4e-8 for triplets, without requiring molecular barcodes.</span><a class="term__more" href="glossary.html#phased-variant">完整條目 →</a></span></span> 則以<b>同一分子上的巧合</b>換準確度 ——
-兩個特定位置同時出錯的機率是相乘的，
-而這不需要丟棄任何分子。</p>
-<p class="prose">代價轉移到別處：需要同一分子上有兩個以上的突變，
-因此 PV 稀少的病人受益有限（<span class="term" data-term="PhasED-seq" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-phased-seq-11">PhasED-seq<span class="term__pop" id="gd-phased-seq-11" role="tooltip"><b class="term__hd">PhasED-seq <i>PhasED-seq</i></b><span class="term__def" data-lang="zh">Stanford 2021 年的方法（Nat Biotechnol）。<b>改變偵測單元</b>：不看單鹼基而看同一分子上的多個突變（phased variants），背景率降至 8.0e-7（2x）與 3.4e-8（3x），且不需分子條碼、不犧牲分子回收率。<b>其限制正好是 ONT 的優勢。</b></span><span class="term__def" data-lang="en" lang="en">The 2021 Stanford method (Nat Biotechnol) that changes the unit of detection: instead of single bases it tracks multiple mutations on the same molecule (phased variants), lowering background to 8.0e-7 for doublets and 3.4e-8 for triplets without molecular barcodes and without sacrificing molecule recovery. Its key limitation is precisely where ONT holds an advantage.</span><a class="term__more" href="glossary.html#phased-seq">完整條目 →</a></span></span> 的固態瘤案例為 14–622 個，差異極大）。</p>
-</div>
-
-<h3 id="可換算的匯率">可換算的匯率</h3>
-
-<div class="eq"><math display="block"><mtext>錯誤率降 2 個數量級</mtext><mo>≈</mo><mtext>深度提高 5 倍</mtext></math><p class="eq__note">由 <span class="term" data-term="AccuScan" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-accuscan-12">AccuScan<span class="term__pop" id="gd-accuscan-12" role="tooltip"><b class="term__hd">AccuScan <i>AccuScan</i></b><span class="term__def" data-lang="zh">2024 年的 WGS MRD 方法（EMBO Mol Med）。用 <b>RCA concatemer</b> 讓錯誤校正在單一 read 內完成，錯誤率 4.2e-7、LOD 達 cVAF 1e-6。<b>背景錯誤率由樣本自身量測、門檻由統計模型反推，皆不需 control 世代。</b></span><span class="term__def" data-lang="en" lang="en">A 2024 WGS MRD method (EMBO Mol Med) using RCA concatemers so that error correction happens within a single read, reaching an error rate of 4.2e-7 and an LOD of cVAF 1e-6. Its background error rate is measured from the sample itself and its threshold derived from the statistical model, neither requiring a control cohort.</span><a class="term__more" href="glossary.html#accuscan">完整條目 →</a></span></span> 的兩點推得：4.2e-7 @ 20× 與 2.8e-5 @ 100× 達到相同的 96% 偵測率
-（<span class="term" data-term="cVAF" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-cvaf-13">cVAF<span class="term__pop" id="gd-cvaf-13" role="tooltip"><b class="term__hd">cVAF <i>循環變異等位基因分率</i></b><span class="term__def" data-lang="zh">血漿中某變異的等位基因分率。與一般 VAF 的差別在量級：germline VAF 約 0.5，而 MRD 情境的 cVAF 常在 10⁻⁵–10⁻⁶ 之間，與定序錯誤率同一個數量級。</span><span class="term__def" data-lang="en" lang="en">The variant allele frequency of a mutation in plasma. It differs from ordinary VAF in magnitude: germline VAF is about 0.5, whereas cVAF in MRD settings is typically 1e-5 to 1e-6, the same order as the sequencing error rate.</span><a class="term__more" href="glossary.html#cvaf">完整條目 →</a></span></span> 2.5e-5，10,000 個<span class="term" data-term="marker" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-marker-14">標的<span class="term__pop" id="gd-marker-14" role="tooltip"><b class="term__hd">marker <i>標的</i></b><span class="term__def" data-lang="zh">與 reporter 同義，AccuScan 等論文使用的稱呼。實測顯示 marker 數對偵測率影響極大：在 cVAF 1e-5 下，2K/5K/10K/20K 個 marker 分別給出 38%/77%/96%/100% 的偵測率。</span><span class="term__def" data-lang="en" lang="en">Synonymous with reporter; the term used by AccuScan and others. Marker count strongly affects detection: at cVAF 1e-5, using 2K, 5K, 10K and 20K markers yields detection rates of 38%, 77%, 96% and 100% respectively.</span><a class="term__more" href="glossary.html#marker">完整條目 →</a></span></span>）。</p></div>
-
-<p class="prose">此匯率把「錯誤率」與「深度」放在同一個尺度上，
-使本專案的高錯誤率可以換算成等效的深度需求。</p>
-</section>
-
-
-<section data-part="evidence" class="part" id="part-evidence">
-<h2 data-num="③" id="主線二-訊號模態有硬界線">主線二：訊號模態有硬界線</h2>
-
-<figure class="dia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 400" class="dia-svg" role="img" aria-labelledby="tf-3percent-boundary__title" aria-describedby="tf-3percent-boundary__desc">
-  <title id="tf-3percent-boundary__title">各訊號模態的適用區間，以及本專案目標落在哪裡</title>
-  <desc id="tf-3percent-boundary__desc">橫軸是腫瘤分數，由右至左遞減，從百分之十降到十的負六次方。
-        圖中以三條水平帶標出不同訊號模態的適用範圍。
-        第一條是拷貝數變異，其偵測下限為腫瘤分數百分之三，
-        這個界線由 ichorCNA 與 NanoRCS 兩篇獨立論文分別佐證，
-        低於此值時拷貝數訊號失效。
-        第二條是片段體學，適用範圍與拷貝數相近，同樣在百分之三以下失效。
-        第三條是單核苷酸變異，可以一路延伸到十的負六次方，
-        是極低腫瘤分數區間唯一可用的訊號。
-        圖下方以虛線標出本專案的目標區間，
-        位於十的負三次方到十的負四次方之間，
-        明顯低於拷貝數與片段體學的失效界線。
-        結論是本專案第四階段的拷貝數模組，在目標區間內可能沒有訊號，
-        這不是失敗而是這條界線的必然結果，應先預期並寫進計畫。</desc>
-
-  <text class="ttl bold zh" x="20" y="34">訊號模態有硬界線 —— TF 低於 3% 時只有 SNV 可用</text>
-  <text class="tick zh" x="20" y="58">兩篇獨立論文佐證同一條線：ichorCNA 的偵測下限 TF 3%；NanoRCS 實測 TF &lt;3% 時 CNA 與 fragmentomics 失效</text>
-
-  <!-- 座標軸（由右至左遞減） -->
-  <path class="axis" d="M90 300 L950 300"/>
-  <text class="tick mid zh" x="900" y="326">10%</text>
-  <text class="tick mid zh" x="760" y="326">3%</text>
-  <text class="tick mid zh" x="620" y="326">1%</text>
-  <text class="tick mid zh" x="450" y="326">1e-3</text>
-  <text class="tick mid zh" x="290" y="326">1e-4</text>
-  <text class="tick mid zh" x="140" y="326">1e-6</text>
-  <path class="axis" d="M900 300 L900 308"/><path class="axis" d="M760 300 L760 308"/>
-  <path class="axis" d="M620 300 L620 308"/><path class="axis" d="M450 300 L450 308"/>
-  <path class="axis" d="M290 300 L290 308"/><path class="axis" d="M140 300 L140 308"/>
-  <text class="anno zh" x="520" y="356" text-anchor="middle">← 腫瘤分數 TF 遞減</text>
-
-  <!-- 三條模態帶 -->
-  <text class="anno bold zh" x="20" y="112">CNA</text>
-  <rect class="bar warn" x="760" y="94" width="190" height="26" rx="5"/>
-  <text class="tick zh" x="620" y="113">↤ 失效</text>
-
-  <text class="anno bold zh" x="20" y="158">fragmentomics</text>
-  <rect class="bar warn" x="760" y="140" width="190" height="26" rx="5"/>
-  <text class="tick zh" x="620" y="159">↤ 失效</text>
-
-  <text class="anno bold zh" x="20" y="204">SNV</text>
-  <rect class="bar ok" x="140" y="186" width="810" height="26" rx="5"/>
-  <text class="anno bold mid zh" x="545" y="205">唯一能延伸到極低 TF 的訊號</text>
-
-  <!-- 3% 界線 -->
-  <path class="guide thick" d="M760 84 L760 300"/>
-  <text class="anno bold mid warn zh" x="760" y="76">TF 3% 界線</text>
-
-  <!-- 本專案目標區間 -->
-  <rect class="region" x="290" y="230" width="160" height="46" rx="6"/>
-  <text class="anno bold mid accent zh" x="370" y="258">本專案目標</text>
-  <path class="guide" d="M290 230 L290 300"/>
-  <path class="guide" d="M450 230 L450 300"/>
-
-  <!-- 結論 -->
-  <rect class="box" x="20" y="366" width="960" height="30" rx="6"/>
-  <text class="anno bold zh" x="44" y="388">→ Phase 4 的 CNA 模組在目標區間可能沒有訊號。這不是失敗，是這條界線的必然結果 —— 應先預期並寫進計畫。</text>
-</svg><figcaption>各訊號模態的適用區間。腫瘤分數低於 3% 時，只有 SNV 訊號可用。</figcaption></figure>
-
-<p class="prose">兩篇獨立論文佐證同一條界線：</p>
-
-<div class="table-wrap">
-<table>
-<thead><tr><th scope="col">來源</th><th scope="col">陳述</th></tr></thead>
-<tbody>
-<tr><td><span class="term" data-term="ichorCNA" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-ichorcna-15">ichorCNA<span class="term__pop" id="gd-ichorcna-15" role="tooltip"><b class="term__hd">ichorCNA <i>ichorCNA</i></b><span class="term__def" data-lang="zh">Broad Institute 2017 年的工具（Nat Commun）。從 <b>0.1× 超低深度 WGS</b> 估 tumor fraction，不需事先知道腫瘤變異。用 HMM 同時預測 CNA 片段與估 TF。<b>MRDetect 三代都在用它。</b> ⚠️ 偵測下限 TF 3%，遠高於 MRD 目標區間。</span><span class="term__def" data-lang="en" lang="en">The 2017 Broad Institute tool (Nat Commun) estimating tumour fraction from 0.1x ultra-low-pass WGS without prior knowledge of tumour variants, using an HMM to jointly predict CNA segments and TF. All three MRDetect generations use it. Its detection floor of TF 3% is far above the MRD target range.</span><a class="term__more" href="glossary.html#ichorcna">完整條目 →</a></span></span>（Nat Commun 2017）</td>
-    <td><span class="term" data-term="CNA" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-cna-16">CNA<span class="term__pop" id="gd-cna-16" role="tooltip"><b class="term__hd">CNA <i>拷貝數變異</i></b><span class="term__def" data-lang="zh">染色體片段的擴增或缺失。作為 MRD 訊號的優勢是片段大、即使極低覆蓋也看得到；<b>劣勢是靈敏度天花板低</b> —— ichorCNA 的偵測下限為 TF 3%，NanoRCS 亦報告 TF <3% 時 CNA 失效。</span><span class="term__def" data-lang="en" lang="en">Amplification or deletion of chromosomal segments. As an MRD signal its advantage is large segment size, visible even at very low coverage; its weakness is a low sensitivity ceiling — ichorCNA's detection floor is TF 3%, and NanoRCS likewise reports CNA failing below TF 3%.</span><a class="term__more" href="glossary.html#cna">完整條目 →</a></span></span> 的偵測下限為 <b>TF 3%</b>，且需 arm-level（&gt;100 Mb）事件</td></tr>
-<tr><td><span class="term" data-term="NanoRCS" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-nanorcs-17">NanoRCS<span class="term__pop" id="gd-nanorcs-17" role="tooltip"><b class="term__hd">NanoRCS <i>NanoRCS</i></b><span class="term__def" data-lang="zh">UMC Utrecht 2025 年的方法（Genome Research）。<b>唯一一篇在 ONT 平台上做 cfDNA 腫瘤偵測的方法論文。</b> RCA + 長讀共識把 ONT 錯誤率從 Q21 降到 Q31（改善 9.4×），LOD 為 TF 0.24%。同時取 SNV、CNA、fragmentomics 三種訊號。</span><span class="term__def" data-lang="en" lang="en">The 2025 method from UMC Utrecht (Genome Research) and the only methods paper performing cfDNA tumour detection on the ONT platform. RCA plus long-read consensus lowers ONT error from Q21 to Q31, a 9.4-fold improvement, achieving an LOD of TF 0.24% while extracting SNV, CNA and fragmentomics signals simultaneously.</span><a class="term__more" href="glossary.html#nanorcs">完整條目 →</a></span></span>（Genome Research 2025）</td>
-    <td>in vitro 稀釋實驗顯示：<b>TF 低於 3% 時只有 SNV 分析可用</b>，
-    CNA 與<span class="term" data-term="fragmentomics" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-fragmentomics-18">片段體學<span class="term__pop" id="gd-fragmentomics-18" role="tooltip"><b class="term__hd">fragmentomics <i>片段體學</i></b><span class="term__def" data-lang="zh">利用 cfDNA 的<b>片段長度模式</b>判斷腫瘤存在（腫瘤來源片段通常較短）。DELFI 用 5 Mb window 內短/長片段比值餵入 gradient boosting。⚠️ <b>本專案不適用</b> —— 純化細胞株 gDNA 沒有 cfDNA 的凋亡片段分布。</span><span class="term__def" data-lang="en" lang="en">Using cfDNA fragment length patterns to infer tumour presence, since tumour-derived fragments tend to be shorter. DELFI feeds short-to-long fragment ratios in 5 Mb windows into gradient boosting. Not applicable in this project: purified cell-line gDNA lacks the apoptotic fragment distribution of cfDNA.</span><a class="term__more" href="glossary.html#fragmentomics">完整條目 →</a></span></span>失效且變異較大</td></tr>
-</tbody>
-</table>
-</div>
-
-<p class="prose">兩者以不同資料、不同平台、相隔八年得到同一個數字，
-使這條界線可視為結構性而非偶然。</p>
-
-<aside class="guardrail" id="guard-16"><p class="guardrail__hd">重要區分 #16：本專案的 Phase 4 落在 CNA 失效的區間</p><p class="prose">本專案的目標 <span class="term" data-term="tumor fraction" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-tumor-fraction-19">腫瘤分數<span class="term__pop" id="gd-tumor-fraction-19" role="tooltip"><b class="term__hd">tumor fraction <i>腫瘤分數</i></b><span class="term__def" data-lang="zh">樣本中源自腫瘤的 DNA 佔全部 DNA 的比例。MRD 情境常低至 10⁻⁵ 甚至 10⁻⁶。本專案因使用純細胞株（purity≈1），混合時的 tumor read 比例即等同 TF。</span><span class="term__def" data-lang="en" lang="en">The proportion of DNA in a sample that derives from tumour. In MRD settings it can be as low as 1e-5 to 1e-6. In this project, because pure cell lines are used (purity approximately 1), the tumour read ratio during admixture equals TF directly.</span><a class="term__more" href="glossary.html#tumor-fraction">完整條目 →</a></span></span>為 1e-3 至 1e-4，
-即 0.1% 至 0.01% —— <b>比 3% 的界線低 30 至 300 倍</b>。</p>
-<p class="prose">依上述兩個獨立來源，CNA 模組在該區間<b>可能沒有訊號</b>。</p>
-<p class="prose">這不是失敗，而是這條界線的必然結果。
-但應<b>事先預期並寫入計畫</b>，而非在跑出無訊號的結果後才解釋。
-CNA 模組在本專案的角色因此偏向「baseline 對照」：
-用以證明本專案的 SNV 路線在低 TF 下優於標準工具，
-或證明低 TF 下 CNA 確實無訊號 —— 兩種結論都有價值。</p></aside>
-
-<h2 id="主線三-三代演進是錯誤抑制的天花板故事">主線三：三代演進是錯誤抑制的天花板故事</h2>
+<p class="prose">實際上，<b>那是同一群人在十年內三次改寫自己的答案</b>。</p>
 
 <figure class="dia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 420" class="dia-svg" role="img" aria-labelledby="three-generations__title" aria-describedby="three-generations__desc">
   <title id="three-generations__title">同一實驗室三代方法的演進：從演算法去噪走向定序化學</title>
@@ -352,35 +177,132 @@ CNA 模組在本專案的角色因此偏向「baseline 對照」：
 <table>
 <thead><tr><th scope="col">代</th><th scope="col">年</th><th scope="col">手段</th><th scope="col">訊噪比</th><th scope="col">錯誤率</th></tr></thead>
 <tbody>
-<tr><td><span class="term" data-term="MRDetect" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-mrdetect-20">MRDetect<span class="term__pop" id="gd-mrdetect-20" role="tooltip"><b class="term__hd">MRDetect <i>MRDetect（第一代）</i></b><span class="term__def" data-lang="zh">Landau lab 2020 年的方法（Nat Med），本專案的基準。核心是「廣度取代深度」：35X WGS + 全基因體數千個 SNV 累加，用線性 SVM 對單條 read 去噪（5 特徵）。LLOD 約 1e-5。⚠️ 程式碼未開源。</span><span class="term__def" data-lang="en" lang="en">The 2020 method from the Landau lab (Nat Med) and the baseline for this project. Its core is breadth supplanting depth: 35X WGS integrating thousands of genome-wide SNVs, with a linear SVM denoising individual reads on five features. LLOD about 1e-5. Code is not open source.</span><a class="term__more" href="glossary.html#mrdetect">完整條目 →</a></span></span></td><td>2020</td><td>線性 SVM，5 個定序品質特徵</td><td>8.3 倍</td><td>4.96e-5</td></tr>
-<tr><td><span class="term" data-term="MRD-EDGE" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-mrd-edge-21">MRD-EDGE<span class="term__pop" id="gd-mrd-edge-21" role="tooltip"><b class="term__hd">MRD-EDGE <i>MRD-EDGE（第二代）</i></b><span class="term__def" data-lang="zh">Landau lab 2024 年的續作（Nat Med）。把 SVM 換成 CNN + MLP ensemble，並加入 ctDNA 專屬生物特徵（SBS context、fragment length、regional epigenomics），訊噪比從 8.3× 提升到 118×。</span><span class="term__def" data-lang="en" lang="en">The Landau lab's 2024 successor (Nat Med), replacing the SVM with a CNN and MLP ensemble and adding ctDNA-specific biological features such as SBS context, fragment length and regional epigenomics, raising signal-to-noise enrichment from 8.3-fold to 118-fold.</span><a class="term__more" href="glossary.html#mrd-edge">完整條目 →</a></span></span></td><td>2024</td><td>CNN + MLP，加入 ctDNA 生物特徵</td><td><b>118 倍</b></td><td>—</td></tr>
-<tr><td><span class="term" data-term="Landau gen3" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-landau-gen3-22">第三代<span class="term__pop" id="gd-landau-gen3-22" role="tooltip"><b class="term__hd">Landau gen3 <i>Landau 第三代</i></b><span class="term__def" data-lang="zh">Landau lab 2025 年的第三代（Nat Methods）。改從<b>定序化學</b>解決：低成本 Ultima 平台做 ~120X 深度，加上全基因體 duplex 錯誤校正，錯誤率達 7.7e-7。<b>三代中唯一開源。</b> ⚠️ 作者自承 tumor-informed 情境下標準 WGS + 高輸入量可能更好。</span><span class="term__def" data-lang="en" lang="en">The Landau lab's 2025 third generation (Nat Methods), solving the problem through sequencing chemistry: about 120X depth on the low-cost Ultima platform plus genome-wide duplex error correction, reaching an error rate of 7.7e-7. The only open-source generation. The authors note that in the tumour-informed setting, standard WGS with higher input may achieve lower detection limits than duplex.</span><a class="term__more" href="glossary.html#landau-gen3">完整條目 →</a></span></span></td><td>2025</td><td><b>改走定序化學</b>（<span class="term" data-term="duplex sequencing" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-duplex-sequencing-23">duplex<span class="term__pop" id="gd-duplex-sequencing-23" role="tooltip"><b class="term__hd">duplex sequencing <i>雙股定序</i></b><span class="term__def" data-lang="zh">同時定序同一 DNA 分子的<b>正反兩股</b>，只有兩股一致的變異才算真。能校正單股損傷（如氧化造成的 G>T），錯誤率可壓到 1e-7 級。⚠️ 代價極高：<b>只回收約 19% 的獨立分子</b>。</span><span class="term__def" data-lang="en" lang="en">Sequencing both strands of the same DNA molecule and accepting a variant only when both agree. This corrects single-strand damage such as oxidative G-to-T, reaching error rates around 1e-7. The cost is severe: only about 19% of unique molecules are recovered.</span><a class="term__more" href="glossary.html#duplex-sequencing">完整條目 →</a></span></span>）</td><td>—</td><td><b>7.7e-7</b></td></tr>
+<tr><td><span class="term" data-term="MRDetect" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-mrdetect-5">MRDetect<span class="term__pop" id="gd-mrdetect-5" role="tooltip"><b class="term__hd">MRDetect <i>MRDetect（第一代）</i></b><span class="term__def" data-lang="zh">Landau lab 2020 年的方法（Nat Med），本專案的基準。核心是「廣度取代深度」：35X WGS + 全基因體數千個 SNV 累加，用線性 SVM 對單條 read 去噪（5 特徵）。LLOD 約 1e-5。⚠️ 程式碼未開源。</span><span class="term__def" data-lang="en" lang="en">The 2020 method from the Landau lab (Nat Med) and the baseline for this project. Its core is breadth supplanting depth: 35X WGS integrating thousands of genome-wide SNVs, with a linear SVM denoising individual reads on five features. LLOD about 1e-5. Code is not open source.</span><a class="term__more" href="glossary.html#mrdetect">完整條目 →</a></span></span></td><td>2020</td><td>線性 SVM，5 個定序品質特徵</td><td>8.3 倍</td><td>4.96e-5</td></tr>
+<tr><td><span class="term" data-term="MRD-EDGE" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-mrd-edge-6">MRD-EDGE<span class="term__pop" id="gd-mrd-edge-6" role="tooltip"><b class="term__hd">MRD-EDGE <i>MRD-EDGE（第二代）</i></b><span class="term__def" data-lang="zh">Landau lab 2024 年的續作（Nat Med）。把 SVM 換成 CNN + MLP ensemble，並加入 ctDNA 專屬生物特徵（SBS context、fragment length、regional epigenomics），訊噪比從 8.3× 提升到 118×。</span><span class="term__def" data-lang="en" lang="en">The Landau lab's 2024 successor (Nat Med), replacing the SVM with a CNN and MLP ensemble and adding ctDNA-specific biological features such as SBS context, fragment length and regional epigenomics, raising signal-to-noise enrichment from 8.3-fold to 118-fold.</span><a class="term__more" href="glossary.html#mrd-edge">完整條目 →</a></span></span></td><td>2024</td><td>CNN + MLP，加入 ctDNA 生物特徵</td><td><b>118 倍</b></td><td>—</td></tr>
+<tr><td><span class="term" data-term="Landau gen3" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-landau-gen3-7">第三代<span class="term__pop" id="gd-landau-gen3-7" role="tooltip"><b class="term__hd">Landau gen3 <i>Landau 第三代</i></b><span class="term__def" data-lang="zh">Landau lab 2025 年的第三代（Nat Methods）。改從<b>定序化學</b>解決：低成本 Ultima 平台做 ~120X 深度，加上全基因體 duplex 錯誤校正，錯誤率達 7.7e-7。<b>三代中唯一開源。</b> ⚠️ 作者自承 tumor-informed 情境下標準 WGS + 高輸入量可能更好。</span><span class="term__def" data-lang="en" lang="en">The Landau lab's 2025 third generation (Nat Methods), solving the problem through sequencing chemistry: about 120X depth on the low-cost Ultima platform plus genome-wide duplex error correction, reaching an error rate of 7.7e-7. The only open-source generation. The authors note that in the tumour-informed setting, standard WGS with higher input may achieve lower detection limits than duplex.</span><a class="term__more" href="glossary.html#landau-gen3">完整條目 →</a></span></span></td><td>2025</td><td><b>改走定序化學</b>（duplex）</td><td>—</td><td><b>7.7e-7</b></td></tr>
 </tbody>
 </table>
 </div>
 
-<p class="prose">第三代不再優化演算法，而是從資料源頭解決 ——
-等同於承認軟體去噪存在天花板。</p>
+<p class="prose">前兩代都在<b>優化演算法</b>：從線性模型換成深度學習，訊噪比從 8.3 倍推到 118 倍。
+第三代沒有繼續往下推，而是<b>從資料源頭解決</b> ——
+換建庫化學，讓每個分子被正反兩股各讀一次。</p>
+
+<p class="prose">這個轉向本身就是一個結論：<b>他們認為軟體去噪已經接近天花板</b>。
+一個把演算法從 8.3 倍推到 118 倍的團隊，下一步選擇改硬體，這件事比任何數字都有說服力。</p>
 
 <div class="guardrail guardrail--warn">
-<p class="guardrail__hd">但作者自己留了一個轉折</p>
-<p class="prose"><span class="term" data-term="Landau gen3" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-landau-gen3-24">第三代<span class="term__pop" id="gd-landau-gen3-24" role="tooltip"><b class="term__hd">Landau gen3 <i>Landau 第三代</i></b><span class="term__def" data-lang="zh">Landau lab 2025 年的第三代（Nat Methods）。改從<b>定序化學</b>解決：低成本 Ultima 平台做 ~120X 深度，加上全基因體 duplex 錯誤校正，錯誤率達 7.7e-7。<b>三代中唯一開源。</b> ⚠️ 作者自承 tumor-informed 情境下標準 WGS + 高輸入量可能更好。</span><span class="term__def" data-lang="en" lang="en">The Landau lab's 2025 third generation (Nat Methods), solving the problem through sequencing chemistry: about 120X depth on the low-cost Ultima platform plus genome-wide duplex error correction, reaching an error rate of 7.7e-7. The only open-source generation. The authors note that in the tumour-informed setting, standard WGS with higher input may achieve lower detection limits than duplex.</span><a class="term__more" href="glossary.html#landau-gen3">完整條目 →</a></span></span>論文的 Discussion 寫道：</p>
+<p class="guardrail__hd">但作者自己在同一篇裡留了一個轉折</p>
+<p class="prose"><span class="term" data-term="Landau gen3" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-landau-gen3-8">第三代<span class="term__pop" id="gd-landau-gen3-8" role="tooltip"><b class="term__hd">Landau gen3 <i>Landau 第三代</i></b><span class="term__def" data-lang="zh">Landau lab 2025 年的第三代（Nat Methods）。改從<b>定序化學</b>解決：低成本 Ultima 平台做 ~120X 深度，加上全基因體 duplex 錯誤校正，錯誤率達 7.7e-7。<b>三代中唯一開源。</b> ⚠️ 作者自承 tumor-informed 情境下標準 WGS + 高輸入量可能更好。</span><span class="term__def" data-lang="en" lang="en">The Landau lab's 2025 third generation (Nat Methods), solving the problem through sequencing chemistry: about 120X depth on the low-cost Ultima platform plus genome-wide duplex error correction, reaching an error rate of 7.7e-7. The only open-source generation. The authors note that in the tumour-informed setting, standard WGS with higher input may achieve lower detection limits than duplex.</span><a class="term__more" href="glossary.html#landau-gen3">完整條目 →</a></span></span>論文的 Discussion 寫道：</p>
 <blockquote class="prose">「<b>In the tumor-informed setting</b>, where prior knowledge of the somatic
 mutations can lower the effective error rate of standard WGS, <b>higher inputs are expected
 to afford lower limits of detection than duplex WGS</b>.」</blockquote>
-<p class="prose">亦即：在 <span class="term" data-term="tumor-informed" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-tumor-informed-25">tumor-informed<span class="term__pop" id="gd-tumor-informed-25" role="tooltip"><b class="term__hd">tumor-informed <i>腫瘤資訊導向</i></b><span class="term__def" data-lang="zh">先對病人的腫瘤定序，取得其專屬變異清單，再到血漿中專門搜尋這些位點。敏感度高，代價是必須取得腫瘤檢體。本專案走這條路線。</span><span class="term__def" data-lang="en" lang="en">Sequencing the patient's tumour first to obtain a personalised variant list, then searching plasma specifically at those sites. Higher sensitivity, at the cost of requiring a tumour specimen. This project follows this route.</span><a class="term__more" href="glossary.html#tumor-informed">完整條目 →</a></span></span> 情境下 —— 也就是本專案的情境 ——
-<b>加大輸入量的標準 WGS 預期可達到比 duplex 更低的偵測極限</b>，
-因為已知要找哪些位點本身就降低了有效錯誤率。</p>
-<p class="prose">duplex 的優勢主要在 <span class="term" data-term="tumor-naive" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-tumor-naive-26">tumor-naive<span class="term__pop" id="gd-tumor-naive-26" role="tooltip"><b class="term__hd">tumor-naive <i>無腫瘤資訊</i></b><span class="term__def" data-lang="zh">不需要配對腫瘤，直接從血漿判斷是否有癌。適用於拿不到腫瘤檢體的情境，但必須額外處理 clonal hematopoiesis 等混淆來源，敏感度通常較低。</span><span class="term__def" data-lang="en" lang="en">Detecting cancer directly from plasma without a matched tumour. Applicable when no tumour specimen is available, but requires additional handling of confounders such as clonal haematopoiesis, and generally achieves lower sensitivity.</span><a class="term__more" href="glossary.html#tumor-naive">完整條目 →</a></span></span> 情境。
-本專案沿用第一代的路線<b>並未過時</b>。</p>
+<p class="prose">亦即：<b>duplex 的優勢主要在 <span class="term" data-term="tumor-naive" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-tumor-naive-9">tumor-naive<span class="term__pop" id="gd-tumor-naive-9" role="tooltip"><b class="term__hd">tumor-naive <i>無腫瘤資訊</i></b><span class="term__def" data-lang="zh">不需要配對腫瘤，直接從血漿判斷是否有癌。適用於拿不到腫瘤檢體的情境，但必須額外處理 clonal hematopoiesis 等混淆來源，敏感度通常較低。</span><span class="term__def" data-lang="en" lang="en">Detecting cancer directly from plasma without a matched tumour. Applicable when no tumour specimen is available, but requires additional handling of confounders such as clonal haematopoiesis, and generally achieves lower sensitivity.</span><a class="term__more" href="glossary.html#tumor-naive">完整條目 →</a></span></span> 情境</b>。
+若事先已知要找哪些位點（<span class="term" data-term="tumor-informed" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-tumor-informed-10">tumor-informed<span class="term__pop" id="gd-tumor-informed-10" role="tooltip"><b class="term__hd">tumor-informed <i>腫瘤資訊導向</i></b><span class="term__def" data-lang="zh">先對病人的腫瘤定序，取得其專屬變異清單，再到血漿中專門搜尋這些位點。敏感度高，代價是必須取得腫瘤檢體。本專案走這條路線。</span><span class="term__def" data-lang="en" lang="en">Sequencing the patient's tumour first to obtain a personalised variant list, then searching plasma specifically at those sites. Higher sensitivity, at the cost of requiring a tumour specimen. This project follows this route.</span><a class="term__more" href="glossary.html#tumor-informed">完整條目 →</a></span></span>），
+那份先驗知識本身就降低了有效錯誤率 ——
+此時<b>加大輸入量的標準 WGS，預期可達到比 duplex 更低的偵測極限</b>。</p>
+<p class="prose">所以這條時間軸不是「後面的一定比前面好」。
+它真正說的是：<b>哪一代適用，取決於你有沒有腫瘤組織的先驗知識</b>。</p>
 </div>
 </section>
 
 
-<section data-part="predict" class="part" id="part-predict">
-<h2 data-num="④" id="共同結構">共同結構</h2>
+<section data-part="evidence" class="part" id="part-evidence">
+<h2 data-num="③" id="二-一條硬界線-tf-3">二 · 一條硬界線：TF 3%</h2>
 
-<p class="prose">若要用一句話概括這 11 篇：</p>
+<p class="prose">選哪一種訊號（SNV？<span class="term" data-term="CNA" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-cna-11">CNA<span class="term__pop" id="gd-cna-11" role="tooltip"><b class="term__hd">CNA <i>拷貝數變異</i></b><span class="term__def" data-lang="zh">染色體片段的擴增或缺失。作為 MRD 訊號的優勢是片段大、即使極低覆蓋也看得到；<b>劣勢是靈敏度天花板低</b> —— ichorCNA 的偵測下限為 TF 3%，NanoRCS 亦報告 TF <3% 時 CNA 失效。</span><span class="term__def" data-lang="en" lang="en">Amplification or deletion of chromosomal segments. As an MRD signal its advantage is large segment size, visible even at very low coverage; its weakness is a low sensitivity ceiling — ichorCNA's detection floor is TF 3%, and NanoRCS likewise reports CNA failing below TF 3%.</span><a class="term__more" href="glossary.html#cna">完整條目 →</a></span></span>？<span class="term" data-term="fragmentomics" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-fragmentomics-12">片段體學<span class="term__pop" id="gd-fragmentomics-12" role="tooltip"><b class="term__hd">fragmentomics <i>片段體學</i></b><span class="term__def" data-lang="zh">利用 cfDNA 的<b>片段長度模式</b>判斷腫瘤存在（腫瘤來源片段通常較短）。DELFI 用 5 Mb window 內短/長片段比值餵入 gradient boosting。⚠️ <b>本專案不適用</b> —— 純化細胞株 gDNA 沒有 cfDNA 的凋亡片段分布。</span><span class="term__def" data-lang="en" lang="en">Using cfDNA fragment length patterns to infer tumour presence, since tumour-derived fragments tend to be shorter. DELFI feeds short-to-long fragment ratios in 5 Mb windows into gradient boosting. Not applicable in this project: purified cell-line gDNA lacks the apoptotic fragment distribution of cfDNA.</span><a class="term__more" href="glossary.html#fragmentomics">完整條目 →</a></span></span>？）看起來是第一步的設計選擇。
+但這個選擇有一個<b>不能跨越的地板</b>：</p>
+
+<figure class="dia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 400" class="dia-svg" role="img" aria-labelledby="tf-3percent-boundary__title" aria-describedby="tf-3percent-boundary__desc">
+  <title id="tf-3percent-boundary__title">各訊號模態的適用區間，以及本專案目標落在哪裡</title>
+  <desc id="tf-3percent-boundary__desc">橫軸是腫瘤分數，由右至左遞減，從百分之十降到十的負六次方。
+        圖中以三條水平帶標出不同訊號模態的適用範圍。
+        第一條是拷貝數變異，其偵測下限為腫瘤分數百分之三，
+        這個界線由 ichorCNA 與 NanoRCS 兩篇獨立論文分別佐證，
+        低於此值時拷貝數訊號失效。
+        第二條是片段體學，適用範圍與拷貝數相近，同樣在百分之三以下失效。
+        第三條是單核苷酸變異，可以一路延伸到十的負六次方，
+        是極低腫瘤分數區間唯一可用的訊號。
+        圖下方以虛線標出本專案的目標區間，
+        位於十的負三次方到十的負四次方之間，
+        明顯低於拷貝數與片段體學的失效界線。
+        結論是本專案第四階段的拷貝數模組，在目標區間內可能沒有訊號，
+        這不是失敗而是這條界線的必然結果，應先預期並寫進計畫。</desc>
+
+  <text class="ttl bold zh" x="20" y="34">訊號模態有硬界線 —— TF 低於 3% 時只有 SNV 可用</text>
+  <text class="tick zh" x="20" y="58">兩篇獨立論文佐證同一條線：ichorCNA 的偵測下限 TF 3%；NanoRCS 實測 TF &lt;3% 時 CNA 與 fragmentomics 失效</text>
+
+  <!-- 座標軸（由右至左遞減） -->
+  <path class="axis" d="M90 300 L950 300"/>
+  <text class="tick mid zh" x="900" y="326">10%</text>
+  <text class="tick mid zh" x="760" y="326">3%</text>
+  <text class="tick mid zh" x="620" y="326">1%</text>
+  <text class="tick mid zh" x="450" y="326">1e-3</text>
+  <text class="tick mid zh" x="290" y="326">1e-4</text>
+  <text class="tick mid zh" x="140" y="326">1e-6</text>
+  <path class="axis" d="M900 300 L900 308"/><path class="axis" d="M760 300 L760 308"/>
+  <path class="axis" d="M620 300 L620 308"/><path class="axis" d="M450 300 L450 308"/>
+  <path class="axis" d="M290 300 L290 308"/><path class="axis" d="M140 300 L140 308"/>
+  <text class="anno zh" x="520" y="356" text-anchor="middle">← 腫瘤分數 TF 遞減</text>
+
+  <!-- 三條模態帶 -->
+  <text class="anno bold zh" x="20" y="112">CNA</text>
+  <rect class="bar warn" x="760" y="94" width="190" height="26" rx="5"/>
+  <text class="tick zh" x="620" y="113">↤ 失效</text>
+
+  <text class="anno bold zh" x="20" y="158">fragmentomics</text>
+  <rect class="bar warn" x="760" y="140" width="190" height="26" rx="5"/>
+  <text class="tick zh" x="620" y="159">↤ 失效</text>
+
+  <text class="anno bold zh" x="20" y="204">SNV</text>
+  <rect class="bar ok" x="140" y="186" width="810" height="26" rx="5"/>
+  <text class="anno bold mid zh" x="545" y="205">唯一能延伸到極低 TF 的訊號</text>
+
+  <!-- 3% 界線 -->
+  <path class="guide thick" d="M760 84 L760 300"/>
+  <text class="anno bold mid warn zh" x="760" y="76">TF 3% 界線</text>
+
+  <!-- 本專案目標區間 -->
+  <rect class="region" x="290" y="230" width="160" height="46" rx="6"/>
+  <text class="anno bold mid accent zh" x="370" y="258">本專案目標</text>
+  <path class="guide" d="M290 230 L290 300"/>
+  <path class="guide" d="M450 230 L450 300"/>
+
+  <!-- 結論 -->
+  <rect class="box" x="20" y="366" width="960" height="30" rx="6"/>
+  <text class="anno bold zh" x="44" y="388">→ Phase 4 的 CNA 模組在目標區間可能沒有訊號。這不是失敗，是這條界線的必然結果 —— 應先預期並寫進計畫。</text>
+</svg><figcaption>各訊號模態的適用區間。腫瘤分數低於 3% 時，只有 SNV 訊號可用。</figcaption></figure>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th scope="col">來源</th><th scope="col">平台</th><th scope="col">年</th><th scope="col">陳述</th></tr></thead>
+<tbody>
+<tr><td><span class="term" data-term="ichorCNA" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-ichorcna-13">ichorCNA<span class="term__pop" id="gd-ichorcna-13" role="tooltip"><b class="term__hd">ichorCNA <i>ichorCNA</i></b><span class="term__def" data-lang="zh">Broad Institute 2017 年的工具（Nat Commun）。從 <b>0.1× 超低深度 WGS</b> 估 tumor fraction，不需事先知道腫瘤變異。用 HMM 同時預測 CNA 片段與估 TF。<b>MRDetect 三代都在用它。</b> ⚠️ 偵測下限 TF 3%，遠高於 MRD 目標區間。</span><span class="term__def" data-lang="en" lang="en">The 2017 Broad Institute tool (Nat Commun) estimating tumour fraction from 0.1x ultra-low-pass WGS without prior knowledge of tumour variants, using an HMM to jointly predict CNA segments and TF. All three MRDetect generations use it. Its detection floor of TF 3% is far above the MRD target range.</span><a class="term__more" href="glossary.html#ichorcna">完整條目 →</a></span></span></td><td>Illumina</td><td>2017</td>
+    <td><span class="term" data-term="CNA" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-cna-14">CNA<span class="term__pop" id="gd-cna-14" role="tooltip"><b class="term__hd">CNA <i>拷貝數變異</i></b><span class="term__def" data-lang="zh">染色體片段的擴增或缺失。作為 MRD 訊號的優勢是片段大、即使極低覆蓋也看得到；<b>劣勢是靈敏度天花板低</b> —— ichorCNA 的偵測下限為 TF 3%，NanoRCS 亦報告 TF <3% 時 CNA 失效。</span><span class="term__def" data-lang="en" lang="en">Amplification or deletion of chromosomal segments. As an MRD signal its advantage is large segment size, visible even at very low coverage; its weakness is a low sensitivity ceiling — ichorCNA's detection floor is TF 3%, and NanoRCS likewise reports CNA failing below TF 3%.</span><a class="term__more" href="glossary.html#cna">完整條目 →</a></span></span> 的偵測下限為 <b>TF 3%</b>，且需 arm-level（&gt;100 Mb）事件</td></tr>
+<tr><td><span class="term" data-term="NanoRCS" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-nanorcs-15">NanoRCS<span class="term__pop" id="gd-nanorcs-15" role="tooltip"><b class="term__hd">NanoRCS <i>NanoRCS</i></b><span class="term__def" data-lang="zh">UMC Utrecht 2025 年的方法（Genome Research）。<b>唯一一篇在 ONT 平台上做 cfDNA 腫瘤偵測的方法論文。</b> RCA + 長讀共識把 ONT 錯誤率從 Q21 降到 Q31（改善 9.4×），LOD 為 TF 0.24%。同時取 SNV、CNA、fragmentomics 三種訊號。</span><span class="term__def" data-lang="en" lang="en">The 2025 method from UMC Utrecht (Genome Research) and the only methods paper performing cfDNA tumour detection on the ONT platform. RCA plus long-read consensus lowers ONT error from Q21 to Q31, a 9.4-fold improvement, achieving an LOD of TF 0.24% while extracting SNV, CNA and fragmentomics signals simultaneously.</span><a class="term__more" href="glossary.html#nanorcs">完整條目 →</a></span></span></td><td><b>ONT</b></td><td>2025</td>
+    <td>in vitro 稀釋實驗顯示：<b>TF 低於 3% 時只有 SNV 分析可用</b>，
+    CNA 與片段體學失效且變異較大</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="prose">兩者用<b>不同資料、不同平台、相隔八年</b>，卻收斂到同一個數字。
+這使這條界線比較像是<b>結構性的</b>，而非某一次實驗的偶然。</p>
+
+<p class="prose">它的實務意涵是：<b>如果目標 TF 低於 3%，CNA 與片段體學這兩條路等於不存在</b> ——
+不是效果差一點，是沒有訊號。此時 SNV 是唯一可走的路，
+而 SNV 又回到 <a href="p03.html">p03</a> 的核心困難：怎麼分辨真變異與定序錯誤。</p>
+
+<p class="prose">反過來說，若目標 TF 在 3% 以上，
+CNA 的成本優勢極大（<span class="term" data-term="ichorCNA" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-ichorcna-16">ichorCNA<span class="term__pop" id="gd-ichorcna-16" role="tooltip"><b class="term__hd">ichorCNA <i>ichorCNA</i></b><span class="term__def" data-lang="zh">Broad Institute 2017 年的工具（Nat Commun）。從 <b>0.1× 超低深度 WGS</b> 估 tumor fraction，不需事先知道腫瘤變異。用 HMM 同時預測 CNA 片段與估 TF。<b>MRDetect 三代都在用它。</b> ⚠️ 偵測下限 TF 3%，遠高於 MRD 目標區間。</span><span class="term__def" data-lang="en" lang="en">The 2017 Broad Institute tool (Nat Commun) estimating tumour fraction from 0.1x ultra-low-pass WGS without prior knowledge of tumour variants, using an HMM to jointly predict CNA segments and TF. All three MRDetect generations use it. Its detection floor of TF 3% is far above the MRD target range.</span><a class="term__more" href="glossary.html#ichorcna">完整條目 →</a></span></span> 只需 0.1× 覆蓋），
+<span class="term" data-term="NanoRCS" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-nanorcs-17">NanoRCS<span class="term__pop" id="gd-nanorcs-17" role="tooltip"><b class="term__hd">NanoRCS <i>NanoRCS</i></b><span class="term__def" data-lang="zh">UMC Utrecht 2025 年的方法（Genome Research）。<b>唯一一篇在 ONT 平台上做 cfDNA 腫瘤偵測的方法論文。</b> RCA + 長讀共識把 ONT 錯誤率從 Q21 降到 Q31（改善 9.4×），LOD 為 TF 0.24%。同時取 SNV、CNA、fragmentomics 三種訊號。</span><span class="term__def" data-lang="en" lang="en">The 2025 method from UMC Utrecht (Genome Research) and the only methods paper performing cfDNA tumour detection on the ONT platform. RCA plus long-read consensus lowers ONT error from Q21 to Q31, a 9.4-fold improvement, achieving an LOD of TF 0.24% while extracting SNV, CNA and fragmentomics signals simultaneously.</span><a class="term__more" href="glossary.html#nanorcs">完整條目 →</a></span></span> 也證明多模態合併能提供 SNV 之外的獨立佐證。</p>
+</section>
+
+
+<section data-part="predict" class="part" id="part-predict">
+<h2 data-num="④" id="三-共同結構-11-篇真正的共同點">三 · 共同結構：11 篇真正的共同點</h2>
+
+<p class="prose">把 66 格掃過一遍，看哪些格子<b>每一列都有東西</b>。若要用一句話概括：</p>
 
 <blockquote class="prose">
 <b>全部都在做同一件事 —— 把單一觀測不可靠的訊號，
@@ -394,27 +316,33 @@ to afford lower limits of detection than duplex WGS</b>.」</blockquote>
 <thead><tr><th scope="col">步驟</th><th scope="col">11 篇的共同點</th></tr></thead>
 <tbody>
 <tr><td>① 追蹤標的</td><td><b>全部都做 germline 移除</b>，無一例外</td></tr>
-<tr><td>② 驗證資料</td><td><b>全部都以稀釋序列量測 LLOD</b>，無一篇僅憑臨床樣本宣稱</td></tr>
+<tr><td>② 驗證資料</td><td><b>全部都以稀釋序列量測 <span class="term" data-term="LLOD" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-llod-18">LLOD<span class="term__pop" id="gd-llod-18" role="tooltip"><b class="term__hd">LLOD <i>偵測極限</i></b><span class="term__def" data-lang="zh">能被可靠偵測到的最低 TF。<b>報告時必須附條件</b>：定序深度、位點數、以及對應的 specificity。不同方法的 LLOD 若深度與位點數不同，不可直接比較。</span><span class="term__def" data-lang="en" lang="en">The lowest tumour fraction reliably detectable. Reporting it requires stating the conditions: sequencing depth, number of tracked sites, and the corresponding specificity. LLODs from methods with different depths or site counts are not directly comparable.</span><a class="term__more" href="glossary.html#llod">完整條目 →</a></span></span></b>，無一篇僅憑臨床樣本宣稱</td></tr>
 <tr><td>③ read 層去噪</td><td>全部都在回答「這一條 read 是真的嗎」——
     差別在用化學、統計還是機器學習</td></tr>
 <tr><td>④ 樣本層分數</td><td>全部都在「把 N 個弱觀測合成一個數」，差別在機率模型</td></tr>
-<tr><td>⑤ 門檻</td><td>全部都與 <span class="term" data-term="specificity" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-specificity-27">特異度<span class="term__pop" id="gd-specificity-27" role="tooltip"><b class="term__hd">specificity <i>特異度</i></b><span class="term__def" data-lang="zh">陰性樣本被正確判為陰性的比例：TN/(TN+FP)。<b>因為只由陰性樣本算出，不受陽性/陰性樣本組成比例影響</b>，是跨研究比較的主指標（Precision 與 F1 則會被 prevalence 綁架）。</span><span class="term__def" data-lang="en" lang="en">The proportion of negative samples correctly classified as negative: TN/(TN+FP). Because it is computed only from negatives, it is unaffected by the positive-to-negative composition and is the main metric for cross-study comparison, unlike precision and F1 which depend on prevalence.</span><a class="term__more" href="glossary.html#specificity">完整條目 →</a></span></span>目標綁定；
+<tr><td>⑤ 門檻</td><td>全部都與<span class="term" data-term="specificity" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-specificity-19">特異度<span class="term__pop" id="gd-specificity-19" role="tooltip"><b class="term__hd">specificity <i>特異度</i></b><span class="term__def" data-lang="zh">陰性樣本被正確判為陰性的比例：TN/(TN+FP)。<b>因為只由陰性樣本算出，不受陽性/陰性樣本組成比例影響</b>，是跨研究比較的主指標（Precision 與 F1 則會被 prevalence 綁架）。</span><span class="term__def" data-lang="en" lang="en">The proportion of negative samples correctly classified as negative: TN/(TN+FP). Because it is computed only from negatives, it is unaffected by the positive-to-negative composition and is the main metric for cross-study comparison, unlike precision and F1 which depend on prevalence.</span><a class="term__more" href="glossary.html#specificity">完整條目 →</a></span></span>目標綁定；
     差別在需不需要陰性樣本世代</td></tr>
 <tr><td>⑥ 評估</td><td>全部都報特異度、都做分層報告；
-    但<b>僅 3 篇明確聲明切分紀律</b></td></tr>
+    但<b>僅 3 篇明確聲明訓練與測試如何分開</b></td></tr>
 </tbody>
 </table>
 </div>
 
-<aside class="guardrail" id="guard-17"><p class="guardrail__hd">重要區分 #17：「累積更多觀測」在低 TF 下不是無限有效的</p><p class="prose">增加位點數是唯一可自由設計的參數，但有兩個天花板。</p>
-<p class="prose"><b>其一是位點品質。</b><span class="term" data-term="INVAR" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-invar-28">INVAR<span class="term__pop" id="gd-invar-28" role="tooltip"><b class="term__hd">INVAR <i>INVAR</i></b><span class="term__def" data-lang="zh">劍橋 Rosenfeld lab 2020 年的方法（Sci Transl Med）。與 MRDetect 同期同目標但<b>走純統計路線不用 ML</b>：四層誤差抑制疊加（背景降 131×），以 likelihood ratio 判定，並<b>用其他病人的樣本當陰性對照定門檻</b>。有開源碼（INVAR2）。</span><span class="term__def" data-lang="en" lang="en">The 2020 method from Rosenfeld's lab in Cambridge (Sci Transl Med). Contemporaneous with MRDetect and sharing its goal but taking a purely statistical route without machine learning: four stacked layers of error suppression (131-fold background reduction), decisions by likelihood ratio, and thresholds set using other patients' samples as negative controls. Open source as INVAR2.</span><a class="term__more" href="glossary.html#invar">完整條目 →</a></span></span> 的作者指出，
+<p class="prose">最後一列是唯一的例外 —— 前五步都是「11 篇全部做到」，
+只有第六步不是。<b>八篇論文沒有寫清楚訓練與測試怎麼分</b>，
+這是整個領域最一致的缺口。</p>
+
+<aside class="guardrail" id="guard-17"><p class="guardrail__hd">重要區分 #17：「累積更多觀測」在低 TF 下不是無限有效的</p><p class="prose">既然共同結構是「累積獨立觀測」，
+自然會想到：那把位點數加到最大就好了？位點數確實是唯一可自由設計的參數，
+但它有兩個天花板。</p>
+<p class="prose"><b>其一是位點品質。</b><span class="term" data-term="INVAR" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-invar-20">INVAR<span class="term__pop" id="gd-invar-20" role="tooltip"><b class="term__hd">INVAR <i>INVAR</i></b><span class="term__def" data-lang="zh">劍橋 Rosenfeld lab 2020 年的方法（Sci Transl Med）。與 MRDetect 同期同目標但<b>走純統計路線不用 ML</b>：四層誤差抑制疊加（背景降 131×），以 likelihood ratio 判定，並<b>用其他病人的樣本當陰性對照定門檻</b>。有開源碼（INVAR2）。</span><span class="term__def" data-lang="en" lang="en">The 2020 method from Rosenfeld's lab in Cambridge (Sci Transl Med). Contemporaneous with MRDetect and sharing its goal but taking a purely statistical route without machine learning: four stacked layers of error suppression (131-fold background reduction), decisions by likelihood ratio, and thresholds set using other patients' samples as negative controls. Open source as INVAR2.</span><a class="term__more" href="glossary.html#invar">完整條目 →</a></span></span> 的作者指出，
 其稀釋序列的 8,660 個追蹤突變中有 <b>39% 在血漿中從未被偵測到</b> ——
-成因是腫瘤內異質性，部分位點只存在於未釋出 ctDNA 的次選殖中。
+成因是腫瘤內異質性，部分位點只存在於未釋出 <span class="term" data-term="ctDNA" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-ctdna-21">ctDNA<span class="term__pop" id="gd-ctdna-21" role="tooltip"><b class="term__hd">ctDNA <i>循環腫瘤 DNA</i></b><span class="term__def" data-lang="zh">cfDNA 中源自腫瘤的那一部分，帶有腫瘤的體細胞變異。在 MRD 情境下它只佔 cfDNA 的極小比例（常低於百萬分之一），這是所有偵測困難的根源。</span><span class="term__def" data-lang="en" lang="en">The tumour-derived fraction of cfDNA, carrying the tumour's somatic alterations. In the MRD setting it constitutes an extremely small share of total cfDNA, often below one part per million — the root of the detection problem.</span><a class="term__more" href="glossary.html#ctdna">完整條目 →</a></span></span> 的次選殖中。
 這些位點只會<b>稀釋分母</b>而非增強訊號。</p>
 <p class="prose"><b>其二是背景。</b>位點越多，累積的背景錯誤也越多。
 偵測機率式 <math><mi>p</mi><mo>=</mo><mn>1</mn><mo>−</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>n</mi><mo>·</mo><mi>d</mi><mo>·</mo><mi>k</mi></mrow></msup></math> 中的 <math><mi>d</mi></math> 若不夠低，
 提高 <math><mi>k</mi></math> 會同時放大訊號與噪音。
-這正是本領域花十年壓低錯誤率的理由。</p></aside>
+這正是本領域花十年壓低錯誤率的理由 —— 也接回第一節那條時間軸。</p></aside>
 </section>
 
 
@@ -423,15 +351,19 @@ to afford lower limits of detection than duplex WGS</b>.」</blockquote>
 
 <div class="table-wrap">
 <table>
-<thead><tr><th scope="col">主線</th><th scope="col">核心陳述</th></tr></thead>
+<thead><tr><th scope="col"></th><th scope="col">核心陳述</th><th scope="col">證據強度</th></tr></thead>
 <tbody>
-<tr><td>取捨</td><td>更低的錯誤率永遠以更少的可用分子換來；
-    <b>PV 是唯一宣稱可避開此取捨者</b></td></tr>
-<tr><td>界線</td><td>TF 低於 3% 時只有 SNV 可用 ——
-    <b>兩個獨立來源佐證</b>，本專案的 Phase 4 落在此界線之下</td></tr>
-<tr><td>演進</td><td>三代由演算法轉向化學，等同承認軟體去噪有天花板；
-    <b>但作者自承 tumor-informed 情境下標準 WGS 可能更好</b></td></tr>
-<tr><td>共同結構</td><td>全部都在累積獨立觀測，差別只在累積什麼、怎麼壓錯誤率</td></tr>
+<tr><td><b>時間軸</b></td>
+    <td>三代由演算法轉向化學，等同承認軟體去噪有天花板；
+    <b>但作者自承 tumor-informed 情境下標準 WGS 可能更好</b></td>
+    <td>同一實驗室三篇的事實 + 作者自述</td></tr>
+<tr><td><b>硬界線</b></td>
+    <td>TF 低於 3% 時只有 SNV 可用，CNA 與片段體學無訊號</td>
+    <td><b>兩個獨立來源</b>（不同平台、相隔八年）</td></tr>
+<tr><td><b>共同結構</b></td>
+    <td>全部都在累積獨立觀測，差別只在累積什麼、怎麼壓錯誤率；
+    <b>唯一的共同缺口是切分紀律</b></td>
+    <td>11 篇 × 六步全數比對</td></tr>
 </tbody>
 </table>
 </div>
@@ -440,9 +372,9 @@ to afford lower limits of detection than duplex WGS</b>.」</blockquote>
 </section>
 
     <nav class="pager" aria-label="模組導覽"><a class="prev" href="p07.html"><small>← 上一模組</small>逐篇完整規格矩陣</a><a class="next" href="p09.html"><small>下一模組 →</small>本專案的位置與設計選單</a></nav>
-    <section class="glossary-appendix"><h2>本模組術語</h2><dl><dt>AccuScan（AccuScan）</dt><dd>2024 年的 WGS MRD 方法（EMBO Mol Med）。用 <b>RCA concatemer</b> 讓錯誤校正在單一 read 內完成，錯誤率 4.2e-7、LOD 達 cVAF 1e-6。<b>背景錯誤率由樣本自身量測、門檻由統計模型反推，皆不需 control 世代。</b></dd><dt>CNA（拷貝數變異）</dt><dd>染色體片段的擴增或缺失。作為 MRD 訊號的優勢是片段大、即使極低覆蓋也看得到；<b>劣勢是靈敏度天花板低</b> —— ichorCNA 的偵測下限為 TF 3%，NanoRCS 亦報告 TF <3% 時 CNA 失效。</dd><dt>INVAR（INVAR）</dt><dd>劍橋 Rosenfeld lab 2020 年的方法（Sci Transl Med）。與 MRDetect 同期同目標但<b>走純統計路線不用 ML</b>：四層誤差抑制疊加（背景降 131×），以 likelihood ratio 判定，並<b>用其他病人的樣本當陰性對照定門檻</b>。有開源碼（INVAR2）。</dd><dt>Landau gen3（Landau 第三代）</dt><dd>Landau lab 2025 年的第三代（Nat Methods）。改從<b>定序化學</b>解決：低成本 Ultima 平台做 ~120X 深度，加上全基因體 duplex 錯誤校正，錯誤率達 7.7e-7。<b>三代中唯一開源。</b> ⚠️ 作者自承 tumor-informed 情境下標準 WGS + 高輸入量可能更好。</dd><dt>MRD-EDGE（MRD-EDGE（第二代））</dt><dd>Landau lab 2024 年的續作（Nat Med）。把 SVM 換成 CNN + MLP ensemble，並加入 ctDNA 專屬生物特徵（SBS context、fragment length、regional epigenomics），訊噪比從 8.3× 提升到 118×。</dd><dt>MRDetect（MRDetect（第一代））</dt><dd>Landau lab 2020 年的方法（Nat Med），本專案的基準。核心是「廣度取代深度」：35X WGS + 全基因體數千個 SNV 累加，用線性 SVM 對單條 read 去噪（5 特徵）。LLOD 約 1e-5。⚠️ 程式碼未開源。</dd><dt>NanoRCS（NanoRCS）</dt><dd>UMC Utrecht 2025 年的方法（Genome Research）。<b>唯一一篇在 ONT 平台上做 cfDNA 腫瘤偵測的方法論文。</b> RCA + 長讀共識把 ONT 錯誤率從 Q21 降到 Q31（改善 9.4×），LOD 為 TF 0.24%。同時取 SNV、CNA、fragmentomics 三種訊號。</dd><dt>PhasED-seq（PhasED-seq）</dt><dd>Stanford 2021 年的方法（Nat Biotechnol）。<b>改變偵測單元</b>：不看單鹼基而看同一分子上的多個突變（phased variants），背景率降至 8.0e-7（2x）與 3.4e-8（3x），且不需分子條碼、不犧牲分子回收率。<b>其限制正好是 ONT 的優勢。</b></dd><dt>RCA（滾環擴增）</dt><dd>把 DNA 環化後沿環複製，產生含同一模板多份<b>串聯拷貝</b>的長分子（concatemer）。因此共識可以在<b>單一 read 之內</b>完成，不需要多條 read 或正反股配對。AccuScan 與 NanoRCS 皆採此法。</dd><dt>TF（腫瘤分數的縮寫）</dt><dd><code>tumor fraction</code>（腫瘤分數）的縮寫，本知識庫全篇使用。定義為樣本中源自腫瘤的 DNA 佔全部 DNA 的比例，代表<b>訊號的強度</b>。MRD 情境的量級為 10⁻⁵ – 10⁻⁶，與定序機本身的錯誤率同一個數量級 —— 這正是整個領域的核心困難。它由病人的疾病狀態決定，<b>不是可以由設計調整的參數</b>。</dd><dt>cVAF（循環變異等位基因分率）</dt><dd>血漿中某變異的等位基因分率。與一般 VAF 的差別在量級：germline VAF 約 0.5，而 MRD 情境的 cVAF 常在 10⁻⁵–10⁻⁶ 之間，與定序錯誤率同一個數量級。</dd><dt>duplex sequencing（雙股定序）</dt><dd>同時定序同一 DNA 分子的<b>正反兩股</b>，只有兩股一致的變異才算真。能校正單股損傷（如氧化造成的 G>T），錯誤率可壓到 1e-7 級。⚠️ 代價極高：<b>只回收約 19% 的獨立分子</b>。</dd><dt>fragmentomics（片段體學）</dt><dd>利用 cfDNA 的<b>片段長度模式</b>判斷腫瘤存在（腫瘤來源片段通常較短）。DELFI 用 5 Mb window 內短/長片段比值餵入 gradient boosting。⚠️ <b>本專案不適用</b> —— 純化細胞株 gDNA 沒有 cfDNA 的凋亡片段分布。</dd><dt>ichorCNA（ichorCNA）</dt><dd>Broad Institute 2017 年的工具（Nat Commun）。從 <b>0.1× 超低深度 WGS</b> 估 tumor fraction，不需事先知道腫瘤變異。用 HMM 同時預測 CNA 片段與估 TF。<b>MRDetect 三代都在用它。</b> ⚠️ 偵測下限 TF 3%，遠高於 MRD 目標區間。</dd><dt>marker（標的）</dt><dd>與 reporter 同義，AccuScan 等論文使用的稱呼。實測顯示 marker 數對偵測率影響極大：在 cVAF 1e-5 下，2K/5K/10K/20K 個 marker 分別給出 38%/77%/96%/100% 的偵測率。</dd><dt>phased variant（同相變異）</dt><dd>位於<b>同一條 DNA 分子上</b>的兩個以上體細胞突變。因為兩個特定位置同時出錯的機率是相乘的，PV 的背景率遠低於單鹼基：2x PV 為 8.0e-7、3x 為 3.4e-8，<b>且不需要分子條碼</b>。</dd><dt>specificity（特異度）</dt><dd>陰性樣本被正確判為陰性的比例：TN/(TN+FP)。<b>因為只由陰性樣本算出，不受陽性/陰性樣本組成比例影響</b>，是跨研究比較的主指標（Precision 與 F1 則會被 prevalence 綁架）。</dd><dt>tumor fraction（腫瘤分數）</dt><dd>樣本中源自腫瘤的 DNA 佔全部 DNA 的比例。MRD 情境常低至 10⁻⁵ 甚至 10⁻⁶。本專案因使用純細胞株（purity≈1），混合時的 tumor read 比例即等同 TF。</dd><dt>tumor-informed（腫瘤資訊導向）</dt><dd>先對病人的腫瘤定序，取得其專屬變異清單，再到血漿中專門搜尋這些位點。敏感度高，代價是必須取得腫瘤檢體。本專案走這條路線。</dd><dt>tumor-naive（無腫瘤資訊）</dt><dd>不需要配對腫瘤，直接從血漿判斷是否有癌。適用於拿不到腫瘤檢體的情境，但必須額外處理 clonal hematopoiesis 等混淆來源，敏感度通常較低。</dd></dl></section>
+    <section class="glossary-appendix"><h2>本模組術語</h2><dl><dt>CNA（拷貝數變異）</dt><dd>染色體片段的擴增或缺失。作為 MRD 訊號的優勢是片段大、即使極低覆蓋也看得到；<b>劣勢是靈敏度天花板低</b> —— ichorCNA 的偵測下限為 TF 3%，NanoRCS 亦報告 TF <3% 時 CNA 失效。</dd><dt>INVAR（INVAR）</dt><dd>劍橋 Rosenfeld lab 2020 年的方法（Sci Transl Med）。與 MRDetect 同期同目標但<b>走純統計路線不用 ML</b>：四層誤差抑制疊加（背景降 131×），以 likelihood ratio 判定，並<b>用其他病人的樣本當陰性對照定門檻</b>。有開源碼（INVAR2）。</dd><dt>LLOD（偵測極限）</dt><dd>能被可靠偵測到的最低 TF。<b>報告時必須附條件</b>：定序深度、位點數、以及對應的 specificity。不同方法的 LLOD 若深度與位點數不同，不可直接比較。</dd><dt>Landau gen3（Landau 第三代）</dt><dd>Landau lab 2025 年的第三代（Nat Methods）。改從<b>定序化學</b>解決：低成本 Ultima 平台做 ~120X 深度，加上全基因體 duplex 錯誤校正，錯誤率達 7.7e-7。<b>三代中唯一開源。</b> ⚠️ 作者自承 tumor-informed 情境下標準 WGS + 高輸入量可能更好。</dd><dt>MRD-EDGE（MRD-EDGE（第二代））</dt><dd>Landau lab 2024 年的續作（Nat Med）。把 SVM 換成 CNN + MLP ensemble，並加入 ctDNA 專屬生物特徵（SBS context、fragment length、regional epigenomics），訊噪比從 8.3× 提升到 118×。</dd><dt>MRDetect（MRDetect（第一代））</dt><dd>Landau lab 2020 年的方法（Nat Med），本專案的基準。核心是「廣度取代深度」：35X WGS + 全基因體數千個 SNV 累加，用線性 SVM 對單條 read 去噪（5 特徵）。LLOD 約 1e-5。⚠️ 程式碼未開源。</dd><dt>NanoRCS（NanoRCS）</dt><dd>UMC Utrecht 2025 年的方法（Genome Research）。<b>唯一一篇在 ONT 平台上做 cfDNA 腫瘤偵測的方法論文。</b> RCA + 長讀共識把 ONT 錯誤率從 Q21 降到 Q31（改善 9.4×），LOD 為 TF 0.24%。同時取 SNV、CNA、fragmentomics 三種訊號。</dd><dt>SVM（支援向量機）</dt><dd>一種監督式分類器，在特徵空間中找一個能把兩類分開、且與兩類邊界距離最大的超平面。本領域用它判斷單條 read 是真突變還是定序錯誤 —— <code>MRDetect</code> 使用線性核與五個特徵，選它的理由是特徵少、可解釋，且各特徵的權重可直接讀出。</dd><dt>ctDNA（循環腫瘤 DNA）</dt><dd>cfDNA 中源自腫瘤的那一部分，帶有腫瘤的體細胞變異。在 MRD 情境下它只佔 cfDNA 的極小比例（常低於百萬分之一），這是所有偵測困難的根源。</dd><dt>duplex sequencing（雙股定序）</dt><dd>同時定序同一 DNA 分子的<b>正反兩股</b>，只有兩股一致的變異才算真。能校正單股損傷（如氧化造成的 G>T），錯誤率可壓到 1e-7 級。⚠️ 代價極高：<b>只回收約 19% 的獨立分子</b>。</dd><dt>fragmentomics（片段體學）</dt><dd>利用 cfDNA 的<b>片段長度模式</b>判斷腫瘤存在（腫瘤來源片段通常較短）。DELFI 用 5 Mb window 內短/長片段比值餵入 gradient boosting。⚠️ <b>本專案不適用</b> —— 純化細胞株 gDNA 沒有 cfDNA 的凋亡片段分布。</dd><dt>ichorCNA（ichorCNA）</dt><dd>Broad Institute 2017 年的工具（Nat Commun）。從 <b>0.1× 超低深度 WGS</b> 估 tumor fraction，不需事先知道腫瘤變異。用 HMM 同時預測 CNA 片段與估 TF。<b>MRDetect 三代都在用它。</b> ⚠️ 偵測下限 TF 3%，遠高於 MRD 目標區間。</dd><dt>specificity（特異度）</dt><dd>陰性樣本被正確判為陰性的比例：TN/(TN+FP)。<b>因為只由陰性樣本算出，不受陽性/陰性樣本組成比例影響</b>，是跨研究比較的主指標（Precision 與 F1 則會被 prevalence 綁架）。</dd><dt>tumor-informed（腫瘤資訊導向）</dt><dd>先對病人的腫瘤定序，取得其專屬變異清單，再到血漿中專門搜尋這些位點。敏感度高，代價是必須取得腫瘤檢體。本專案走這條路線。</dd><dt>tumor-naive（無腫瘤資訊）</dt><dd>不需要配對腫瘤，直接從血漿判斷是否有癌。適用於拿不到腫瘤檢體的情境，但必須額外處理 clonal hematopoiesis 等混淆來源，敏感度通常較低。</dd></dl></section>
   </main>
-  <nav class="toc--sticky" aria-label="本頁目錄"><h2>本頁目錄</h2><ol><li class="lv2"><a href="#為什麼重要">為什麼重要</a></li><li class="lv2"><a href="#主線一-所有方法都在同一組取捨上">主線一：所有方法都在同一組取捨上</a></li><li class="lv3"><a href="#可換算的匯率">可換算的匯率</a></li><li class="lv2"><a href="#主線二-訊號模態有硬界線">主線二：訊號模態有硬界線</a></li><li class="lv2"><a href="#主線三-三代演進是錯誤抑制的天花板故事">主線三：三代演進是錯誤抑制的天花板故事</a></li><li class="lv2"><a href="#共同結構">共同結構</a></li><li class="lv2"><a href="#小結">小結</a></li></ol></nav>
+  <nav class="toc--sticky" aria-label="本頁目錄"><h2>本頁目錄</h2><ol><li class="lv2"><a href="#為什麼重要">為什麼重要</a></li><li class="lv2"><a href="#一-一條被藏起來的時間軸">一 · 一條被藏起來的時間軸</a></li><li class="lv2"><a href="#二-一條硬界線-tf-3">二 · 一條硬界線：TF 3%</a></li><li class="lv2"><a href="#三-共同結構-11-篇真正的共同點">三 · 共同結構：11 篇真正的共同點</a></li><li class="lv2"><a href="#小結">小結</a></li></ol></nav>
 </div>
 
 <footer class="site-footer">

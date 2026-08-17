@@ -1,10 +1,9 @@
 <!--tw
 {
   "objectives": [
-    "說明降噪方法在錯誤率、可用分子數與涵蓋廣度之間的三向取捨",
-    "指出訊號模態在腫瘤分數三個百分點處的適用界線，及其兩個獨立來源",
-    "依三代方法的演進，說明錯誤抑制路線的轉折與作者自身留下的轉折",
-    "陳述 11 篇方法的共同結構，並說明其對本專案設計的意涵"
+    "說明 MRDetect、MRD-EDGE 與第三代其實是同一實驗室的三次改寫，以及第三次的轉向意味著什麼",
+    "指出訊號模態在腫瘤分數 3% 處的硬界線，及其兩個獨立來源",
+    "陳述 11 篇在六個步驟上真正的共同點，並指出唯一多數論文未做到的一項"
   ]
 }
 -->
@@ -12,99 +11,38 @@
 <section data-part="why">
 <h2>為什麼重要</h2>
 
-<p class="prose">前五頁逐步驟比較，本頁處理只有把 11 篇放在一起才看得出來的三件事。</p>
+<p class="prose">前六頁都是<b>同一步的橫向比較</b>：這一步有哪些做法、各自的代價是什麼。
+那個框架很有用，但它有一個結構性的盲點 ——
+<b>有些東西的形狀不是「一個步驟」</b>，因此在任何一頁都放不下。</p>
 
-<p class="prose">這三條主線不存在於任何單一論文中 ——
-[[PhasED-seq]] 不會提 [[NanoRCS]]，[[NanoRCS]] 也不會討論 [[duplex sequencing|duplex]] 的分子回收率。
-它們是跨論文比對的產物。</p>
+<p class="prose">本頁只處理兩件這樣的事，加上一個總結：</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th></th><th>它橫跨什麼</th><th>為什麼步驟頁裝不下</th></tr></thead>
+<tbody>
+<tr><td><b>一條被藏起來的時間軸</b></td><td><b>時間</b></td>
+    <td>步驟頁把 11 篇當成同時存在的並列選項，
+    藏住了其中三篇<b>是同一個實驗室的連續嘗試</b></td></tr>
+<tr><td><b>一條硬界線</b></td><td>① 與 ⑥</td>
+    <td>它說的是「你在 ① 選了哪種訊號，⑥ 就有一個地板」——
+    兩頁各自都看不到這個因果</td></tr>
+<tr><td><b>共同結構</b></td><td>全部六步</td>
+    <td>要把 66 格都掃過，才看得出哪些格子每一列都有東西</td></tr>
+</tbody>
+</table>
+</div>
 </section>
 
 
 <section data-part="concept">
-<h2>主線一：所有方法都在同一組取捨上</h2>
+<h2>一 · 一條被藏起來的時間軸</h2>
 
-{{svg:tradeoff-triangle | 各方法在錯誤率與可用分子數兩軸上的位置。越靠右下越理想，但沒有方法能同時佔滿兩軸。}}
+<p class="prose">在 <a href="p03.html">p03</a> 讀到 [[MRDetect]] 的 [[SVM]]、
+[[MRD-EDGE]] 的 CNN、[[Landau gen3|第三代]]的 [[duplex sequencing|duplex]] 時，
+它們看起來是三個並列的選項。</p>
 
-<p class="prose">降噪的手段各不相同，但代價的形式一致：
-<b>更低的錯誤率永遠用更少的可用分子換來</b>。</p>
-
-<div class="table-wrap">
-<table>
-<thead><tr><th>方法</th><th>買到什麼</th><th>賣掉什麼</th></tr></thead>
-<tbody>
-<tr><td>[[duplex sequencing|duplex 定序]]</td><td>錯誤率 7.7e-7</td>
-    <td><b>只回收 19% 的獨立片段</b>；作者自承獨立分子數少一個數量級</td></tr>
-<tr><td>[[RCA]] 共識</td><td>錯誤率 4.2e-7（Illumina）／7.2e-4（ONT）</td>
-    <td>去重後僅 35–51% 的原始 read 可用</td></tr>
-<tr><td><b>[[phased variant|同分子多突變]]</b></td><td>背景 8.0e-7（2×）／3.4e-8（3×）</td>
-    <td><b>幾乎不損失</b> —— 間距 &lt;20 bp 者深度等同全樣本</td></tr>
-<tr><td>[[MRDetect]] 世系</td><td>涵蓋廣度（全基因體 10⁴–10⁵ 位點）</td>
-    <td>接受較高的錯誤率（4.96e-5）</td></tr>
-<tr><td>[[ichorCNA]]</td><td>極低成本（0.1× 覆蓋）</td>
-    <td>偵測下限僅到 [[TF]] 3%</td></tr>
-</tbody>
-</table>
-</div>
-
-<div class="guardrail guardrail--info">
-<p class="guardrail__hd">PhasED-seq 是唯一宣稱可避開此取捨的方法</p>
-<p class="prose">其他方法都以「更少的分子」換準確度；
-[[phased variant|PV]] 則以<b>同一分子上的巧合</b>換準確度 ——
-兩個特定位置同時出錯的機率是相乘的，
-而這不需要丟棄任何分子。</p>
-<p class="prose">代價轉移到別處：需要同一分子上有兩個以上的突變，
-因此 PV 稀少的病人受益有限（[[PhasED-seq]] 的固態瘤案例為 14–622 個，差異極大）。</p>
-</div>
-
-<h3>可換算的匯率</h3>
-
-{{eq}}
-\text{錯誤率降 2 個數量級} ≈ \text{深度提高 5 倍}
-{{note}}
-由 [[AccuScan]] 的兩點推得：4.2e-7 @ 20× 與 2.8e-5 @ 100× 達到相同的 96% 偵測率
-（[[cVAF]] 2.5e-5，10,000 個[[marker|標的]]）。
-{{/eq}}
-
-<p class="prose">此匯率把「錯誤率」與「深度」放在同一個尺度上，
-使本專案的高錯誤率可以換算成等效的深度需求。</p>
-</section>
-
-
-<section data-part="evidence">
-<h2>主線二：訊號模態有硬界線</h2>
-
-{{svg:tf-3percent-boundary | 各訊號模態的適用區間。腫瘤分數低於 3% 時，只有 SNV 訊號可用。}}
-
-<p class="prose">兩篇獨立論文佐證同一條界線：</p>
-
-<div class="table-wrap">
-<table>
-<thead><tr><th>來源</th><th>陳述</th></tr></thead>
-<tbody>
-<tr><td>[[ichorCNA]]（Nat Commun 2017）</td>
-    <td>[[CNA]] 的偵測下限為 <b>TF 3%</b>，且需 arm-level（&gt;100 Mb）事件</td></tr>
-<tr><td>[[NanoRCS]]（Genome Research 2025）</td>
-    <td>in vitro 稀釋實驗顯示：<b>TF 低於 3% 時只有 SNV 分析可用</b>，
-    CNA 與[[fragmentomics|片段體學]]失效且變異較大</td></tr>
-</tbody>
-</table>
-</div>
-
-<p class="prose">兩者以不同資料、不同平台、相隔八年得到同一個數字，
-使這條界線可視為結構性而非偶然。</p>
-
-{{guard:16 | 本專案的 Phase 4 落在 CNA 失效的區間}}
-<p class="prose">本專案的目標 [[tumor fraction|腫瘤分數]]為 1e-3 至 1e-4，
-即 0.1% 至 0.01% —— <b>比 3% 的界線低 30 至 300 倍</b>。</p>
-<p class="prose">依上述兩個獨立來源，CNA 模組在該區間<b>可能沒有訊號</b>。</p>
-<p class="prose">這不是失敗，而是這條界線的必然結果。
-但應<b>事先預期並寫入計畫</b>，而非在跑出無訊號的結果後才解釋。
-CNA 模組在本專案的角色因此偏向「baseline 對照」：
-用以證明本專案的 SNV 路線在低 TF 下優於標準工具，
-或證明低 TF 下 CNA 確實無訊號 —— 兩種結論都有價值。</p>
-{{/guard}}
-
-<h2>主線三：三代演進是錯誤抑制的天花板故事</h2>
+<p class="prose">實際上，<b>那是同一群人在十年內三次改寫自己的答案</b>。</p>
 
 {{svg:three-generations | 同一實驗室三代方法的演進。第三代不再從演算法下手，改以定序化學解決。}}
 
@@ -114,33 +52,72 @@ CNA 模組在本專案的角色因此偏向「baseline 對照」：
 <tbody>
 <tr><td>[[MRDetect]]</td><td>2020</td><td>線性 SVM，5 個定序品質特徵</td><td>8.3 倍</td><td>4.96e-5</td></tr>
 <tr><td>[[MRD-EDGE]]</td><td>2024</td><td>CNN + MLP，加入 ctDNA 生物特徵</td><td><b>118 倍</b></td><td>—</td></tr>
-<tr><td>[[Landau gen3|第三代]]</td><td>2025</td><td><b>改走定序化學</b>（[[duplex sequencing|duplex]]）</td><td>—</td><td><b>7.7e-7</b></td></tr>
+<tr><td>[[Landau gen3|第三代]]</td><td>2025</td><td><b>改走定序化學</b>（duplex）</td><td>—</td><td><b>7.7e-7</b></td></tr>
 </tbody>
 </table>
 </div>
 
-<p class="prose">第三代不再優化演算法，而是從資料源頭解決 ——
-等同於承認軟體去噪存在天花板。</p>
+<p class="prose">前兩代都在<b>優化演算法</b>：從線性模型換成深度學習，訊噪比從 8.3 倍推到 118 倍。
+第三代沒有繼續往下推，而是<b>從資料源頭解決</b> ——
+換建庫化學，讓每個分子被正反兩股各讀一次。</p>
+
+<p class="prose">這個轉向本身就是一個結論：<b>他們認為軟體去噪已經接近天花板</b>。
+一個把演算法從 8.3 倍推到 118 倍的團隊，下一步選擇改硬體，這件事比任何數字都有說服力。</p>
 
 <div class="guardrail guardrail--warn">
-<p class="guardrail__hd">但作者自己留了一個轉折</p>
+<p class="guardrail__hd">但作者自己在同一篇裡留了一個轉折</p>
 <p class="prose">[[Landau gen3|第三代]]論文的 Discussion 寫道：</p>
 <blockquote class="prose">「<b>In the tumor-informed setting</b>, where prior knowledge of the somatic
 mutations can lower the effective error rate of standard WGS, <b>higher inputs are expected
 to afford lower limits of detection than duplex WGS</b>.」</blockquote>
-<p class="prose">亦即：在 [[tumor-informed]] 情境下 —— 也就是本專案的情境 ——
-<b>加大輸入量的標準 WGS 預期可達到比 duplex 更低的偵測極限</b>，
-因為已知要找哪些位點本身就降低了有效錯誤率。</p>
-<p class="prose">duplex 的優勢主要在 [[tumor-naive]] 情境。
-本專案沿用第一代的路線<b>並未過時</b>。</p>
+<p class="prose">亦即：<b>duplex 的優勢主要在 [[tumor-naive]] 情境</b>。
+若事先已知要找哪些位點（[[tumor-informed]]），
+那份先驗知識本身就降低了有效錯誤率 ——
+此時<b>加大輸入量的標準 WGS，預期可達到比 duplex 更低的偵測極限</b>。</p>
+<p class="prose">所以這條時間軸不是「後面的一定比前面好」。
+它真正說的是：<b>哪一代適用，取決於你有沒有腫瘤組織的先驗知識</b>。</p>
 </div>
 </section>
 
 
-<section data-part="predict">
-<h2>共同結構</h2>
+<section data-part="evidence">
+<h2>二 · 一條硬界線：TF 3%</h2>
 
-<p class="prose">若要用一句話概括這 11 篇：</p>
+<p class="prose">選哪一種訊號（SNV？[[CNA]]？[[fragmentomics|片段體學]]？）看起來是第一步的設計選擇。
+但這個選擇有一個<b>不能跨越的地板</b>：</p>
+
+{{svg:tf-3percent-boundary | 各訊號模態的適用區間。腫瘤分數低於 3% 時，只有 SNV 訊號可用。}}
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>來源</th><th>平台</th><th>年</th><th>陳述</th></tr></thead>
+<tbody>
+<tr><td>[[ichorCNA]]</td><td>Illumina</td><td>2017</td>
+    <td>[[CNA]] 的偵測下限為 <b>TF 3%</b>，且需 arm-level（&gt;100 Mb）事件</td></tr>
+<tr><td>[[NanoRCS]]</td><td><b>ONT</b></td><td>2025</td>
+    <td>in vitro 稀釋實驗顯示：<b>TF 低於 3% 時只有 SNV 分析可用</b>，
+    CNA 與片段體學失效且變異較大</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="prose">兩者用<b>不同資料、不同平台、相隔八年</b>，卻收斂到同一個數字。
+這使這條界線比較像是<b>結構性的</b>，而非某一次實驗的偶然。</p>
+
+<p class="prose">它的實務意涵是：<b>如果目標 TF 低於 3%，CNA 與片段體學這兩條路等於不存在</b> ——
+不是效果差一點，是沒有訊號。此時 SNV 是唯一可走的路，
+而 SNV 又回到 <a href="p03.html">p03</a> 的核心困難：怎麼分辨真變異與定序錯誤。</p>
+
+<p class="prose">反過來說，若目標 TF 在 3% 以上，
+CNA 的成本優勢極大（[[ichorCNA]] 只需 0.1× 覆蓋），
+[[NanoRCS]] 也證明多模態合併能提供 SNV 之外的獨立佐證。</p>
+</section>
+
+
+<section data-part="predict">
+<h2>三 · 共同結構：11 篇真正的共同點</h2>
+
+<p class="prose">把 66 格掃過一遍，看哪些格子<b>每一列都有東西</b>。若要用一句話概括：</p>
 
 <blockquote class="prose">
 <b>全部都在做同一件事 —— 把單一觀測不可靠的訊號，
@@ -154,28 +131,34 @@ to afford lower limits of detection than duplex WGS</b>.」</blockquote>
 <thead><tr><th>步驟</th><th>11 篇的共同點</th></tr></thead>
 <tbody>
 <tr><td>① 追蹤標的</td><td><b>全部都做 germline 移除</b>，無一例外</td></tr>
-<tr><td>② 驗證資料</td><td><b>全部都以稀釋序列量測 LLOD</b>，無一篇僅憑臨床樣本宣稱</td></tr>
+<tr><td>② 驗證資料</td><td><b>全部都以稀釋序列量測 [[LLOD]]</b>，無一篇僅憑臨床樣本宣稱</td></tr>
 <tr><td>③ read 層去噪</td><td>全部都在回答「這一條 read 是真的嗎」——
     差別在用化學、統計還是機器學習</td></tr>
 <tr><td>④ 樣本層分數</td><td>全部都在「把 N 個弱觀測合成一個數」，差別在機率模型</td></tr>
-<tr><td>⑤ 門檻</td><td>全部都與 [[specificity|特異度]]目標綁定；
+<tr><td>⑤ 門檻</td><td>全部都與[[specificity|特異度]]目標綁定；
     差別在需不需要陰性樣本世代</td></tr>
 <tr><td>⑥ 評估</td><td>全部都報特異度、都做分層報告；
-    但<b>僅 3 篇明確聲明切分紀律</b></td></tr>
+    但<b>僅 3 篇明確聲明訓練與測試如何分開</b></td></tr>
 </tbody>
 </table>
 </div>
 
+<p class="prose">最後一列是唯一的例外 —— 前五步都是「11 篇全部做到」，
+只有第六步不是。<b>八篇論文沒有寫清楚訓練與測試怎麼分</b>，
+這是整個領域最一致的缺口。</p>
+
 {{guard:17 | 「累積更多觀測」在低 TF 下不是無限有效的}}
-<p class="prose">增加位點數是唯一可自由設計的參數，但有兩個天花板。</p>
+<p class="prose">既然共同結構是「累積獨立觀測」，
+自然會想到：那把位點數加到最大就好了？位點數確實是唯一可自由設計的參數，
+但它有兩個天花板。</p>
 <p class="prose"><b>其一是位點品質。</b>[[INVAR]] 的作者指出，
 其稀釋序列的 8,660 個追蹤突變中有 <b>39% 在血漿中從未被偵測到</b> ——
-成因是腫瘤內異質性，部分位點只存在於未釋出 ctDNA 的次選殖中。
+成因是腫瘤內異質性，部分位點只存在於未釋出 [[ctDNA]] 的次選殖中。
 這些位點只會<b>稀釋分母</b>而非增強訊號。</p>
 <p class="prose"><b>其二是背景。</b>位點越多，累積的背景錯誤也越多。
 偵測機率式 {{m: p = 1 − e^{−n·d·k}}} 中的 {{m: d}} 若不夠低，
 提高 {{m: k}} 會同時放大訊號與噪音。
-這正是本領域花十年壓低錯誤率的理由。</p>
+這正是本領域花十年壓低錯誤率的理由 —— 也接回第一節那條時間軸。</p>
 {{/guard}}
 </section>
 
@@ -185,15 +168,19 @@ to afford lower limits of detection than duplex WGS</b>.」</blockquote>
 
 <div class="table-wrap">
 <table>
-<thead><tr><th>主線</th><th>核心陳述</th></tr></thead>
+<thead><tr><th></th><th>核心陳述</th><th>證據強度</th></tr></thead>
 <tbody>
-<tr><td>取捨</td><td>更低的錯誤率永遠以更少的可用分子換來；
-    <b>PV 是唯一宣稱可避開此取捨者</b></td></tr>
-<tr><td>界線</td><td>TF 低於 3% 時只有 SNV 可用 ——
-    <b>兩個獨立來源佐證</b>，本專案的 Phase 4 落在此界線之下</td></tr>
-<tr><td>演進</td><td>三代由演算法轉向化學，等同承認軟體去噪有天花板；
-    <b>但作者自承 tumor-informed 情境下標準 WGS 可能更好</b></td></tr>
-<tr><td>共同結構</td><td>全部都在累積獨立觀測，差別只在累積什麼、怎麼壓錯誤率</td></tr>
+<tr><td><b>時間軸</b></td>
+    <td>三代由演算法轉向化學，等同承認軟體去噪有天花板；
+    <b>但作者自承 tumor-informed 情境下標準 WGS 可能更好</b></td>
+    <td>同一實驗室三篇的事實 + 作者自述</td></tr>
+<tr><td><b>硬界線</b></td>
+    <td>TF 低於 3% 時只有 SNV 可用，CNA 與片段體學無訊號</td>
+    <td><b>兩個獨立來源</b>（不同平台、相隔八年）</td></tr>
+<tr><td><b>共同結構</b></td>
+    <td>全部都在累積獨立觀測，差別只在累積什麼、怎麼壓錯誤率；
+    <b>唯一的共同缺口是切分紀律</b></td>
+    <td>11 篇 × 六步全數比對</td></tr>
 </tbody>
 </table>
 </div>

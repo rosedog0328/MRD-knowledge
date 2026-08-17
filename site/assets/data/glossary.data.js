@@ -55,7 +55,8 @@ window.TW_GLOSSARY = {
   "slug": "ctdna",
   "modules": [
    "p01",
-   "p03"
+   "p03",
+   "p08"
   ]
  },
  "tumor fraction": {
@@ -77,8 +78,7 @@ window.TW_GLOSSARY = {
    "p01",
    "p02",
    "p03",
-   "p07",
-   "p08"
+   "p07"
   ]
  },
  "genomic equivalents": {
@@ -137,6 +137,7 @@ window.TW_GLOSSARY = {
    "p02",
    "p03",
    "p05",
+   "p08",
    "p09"
   ]
  },
@@ -238,8 +239,7 @@ window.TW_GLOSSARY = {
   "modules": [
    "p01",
    "p03",
-   "p06",
-   "p08"
+   "p06"
   ]
  },
  "selector": {
@@ -341,8 +341,7 @@ window.TW_GLOSSARY = {
    "p00",
    "p01",
    "p03",
-   "p04",
-   "p08"
+   "p04"
   ]
  },
  "IMAF": {
@@ -514,7 +513,6 @@ window.TW_GLOSSARY = {
    "p03",
    "p06",
    "p07",
-   "p08",
    "p09"
   ]
  },
@@ -675,7 +673,6 @@ window.TW_GLOSSARY = {
    "p02",
    "p03",
    "p06",
-   "p08",
    "p09"
   ]
  },
@@ -1386,7 +1383,6 @@ window.TW_GLOSSARY = {
    "p03",
    "p04",
    "p06",
-   "p08",
    "p09"
   ]
  },
@@ -1450,7 +1446,6 @@ window.TW_GLOSSARY = {
    "p04",
    "p05",
    "p06",
-   "p08",
    "p09"
   ]
  },
@@ -1684,7 +1679,8 @@ window.TW_GLOSSARY = {
   "modules": [
    "p01",
    "p03",
-   "p06"
+   "p06",
+   "p08"
   ]
  },
  "TF": {
@@ -1703,7 +1699,6 @@ window.TW_GLOSSARY = {
    "p03",
    "p04",
    "p06",
-   "p08",
    "p09"
   ]
  },

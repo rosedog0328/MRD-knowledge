@@ -91,11 +91,11 @@ window.TW_MODULES = [
  {
   "id": "p08",
   "num": "8",
-  "title_zh": "跨論文統整：三條主線",
-  "title_en": "Three cross-cutting themes",
-  "short": "三條主線",
-  "q": "這 11 篇合起來說了什麼？",
-  "sub": "取捨三角、訊號模態的硬界線、以及同一實驗室三代方法的演進所揭示的天花板。",
+  "title_zh": "一條時間軸與一條硬界線",
+  "title_en": "A hidden timeline and a hard floor",
+  "short": "跨論文統整",
+  "q": "按步驟比較，會漏掉什麼？",
+  "sub": "有些東西的形狀不是「一個步驟」—— 三篇論文其實是同一個實驗室的連續嘗試，以及一條決定「哪種訊號在哪個 TF 區間會整個失效」的界線。",
   "est_min": 30,
   "group": "統整"
  },
