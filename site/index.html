@@ -53,108 +53,103 @@
 
 <div class="wrap wrap--plain">
   <main class="main" id="main">
-    <header class="mhead"><p class="mhead__kicker">方法知識庫</p><h1>MRD 偵測方法知識庫</h1></header><div class="home-hook"><p class="home-hook__q">治療後殘存的癌細胞，濃度低到十萬分之一。要怎麼從一管血裡測出來？</p><p>十餘年來有數十篇論文回答過這個問題，但用詞、量測單位與報告方式互不一致，並排閱讀難以判斷兩個方法是在解同一個問題、還是不同問題。這裡把其中 11 篇拆進同一組欄位，讓「大家都怎麼做」與「同一步有幾種做法」直接可比。</p></div><figure class="dia dia--wide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" class="dia-svg" role="img" aria-labelledby="index-what-we-do__title" aria-describedby="index-what-we-do__desc">
-  <title id="index-what-we-do__title">這份知識庫在做什麼</title>
-  <desc id="index-what-we-do__desc">由上而下三層。第一層是輸入：十一篇 MRD 偵測方法論文，
-        各自來自不同實驗室、不同年份、不同定序平台，
-        用詞、量測單位與報告方式互不一致，直接並排閱讀難以比較。
-        第二層是處理方式：把每一篇拆進同一組欄位，也就是六步共同骨架，
-        每一步記錄該方法的可實作規格、達到的數字、作者自承的限制，
-        以及本專案對能否移植到 ONT 平台的判斷。
-        第三層是輸出：一張十一篇乘以六步的矩陣，共六十六格規格。
-        由此可以直接看出每一步有哪些做法可選、各自的代價是什麼，
-        成為本專案設計自己方法時的選單。
-        同一批拆解結果同時以網頁提供給人閱讀，以結構化 JSON 提供給 AI agent 讀取。</desc>
+    <header class="mhead"><p class="mhead__kicker">方法知識庫</p><h1>MRD 偵測方法知識庫</h1></header><div class="home-hook"><p class="home-hook__q">病人開完刀，影像上看不到腫瘤了 —— 但體內可能還殘存極少量癌細胞。</p><p>等到影像重新看得見時，往往已經復發。<b>MRD 偵測</b>（molecular residual disease，分子殘存疾病）就是想在那之前，從一管血裡把它測出來。</p></div><figure class="dia dia--wide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 540" class="dia-svg" role="img" aria-labelledby="index-what-we-do__title" aria-describedby="index-what-we-do__desc">
+  <title id="index-what-we-do__title">MRD 偵測在做什麼</title>
+  <desc id="index-what-we-do__desc">上半部說明臨床處境：病人接受手術切除腫瘤之後，影像檢查上已看不到腫瘤，
+        但體內仍可能殘存極少量癌細胞。等到影像重新看得見時，往往已經復發。
+        目標是在影像看得見之前就偵測到殘存。
+        下半部說明偵測流程，由兩條資料來源匯合。
+        左邊一條：取腫瘤組織定序，並與正常組織比對，
+        得到這位病人專屬的體細胞突變清單，規模為數千至數萬個位點。
+        中間一條：抽一管血，血漿中含有游離 DNA，
+        其中絕大多數來自正常細胞，只有極少部分來自腫瘤。
+        兩條匯合到右邊：在血漿的定序資料中，
+        逐一檢查突變清單上的每個位點是否出現對應的突變。
+        找到的量若明顯高於背景雜訊，即判定體內仍有殘存腫瘤。
+        圖最下方標出核心困難：腫瘤來源的 DNA 只佔血漿游離 DNA 的十萬分之一，
+        與定序機本身的錯誤率同一個數量級，因此訊號與雜訊難以分辨。</desc>
 
-  <!-- ── 第一層：輸入 ── -->
-  <text class="lbl bold zh" x="20" y="34">① 輸入：11 篇 MRD 偵測方法論文</text>
-  <text class="tick zh" x="20" y="58">不同實驗室、不同年份、不同平台 —— 用詞與報告方式互不一致</text>
+  <text class="ttl bold zh" x="20" y="34">MRD 偵測在做什麼</text>
+
+  <!-- ══ 上：臨床處境 ══ -->
+  <rect class="box plain" x="20" y="56" width="960" height="104" rx="10"/>
+  <text class="anno bold zh" x="44" y="86">臨床處境</text>
 
   <g>
-    <rect class="box plain" x="24" y="76" width="126" height="62" rx="8"/>
-    <text class="anno bold mid zh" x="87" y="103">MRDetect</text>
-    <text class="tick mid zh" x="87" y="124">2020 · WGS</text>
+    <rect class="box" x="128" y="98" width="180" height="46" rx="8"/>
+    <text class="anno bold mid zh" x="218" y="127">手術切除腫瘤</text>
 
-    <rect class="box plain" x="164" y="76" width="126" height="62" rx="8"/>
-    <text class="anno bold mid zh" x="227" y="103">CAPP-Seq</text>
-    <text class="tick mid zh" x="227" y="124">2014 · panel</text>
+    <path class="conn" d="M316 121 L344 121" marker-end="url(#index-what-we-do__mrd-a)"/>
 
-    <rect class="box plain" x="304" y="76" width="126" height="62" rx="8"/>
-    <text class="anno bold mid zh" x="367" y="103">iDES</text>
-    <text class="tick mid zh" x="367" y="124">2016 · 背景拋光</text>
+    <rect class="box" x="352" y="98" width="216" height="46" rx="8"/>
+    <text class="anno bold mid zh" x="460" y="127">影像上看不到了</text>
 
-    <rect class="box plain" x="444" y="76" width="126" height="62" rx="8"/>
-    <text class="anno bold mid zh" x="507" y="103">INVAR</text>
-    <text class="tick mid zh" x="507" y="124">2020 · 統計整合</text>
+    <path class="conn" d="M576 121 L604 121" marker-end="url(#index-what-we-do__mrd-a)"/>
 
-    <rect class="box plain" x="584" y="76" width="126" height="62" rx="8"/>
-    <text class="anno bold mid zh" x="647" y="103">PhasED-seq</text>
-    <text class="tick mid zh" x="647" y="124">2021 · 同分子</text>
-
-    <rect class="box plain" x="724" y="76" width="126" height="62" rx="8"/>
-    <text class="anno bold mid zh" x="787" y="103">NanoRCS</text>
-    <text class="tick mid zh" x="787" y="124">2025 · ONT</text>
-
-    <rect class="box plain" x="864" y="76" width="112" height="62" rx="8"/>
-    <text class="anno bold mid zh" x="920" y="103">⋯</text>
-    <text class="tick mid zh" x="920" y="124">另 5 篇</text>
+    <rect class="box" x="612" y="98" width="248" height="46" rx="8"/>
+    <text class="anno bold mid somatic zh" x="736" y="127">但可能還殘存極少量癌細胞</text>
   </g>
+  <text class="tick zh" x="880" y="127">← 要測的就是它</text>
 
-  <path class="conn thick" d="M500 152 L500 176" marker-end="url(#index-what-we-do__kb-arrow)"/>
   <defs>
-    <marker id="index-what-we-do__kb-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+    <marker id="index-what-we-do__mrd-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
       <path class="conn" d="M0 0 L10 5 L0 10 z"/>
     </marker>
   </defs>
 
-  <!-- ── 第二層：處理 ── -->
-  <rect class="box" x="24" y="188" width="952" height="196" rx="10"/>
-  <text class="lbl bold zh" x="48" y="220">② 拆進同一組欄位：六步共同骨架</text>
-  <text class="tick zh" x="48" y="244">每一篇的每一步，都記錄下面四件事</text>
+  <!-- ══ 下：偵測流程 ══ -->
+  <text class="anno bold zh" x="20" y="196">偵測流程：兩條資料來源匯合</text>
 
-  <g>
-    <rect class="box plain" x="48" y="262" width="216" height="100" rx="8"/>
-    <text class="anno bold mid zh" x="156" y="290">可實作規格</text>
-    <text class="tick mid zh" x="156" y="314">超參數、訓練資料</text>
-    <text class="tick mid zh" x="156" y="334">怎麼來、演算法</text>
-    <text class="tick mid zh" x="156" y="354">← 取自論文</text>
+  <!-- 左：腫瘤組織 -->
+  <rect class="box" x="20" y="212" width="290" height="196" rx="10"/>
+  <text class="anno bold mid accent zh" x="165" y="240">① 腫瘤組織</text>
 
-    <rect class="box plain" x="280" y="262" width="216" height="100" rx="8"/>
-    <text class="anno bold mid zh" x="388" y="290">達到的數字</text>
-    <text class="tick mid zh" x="388" y="314">錯誤率、偵測極限</text>
-    <text class="tick mid zh" x="388" y="334">敏感度、特異度</text>
-    <text class="tick mid zh" x="388" y="354">← 取自論文</text>
+  <rect class="box plain" x="44" y="256" width="242" height="42" rx="7"/>
+  <text class="tick mid zh" x="165" y="282">腫瘤 + 正常組織，各自定序</text>
 
-    <rect class="box plain" x="512" y="262" width="216" height="100" rx="8"/>
-    <text class="anno bold mid zh" x="620" y="290">作者自承的限制</text>
-    <text class="tick mid zh" x="620" y="314">他們自己說</text>
-    <text class="tick mid zh" x="620" y="334">哪裡不行</text>
-    <text class="tick mid zh" x="620" y="354">← 取自論文</text>
+  <path class="conn" d="M165 306 L165 322" marker-end="url(#index-what-we-do__mrd-a)"/>
 
-    <rect class="box plain" x="744" y="262" width="208" height="100" rx="8"/>
-    <text class="anno bold mid accent zh" x="848" y="290">能否移植到 ONT</text>
-    <text class="tick mid zh" x="848" y="314">可移植／需調整／</text>
-    <text class="tick mid zh" x="848" y="334">不可移植</text>
-    <text class="tick mid warn zh" x="848" y="354">← 本專案的判斷</text>
-  </g>
+  <rect class="box plain" x="44" y="330" width="242" height="62" rx="7"/>
+  <text class="anno bold mid zh" x="165" y="356">病人專屬突變清單</text>
+  <text class="tick mid zh" x="165" y="380">數千至數萬個位點</text>
 
-  <path class="conn thick" d="M500 396 L500 420" marker-end="url(#index-what-we-do__kb-arrow)"/>
+  <!-- 中：血液 -->
+  <rect class="box" x="330" y="212" width="290" height="196" rx="10"/>
+  <text class="anno bold mid accent zh" x="475" y="240">② 抽一管血</text>
 
-  <!-- ── 第三層：輸出 ── -->
-  <text class="lbl bold zh" x="20" y="452">③ 輸出：11 篇 × 6 步 ＝ 66 格規格</text>
+  <rect class="box plain" x="354" y="256" width="242" height="42" rx="7"/>
+  <text class="tick mid zh" x="475" y="282">血漿中的游離 DNA</text>
 
-  <rect class="box" x="24" y="470" width="608" height="130" rx="10"/>
-  <text class="anno bold zh" x="48" y="500">一張可比較的矩陣</text>
-  <text class="tick zh" x="48" y="526">每一步有哪些做法可選、各自的代價是什麼 ——</text>
-  <text class="tick zh" x="48" y="548">這就是本專案設計自己方法時的選單。</text>
-  <text class="tick zh" x="48" y="578">同一步的做法數：③ 去噪有 7 種、④ 分數有 8 種、⑤ 門檻有 6 種</text>
+  <path class="conn" d="M475 306 L475 322" marker-end="url(#index-what-we-do__mrd-a)"/>
 
-  <rect class="box plain" x="652" y="470" width="324" height="130" rx="10"/>
-  <text class="anno bold zh" x="676" y="500">兩種讀法，同一份來源</text>
-  <text class="tick zh" x="676" y="526">人 → 本網站（含圖與術語 tooltip）</text>
-  <text class="tick zh" x="676" y="548">AI agent → 結構化 JSON</text>
-  <text class="tick zh" x="676" y="578">內容相同，不會分歧</text>
-</svg><figcaption>11 篇論文各自用不同的詞彙與量測方式描述同一件事；拆進同一組欄位之後，共同點與分歧才看得出來。</figcaption></figure><figure class="dia dia--wide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 300" class="dia-svg" role="img" aria-labelledby="index-path__title" aria-describedby="index-path__desc">
+  <rect class="box plain" x="354" y="330" width="242" height="62" rx="7"/>
+  <text class="tick mid zh" x="475" y="354">絕大多數來自正常細胞</text>
+  <text class="anno bold mid somatic zh" x="475" y="380">極少部分來自腫瘤</text>
+
+  <!-- 匯合箭頭 -->
+  <path class="conn thick" d="M310 310 L328 310"/>
+  <path class="conn thick" d="M620 310 L648 310" marker-end="url(#index-what-we-do__mrd-a)"/>
+
+  <!-- 右：比對與判定 -->
+  <rect class="box" x="656" y="212" width="324" height="196" rx="10"/>
+  <text class="anno bold mid accent zh" x="818" y="240">③ 在血液資料中搜尋</text>
+
+  <rect class="box plain" x="680" y="256" width="276" height="42" rx="7"/>
+  <text class="tick mid zh" x="818" y="282">逐一檢查清單上的每個位點</text>
+
+  <path class="conn" d="M818 306 L818 322" marker-end="url(#index-what-we-do__mrd-a)"/>
+
+  <rect class="box plain" x="680" y="330" width="276" height="62" rx="7"/>
+  <text class="anno bold mid zh" x="818" y="356">找到的量高於背景雜訊</text>
+  <text class="anno bold mid ok zh" x="818" y="380">→ 判定仍有殘存</text>
+
+  <!-- ══ 核心困難 ══ -->
+  <rect class="box" x="20" y="428" width="960" height="94" rx="10"/>
+  <text class="anno bold zh" x="44" y="458">核心困難</text>
+  <text class="tick zh" x="44" y="486">腫瘤來源的 DNA 只佔血漿游離 DNA 的<tspan class="somatic bold">十萬分之一</tspan>，</text>
+  <text class="tick zh" x="44" y="508">與定序機本身的錯誤率<tspan class="bold">同一個數量級</tspan> —— 訊號與雜訊分不開。</text>
+  <text class="anno bold accent zh" x="600" y="497">十餘年來各家方法都在解這一件事</text>
+</svg><figcaption>先從腫瘤組織取得這位病人專屬的突變清單，再到血漿的游離 DNA 中搜尋這些位點。困難在於腫瘤來源的 DNA 只佔十萬分之一 —— 與定序機的錯誤率同一個數量級。</figcaption></figure><div class="home-hook"><p class="home-hook__q">十年來各家用完全不同的方法解這一件事。</p><p>有的用點突變、有的用 DNA 片段長度、有的用甲基化；有的追蹤數百個位點並定序到一萬倍深度，有的追蹤數萬個位點但只有二十倍深度。宣稱的偵測極限相差三個數量級，而彼此的用詞與量測方式又互不一致。</p><p>這裡把其中 <b>11 篇</b>拆進<b>同一組欄位</b>，讓「大家都怎麼做」與「同一步有幾種做法」直接可比。</p></div><figure class="dia dia--wide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 300" class="dia-svg" role="img" aria-labelledby="index-path__title" aria-describedby="index-path__desc">
   <title id="index-path__title">本知識庫的閱讀路徑</title>
   <desc id="index-path__desc">由左至右分成三段。第一段是導覽，包含第零頁與第一頁，
         說明六步骨架的組織原則，並建立為何加深定序無效這個核心直覺，
