@@ -11,6 +11,7 @@ check_svg_layout.py — 抓 SVG 圖裡的文字重疊與超出邊界
 用法：python3 tools/check_svg_layout.py
 """
 
+import math
 import pathlib
 import re
 import sys
@@ -38,6 +39,55 @@ def text_width(s: str, fs: int) -> float:
         else:
             w += fs * 0.55
     return w
+
+
+def rotated_aabb(x0, y0, w, h, deg, cx, cy):
+    """把一個未旋轉的方框繞 (cx, cy) 轉 deg 度，回傳轉完後的軸對齊外接框。
+
+    為什麼要這個：SVG 的 rotate() 只改繪製結果，不改屬性上的 x/y。
+    先前的版本遇到 transform 就整段跳過，於是斜放的標籤等於沒被檢查 ——
+    five-target-designs.svg 的「固定預算」斜標籤就是這樣溜過去的：
+    它旋轉後往右下延伸約 170px，蓋住了下方的資料點標籤。
+
+    這裡取「旋轉後四個角的軸對齊外接框」，比真正的斜方框大一些，
+    也就是偏保守 —— 對 lint 而言寧可誤報也不要漏報。
+    """
+    rad = math.radians(deg)
+    cos_r, sin_r = math.cos(rad), math.sin(rad)
+    xs, ys = [], []
+    for px, py in ((x0, y0), (x0 + w, y0), (x0, y0 + h), (x0 + w, y0 + h)):
+        dx, dy = px - cx, py - cy
+        xs.append(cx + dx * cos_r - dy * sin_r)
+        ys.append(cy + dx * sin_r + dy * cos_r)
+    return min(xs), min(ys), max(xs) - min(xs), max(ys) - min(ys)
+
+
+def parse_transform(attrs: str):
+    """回傳 (deg, cx, cy, tx, ty)；沒有 transform 就是 (0, 0, 0, 0, 0)。
+
+    只支援 rotate 與 translate —— 本專案的圖只用到這兩種。
+    出現其他 transform 時回傳 None，呼叫端會照實報成「無法檢查」而非默默跳過。
+    """
+    tm = re.search(r'transform="([^"]*)"', attrs)
+    if not tm:
+        return 0.0, 0.0, 0.0, 0.0, 0.0
+    body = tm.group(1).strip()
+    deg = cx = cy = tx = ty = 0.0
+    seen = 0
+    for fn, args in re.findall(r"(\w+)\s*\(([^)]*)\)", body):
+        nums = [float(n) for n in re.findall(r"-?[\d.]+", args)]
+        if fn == "rotate":
+            deg = nums[0]
+            if len(nums) >= 3:
+                cx, cy = nums[1], nums[2]
+            seen += 1
+        elif fn == "translate":
+            tx = nums[0]
+            ty = nums[1] if len(nums) > 1 else 0.0
+            seen += 1
+        else:
+            return None
+    return (deg, cx, cy, tx, ty) if seen else (0.0, 0.0, 0.0, 0.0, 0.0)
 
 
 def main():
@@ -81,8 +131,12 @@ def main():
             xm = re.search(r'\sx="(-?[\d.]+)"', attrs)
             ym = re.search(r'\sy="(-?[\d.]+)"', attrs)
             if not xm or not ym:
-                continue          # 有 transform 的（例如旋轉的軸標）跳過
-            if "transform" in attrs:
+                continue          # 沒有 x/y 的（例如純靠 tspan 定位）跳過
+            tf = parse_transform(attrs)
+            if tf is None:
+                print(f"  {f.name}: 無法檢查 「{txt[:26]}」"
+                      f" —— 用了 rotate/translate 以外的 transform")
+                problems += 1
                 continue
             x, y = float(xm.group(1)), float(ym.group(1))
             fs = font_size(cls)
@@ -104,7 +158,37 @@ def main():
             x0 = x - w / 2 if anchor_mid else (x - w if anchor_end else x)
             # y 是 baseline；ascent 約 0.82×fs、descent 約 0.18×fs
             y0 = y - fs * 0.82
-            boxes.append((x0, y0, w, fs, txt))
+            deg, rcx, rcy, tx, ty = tf
+            x0, y0 = x0 + tx, y0 + ty
+            bw, bh = w, float(fs)
+            if deg:
+                x0, y0, bw, bh = rotated_aabb(x0, y0, bw, bh, deg, rcx + tx, rcy + ty)
+            boxes.append((x0, y0, bw, bh, txt))
+
+        # 資料點（<circle class="mark …">）—— 文字絕不該蓋在上面。
+        # 只收 mark，不收 .box 之類的容器：文字放在容器方框「裡面」是正常排版，
+        # 蓋在資料點上才是版面錯誤。
+        marks = []
+        for m in re.finditer(r"<circle\b([^>]*)>", src_nc):
+            a = m.group(1)
+            cm = re.search(r'class="([^"]*)"', a)
+            if not cm or "mark" not in cm.group(1).split():
+                continue
+            try:
+                marks.append((float(re.search(r'\scx="(-?[\d.]+)"', a).group(1)),
+                              float(re.search(r'\scy="(-?[\d.]+)"', a).group(1)),
+                              float(re.search(r'\sr="(-?[\d.]+)"', a).group(1))))
+            except AttributeError:
+                continue
+
+        for x0, y0, w, fs, txt in boxes:
+            for cx, cy, r in marks:
+                ox = min(x0 + w, cx + r) - max(x0, cx - r)
+                oy = min(y0 + fs, cy + r) - max(y0, cy - r)
+                if ox > 1.5 and oy > 1.5:
+                    print(f"  {f.name}: 文字壓在資料點上（{ox:.0f}x{oy:.0f}px）"
+                          f"「{txt[:26]}」 ↔ 圓心 ({cx:.0f}, {cy:.0f})")
+                    problems += 1
 
         # 超出邊界
         for x0, y0, w, fs, txt in boxes:
@@ -128,7 +212,7 @@ def main():
     if problems:
         print(f"\n  共 {problems} 個版面問題")
         sys.exit(1)
-    print("  ✓ 所有 SVG 版面正常（無文字重疊、無超出畫布）")
+    print("  ✓ 所有 SVG 版面正常（無文字重疊、無壓住資料點、無超出畫布）")
 
 
 if __name__ == "__main__":
