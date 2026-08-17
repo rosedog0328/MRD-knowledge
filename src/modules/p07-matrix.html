@@ -11,11 +11,12 @@
 <section data-part="why">
 <h2>為什麼重要</h2>
 
-<p class="prose">前四頁依步驟橫向比較，本頁提供<b>完整的查詢介面</b>：
-11 篇 × 六步 ＝ 66 格，每格可展開為可實作規格。</p>
+<p class="prose">前五頁是<b>依步驟橫向比較</b>，每一步只挑重點講。
+本頁是<b>完整規格</b>：11 篇 × 六步 ＝ 66 格，
+每一格點開就是那篇論文在那一步的可實作細節。</p>
 
-<p class="prose">本頁內容<b>由 <code>dissection/*.json</code> 自動產生</b>，
-與 AI agent 讀取的結構化資料同源，不會分歧。</p>
+<p class="prose">用途是查，不是讀。
+想確認「某一篇在某一步到底怎麼做」，直接來這裡點開對應的格子。</p>
 </section>
 
 
@@ -122,22 +123,22 @@ p 取 EM 估計與加權平均的較大值。</li>
 
 
 <section data-part="practice">
-<h2>給 AI agent 的存取方式</h2>
+<h2>怎麼用這張矩陣</h2>
 
-<p class="prose">本頁的同一批資料以結構化形式提供，agent 應讀該版本而非本頁 HTML：</p>
+<p class="prose">兩種讀法，看你想回答什麼問題：</p>
 
-{{cli}}
-docs/paper/dissection/
-├─ README.md        ← agent 入口：欄位語意、使用警告、快速索引
-├─ SYNTHESIS.md     ← 跨論文綜合分析（先讀這份）
-├─ _TABLES.json     ← 扁平比較表（約 10k tokens，橫向查詢用）
-└─ <id>_<key>.json  ← 逐篇完整規格（11 檔，全載入約 38k tokens）
-{{/cli}}
+<div class="table-wrap">
+<table>
+<thead><tr><th>讀法</th><th>怎麼看</th><th>回答什麼問題</th></tr></thead>
+<tbody>
+<tr><td><b>橫著讀一列</b></td><td>看同一篇論文的六個步驟</td>
+    <td>「這個方法從頭到尾是怎麼串起來的」</td></tr>
+<tr><td><b>直著讀一欄</b></td><td>看同一個步驟下 11 篇的做法</td>
+    <td>「這一步有哪些選項，各自的代價是什麼」</td></tr>
+</tbody>
+</table>
+</div>
 
-<p class="prose">改動 JSON 後，重新產生本頁：</p>
-
-{{cli}}
-python3 tools/gen_matrix_module.py   # 重新產生 p06 模組原始檔
-node tools/build.mjs                 # 重建網站
-{{/cli}}
+<p class="prose">格子裡標「未公開」的，代表該細節在論文的補充資料中而本知識庫未取得 ——
+<b>照實標記，不臆測</b>。</p>
 </section>
