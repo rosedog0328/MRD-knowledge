@@ -826,8 +826,8 @@ function writeIndex(modules, shell) {
   const whatSvg = inlineSvg('index-what-we-do', 'index');
   const whatFig = whatSvg
     ? `<figure class="dia dia--wide">${whatSvg.svg}` +
-      `<figcaption>定序機給的是一堆看不出來源的字串；` +
-      `把每一條判回它從哪來，就是這個實驗室寫的軟體在做的事。</figcaption></figure>` : '';
+      `<figcaption>11 篇論文各自用不同的詞彙與量測方式描述同一件事；` +
+      `拆進同一組欄位之後，共同點與分歧才看得出來。</figcaption></figure>` : '';
 
   /* 自學者最先問的四件事：給誰、需要先會什麼、要多久、讀完能做什麼。
      原本是開場圖後面的四格區塊，放在那裡太重（第一次打開的人只想知道這在幹嘛），
@@ -841,17 +841,17 @@ function writeIndex(modules, shell) {
 
   const body =
     `<header class="mhead">` +
-    `<p class="mhead__kicker">自學課程</p>` +
+    `<p class="mhead__kicker">方法知識庫</p>` +
     `<h1>MRD 偵測方法知識庫</h1>` +
     `</header>` +
 
     /* ① 鉤子：先讓人知道這在解什麼問題，再談課程安排。
        文字刻意壓到兩句，重量放在下面那張圖上。 */
     `<div class="home-hook">` +
-    `<p class="home-hook__q">這個實驗室做的事，是寫程式分析 DNA 定序資料。</p>` +
-    `<p>定序機把一管檢體裡的 DNA 打斷成片段、逐條讀出，產出幾百萬條帶著錯誤的字串。` +
-    `麻煩的是：這管檢體裡同時有正常細胞和癌細胞，而字串上沒有標記誰是誰。` +
-    `把它還原回來，就是我們寫的軟體要做的事。</p>` +
+    `<p class="home-hook__q">治療後殘存的癌細胞，濃度低到十萬分之一。要怎麼從一管血裡測出來？</p>` +
+    `<p>十餘年來有數十篇論文回答過這個問題，但用詞、量測單位與報告方式互不一致，` +
+    `並排閱讀難以判斷兩個方法是在解同一個問題、還是不同問題。` +
+    `這裡把其中 11 篇拆進同一組欄位，讓「大家都怎麼做」與「同一步有幾種做法」直接可比。</p>` +
     `</div>` +
 
     whatFig +
@@ -861,21 +861,22 @@ function writeIndex(modules, shell) {
 
     /* ③ 明確的起點：不要讓人在 15 張卡片裡自己猜 */
     `<p class="home-cta">` +
-    `<a class="btn btn--big" href="${first.id}.html">開始第一個模組 →</a>` +
+    `<a class="btn btn--big" href="${first.id}.html">從導覽開始 →</a>` +
     `<a class="chip chip--accent" href="#resume" data-resume hidden>繼續上次</a>` +
     `<span class="chip" data-progress-summary>—</span>` +
     `</p>` +
 
-    `<details class="reveal"><summary>這份教材適合誰？需要什麼基礎？要花多久？</summary>` +
+    `<details class="reveal"><summary>這份知識庫給誰看？需要什麼基礎？要花多久？</summary>` +
     `<div class="reveal__a"><dl class="home-facts">` +
-    `<div><dt>適合對象</dt><dd>資訊工程背景、沒有受過癌症生物學與定序訓練的自學者</dd></div>` +
-    `<div><dt>先備能力</dt><dd>不要求生物學背景。M0–M3 只需閱讀與操作互動元件；` +
-    `M4 起需要能在終端機執行基本指令</dd></div>` +
-    `<div><dt>預計時間</dt><dd>${course.length} 個單元合計約 ${totalHr} 小時，建議分 6 週完成` +
-    (modules.length > course.length
-      ? `；另有 ${modules.length - course.length} 篇研究指引，不計入課程時數` : '') +
-    `</dd></div>` +
-    `<div><dt>完成後能做什麼</dt><dd>獨立判讀一個位點的證據，並寫出明確標示不確定性的結論</dd></div>` +
+    `<div><dt>適合對象</dt><dd>要設計或評估 MRD 偵測方法的研究者；` +
+    `另有供 AI agent 讀取的結構化版本（見 p00）</dd></div>` +
+    `<div><dt>先備能力</dt><dd>需具備長讀長癌症基因體學的基礎 —— ` +
+    `variant／VAF／purity／somatic calling／效能指標。` +
+    `這些在實驗室既有教材已完整涵蓋，本知識庫不重複說明</dd></div>` +
+    `<div><dt>預計時間</dt><dd>${course.length} 頁合計約 ${totalHr} 小時。` +
+    `依序讀完可建立完整脈絡；只查特定做法可直接跳到第 6 頁的矩陣</dd></div>` +
+    `<div><dt>讀完能做什麼</dt><dd>就六個步驟各自說出有哪些做法可選、各自的代價是什麼，` +
+    `並判斷哪些能移植到自己的平台</dd></div>` +
     `</dl></div></details>` +
 
     cards +
@@ -890,14 +891,14 @@ function writeIndex(modules, shell) {
     `</p>` +
     `<details class="reveal"><summary>換電腦或共用帳號時，進度如何保存？</summary>` +
     `<div class="reveal__a"><p class="prose">進度存在<b>目前這台電腦的這個瀏覽器</b>裡，` +
-    `不會隨教材檔案移轉；瀏覽器無法把本機檔案的進度與檔案本身綁定。</p>` +
+    `不會隨網站檔案移轉；瀏覽器無法把本機檔案的進度與檔案本身綁定。</p>` +
     `<p class="prose">所以換電腦、換瀏覽器、或多人共用同一個帳號時，` +
     `請用上面的「匯出進度」存成檔案，再到另一台「匯入進度」。</p></div></details>` +
     `</section>`;
 
   const page = shell
     .replace('{{slot:title}}', () => 'MRD 偵測方法知識庫')
-    .replace('{{slot:desc}}', () => '供中正大學資工系黃耀廷實驗室新進成員自學的教材')
+    .replace('{{slot:desc}}', () => '11 篇 MRD 偵測方法論文拆進同一組六步骨架的橫向比較')
     .replace('{{slot:wrapclass}}', () => 'wrap--plain')
     .replace('{{slot:body}}', () => body)
     .replace('{{slot:pager}}', () => '')
