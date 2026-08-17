@@ -77,7 +77,6 @@ window.TW_GLOSSARY = {
    "p01",
    "p02",
    "p03",
-   "p06",
    "p07",
    "p08"
   ]
@@ -138,7 +137,6 @@ window.TW_GLOSSARY = {
    "p02",
    "p03",
    "p05",
-   "p06",
    "p09"
   ]
  },
@@ -1069,9 +1067,7 @@ window.TW_GLOSSARY = {
    "sensitivity"
   ],
   "slug": "sample-level-evaluation",
-  "modules": [
-   "p06"
-  ]
+  "modules": []
  },
  "prevalence": {
   "zh_gloss": "盛行率",
@@ -1179,7 +1175,8 @@ window.TW_GLOSSARY = {
   "slug": "dilution-series",
   "modules": [
    "p01",
-   "p02"
+   "p02",
+   "p06"
   ]
  },
  "TF0 replicate": {
@@ -1686,7 +1683,8 @@ window.TW_GLOSSARY = {
   "slug": "svm",
   "modules": [
    "p01",
-   "p03"
+   "p03",
+   "p06"
   ]
  },
  "TF": {
@@ -1801,7 +1799,8 @@ window.TW_GLOSSARY = {
   ],
   "slug": "recall",
   "modules": [
-   "p05"
+   "p05",
+   "p06"
   ]
  }
 };
