@@ -1310,6 +1310,7 @@ window.TW_GLOSSARY = {
   "slug": "capp-seq",
   "modules": [
    "p00",
+   "p01",
    "p02",
    "p05",
    "p06",
@@ -1690,6 +1691,20 @@ window.TW_GLOSSARY = {
    "p05",
    "p07",
    "p08"
+  ]
+ },
+ "panel": {
+  "zh_gloss": "標的組",
+  "zh": "一組事先選定、只針對它們做定序的基因體區域。把定序量集中在少數區域，可換得極高的深度（10³ – 10⁴ 倍），代價是位點數少（數十至數百個），且客製 panel 需為每位病人重新設計與製作，有時間與成本的門檻。與全基因體定序恰好是<b>深度換廣度</b>的兩端。",
+  "en": "A predefined set of genomic regions that sequencing is restricted to. Concentrating the sequencing effort on few regions buys very high depth (10^3 to 10^4 fold) at the cost of tracking few sites (tens to hundreds); a bespoke panel must also be designed and manufactured per patient, which costs time and money. Panels and whole-genome sequencing sit at opposite ends of the depth-versus-breadth trade-off.",
+  "see": [
+   "breadth supplants depth",
+   "CAPP-Seq",
+   "LLOD"
+  ],
+  "slug": "panel",
+  "modules": [
+   "p01"
   ]
  }
 };
