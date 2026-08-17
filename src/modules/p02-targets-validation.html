@@ -391,12 +391,20 @@ replicate 少會使分布估計不穩，直接影響 [[specificity|特異度]]�
 而是把健康捐贈者 A 的 cfDNA 稀釋進健康捐贈者 B，
 以<b>兩人之間相異的 germline SNV</b>（超過 10 萬個）作為追蹤標的。</p>
 
-<p class="prose">此設計的優點是真值完全精確：germline 位點的基因型已知，
-不受 somatic caller 偽陽性影響。
-本專案可用 HCC1395 與 HCC1395BL 之間的 germline 差異做同樣的事，
-作為 somatic [[compendium]] 之外的<b>獨立驗證管道</b> ——
+<p class="prose">此設計的優點是<b>真值完全精確</b>：germline 位點的基因型已知，
+不受 somatic caller 偽陽性影響。因此它可以當作
+somatic [[compendium]] 之外的<b>獨立驗證管道</b> ——
 若在 germline 代理標的上的偵測表現與 somatic 標的差異很大，
-即指向 compendium 本身的品質問題而非偵測流程的問題。</p>
+即指向 compendium 本身的品質問題，而非偵測流程的問題。</p>
+
+<div class="guardrail guardrail--warn">
+<p class="guardrail__hd">要照做，必須是<b>兩個不同個體</b></p>
+<p class="prose">同一位病人的腫瘤與 matched normal 之間<b>germline 是相同的</b> ——
+matched normal 之所以能拿來做 somatic calling，正是因為它代表這位病人的 germline。
+兩者之間沒有 germline 差異可用。</p>
+<p class="prose">要建立這條驗證管道，稀釋的兩端必須來自<b>不同個體</b>，
+才會有數萬至數十萬個基因型相異的 germline 位點。</p>
+</div>
 </section>
 
 
