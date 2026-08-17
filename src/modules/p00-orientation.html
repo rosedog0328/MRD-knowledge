@@ -1,10 +1,10 @@
 <!--tw
 {
   "objectives": [
-    "說明本知識庫收錄哪 11 篇方法論文，以及選擇它們的判準",
-    "解讀六步共同骨架，並說明為何以此作為組織原則",
-    "區分本知識庫中「取自論文」與「本專案判斷」兩類內容",
-    "依讀者身分（人／AI agent）選擇對應的資料層"
+    "說明 MRD 偵測要解決什麼問題，以及為什麼它困難",
+    "解讀六步共同骨架，並說明為何用它作為比較各方法的框架",
+    "說明收錄的 11 篇論文各自代表哪一條方法路線",
+    "在引用任一方法的偵測極限時，說出必須一併陳述的三個條件"
   ]
 }
 -->
@@ -12,32 +12,61 @@
 <section data-part="why">
 <h2>為什麼重要</h2>
 
-<p class="prose">[[MRD]] 偵測的方法文獻分散在十餘年、數個實驗室與數種定序平台上。
-各篇的用詞、量測單位與報告方式互不一致：有的報 [[LLOD|偵測極限]]，有的報分期敏感度；
-有的以 [[cVAF]] 表述，有的以 [[tumor fraction|腫瘤分數]]。
-直接並排閱讀，難以判斷兩個方法究竟是在解同一個問題，還是在解不同的問題。</p>
+<h3>MRD 偵測要解決什麼</h3>
 
-<p class="prose">本知識庫的作法是：把 11 篇方法論文拆進<b>同一組欄位</b>，
-使「大家都怎麼做」與「同一步有幾種做法」得以直接對照。
-這組欄位即下方的六步骨架。</p>
+<p class="prose">病人接受手術切除腫瘤之後，影像檢查上已經看不到腫瘤。
+但體內仍可能殘存極少量癌細胞 —— 少到任何影像技術都測不出來。
+等到影像重新看得見時，往往已經復發。</p>
 
-{{svg:how-this-is-built | 11 篇論文各自用不同的詞彙與量測方式描述同一件事。拆進同一組欄位之後，共同點與分歧才得以對照；同一批結果並以結構化 JSON 提供給 AI agent 讀取。}}
+<p class="prose">[[MRD]]（Minimal Residual Disease，微量殘存疾病）偵測，
+就是用定序技術從一管血裡，把這些微量的癌症訊號找出來。
+作法上分三步：先從腫瘤組織取得這位病人專屬的突變清單，
+再抽血取得血漿中的 [[cfDNA|游離 DNA]]，
+最後在血液的定序資料中逐一檢查那些位點。</p>
+
+<h3>困難在哪</h3>
+
+<p class="prose">腫瘤來源的 DNA 只佔血漿游離 DNA 的極小比例 ——
+[[tumor fraction|腫瘤分數]]常低至十萬分之一，甚至百萬分之一。
+這個數字與<b>定序機本身的錯誤率同一個數量級</b>：
+在某個位點上看到一個與參考不符的鹼基，它可能是真的癌症訊號，
+也可能只是機器讀錯，兩者無從分辨。</p>
+
+<p class="prose">十餘年來，各家團隊用完全不同的策略解這一件事。
+但各篇的用詞、量測單位與報告方式互不一致：
+有的報 [[LLOD|偵測極限]]、有的報分期敏感度；
+有的以 [[cVAF]] 表述、有的以腫瘤分數表述。
+直接並排閱讀，難以判斷兩個方法究竟是在解同一個問題，還是不同問題。</p>
+
+<h3>本知識庫的作法</h3>
+
+<p class="prose">作法是：<b>用同一組問題去問每一篇論文，把答案填進同一張表</b>。
+這組問題有六個，即下方的六步骨架。</p>
+
+<p class="prose">舉例來說，「怎麼分辨真訊號與定序錯誤」是其中一個問題。
+[[MRDetect]] 的答案是「用線性 SVM 對單條 read 分類」、
+[[iDES]] 的答案是「逐位置建背景分布再扣掉」、
+[[PhasED-seq]] 的答案是「改看同一條分子上的多個突變」。
+三個答案填進同一格，就能直接比較它們的代價與適用範圍。</p>
+
+{{svg:how-this-is-built | 11 篇論文各自用不同的詞彙與量測方式描述同一件事。用同一組問題去問每一篇、答案填進同一張表之後，共同點與分歧才得以對照。}}
 
 <div class="guardrail guardrail--info">
-<p class="guardrail__hd">本知識庫的三個定位</p>
+<p class="guardrail__hd">本知識庫的兩個定位</p>
 <ol class="prose">
 <li><b>不是文獻綜述。</b>目標不是覆蓋全領域，而是找出各方法的共同骨架與分歧點。</li>
-<li><b>不是教材。</b>前置知識假設讀者已具備，見下方「前置知識」一節。</li>
-<li><b>是設計選單。</b>最終產出是「每一步有哪些選項、各自的代價是什麼」，供本專案據以設計 ONT 版本。</li>
+<li><b>最終產出是設計選單。</b>「每一步有哪些選項、各自的代價是什麼」——
+供後續設計自己的偵測方法時據以取捨。</li>
 </ol>
+<p class="prose">本頁與下一頁（<a href="p01.html">p01</a>）偏向教學，
+建立讀懂後續內容所需的共同語言；
+<a href="p02.html">p02</a> 之後才進入逐步驟的方法比較。</p>
 </div>
 </section>
 
 
 <section data-part="concept">
-<h2>概念與結構</h2>
-
-<h3>六步共同骨架</h3>
+<h2>六步共同骨架</h2>
 
 <p class="prose">不論訊號來自體細胞突變、片段長度還是甲基化，
 不論定序策略是全基因體還是 [[patient-specific panel|客製 panel]]，
@@ -47,132 +76,139 @@
 
 <div class="table-wrap">
 <table>
-<thead><tr><th>步驟</th><th>要回答的問題</th><th>本知識庫的對應頁</th></tr></thead>
+<thead><tr><th>步驟</th><th>要回答的問題</th><th>同一步有幾種做法</th><th>本知識庫的對應頁</th></tr></thead>
 <tbody>
-<tr><td><b>① 追蹤標的</b></td><td>追蹤哪些位點或特徵？這份清單怎麼得到？</td><td><a href="p02.html">p02</a></td></tr>
-<tr><td><b>② 驗證資料</b></td><td>用什麼資料證明方法有效？</td><td><a href="p02.html">p02</a></td></tr>
-<tr><td><b>③ read 層去噪</b></td><td>怎麼分辨真訊號與定序錯誤？</td><td><a href="p03.html">p03</a></td></tr>
-<tr><td><b>④ 樣本層分數</b></td><td>成千上萬個位點怎麼合成一個數字？</td><td><a href="p04.html">p04</a></td></tr>
-<tr><td><b>⑤ 門檻</b></td><td>判定「有癌」的線畫在哪？由誰決定？</td><td><a href="p04.html">p04</a></td></tr>
-<tr><td><b>⑥ 評估</b></td><td>怎麼證明結果並非過度擬合？</td><td><a href="p05.html">p05</a></td></tr>
+<tr><td><b>① 追蹤標的</b></td><td>追蹤哪些位點或特徵？這份清單怎麼得到？</td><td>5 種</td><td><a href="p02.html">p02</a></td></tr>
+<tr><td><b>② 驗證資料</b></td><td>用什麼資料證明方法有效？</td><td>3 種</td><td><a href="p02.html">p02</a></td></tr>
+<tr><td><b>③ read 層去噪</b></td><td>怎麼分辨真訊號與定序錯誤？</td><td><b>7 種</b></td><td><a href="p03.html">p03</a></td></tr>
+<tr><td><b>④ 樣本層分數</b></td><td>成千上萬個位點怎麼合成一個數字？</td><td><b>8 種</b></td><td><a href="p04.html">p04</a></td></tr>
+<tr><td><b>⑤ 門檻</b></td><td>判定「有癌」的線畫在哪？由誰決定？</td><td>6 種</td><td><a href="p04.html">p04</a></td></tr>
+<tr><td><b>⑥ 評估</b></td><td>怎麼證明結果並非過度擬合？</td><td>—</td><td><a href="p05.html">p05</a></td></tr>
 </tbody>
 </table>
 </div>
 
-<h3>收錄範圍</h3>
-
-<p class="prose">共蒐集 28 篇 MRD 方法論文，依「可信度／可驗證性」與「與建立本專案方法的相關性」
-兩軸分為三級。<b>本知識庫的主體是完成完整拆解的 11 篇</b>。</p>
-
-<div class="table-wrap">
-<table>
-<thead><tr><th>方法</th><th>年</th><th>期刊</th><th>在骨架中的位置</th><th>開源碼</th></tr></thead>
-<tbody>
-<tr><td><b>[[MRDetect]]</b></td><td>2020</td><td>Nat Med</td><td>全基因體突變整合（本專案基準）</td><td>—</td></tr>
-<tr><td><b>[[MRD-EDGE]]</b></td><td>2024</td><td>Nat Med</td><td>第二代：深度學習去噪</td><td>—</td></tr>
-<tr><td><b>[[Landau gen3|Landau 第三代]]</b></td><td>2025</td><td>Nat Methods</td><td>第三代：[[duplex sequencing|duplex]] 錯誤校正</td><td>✅</td></tr>
-<tr><td><b>[[CAPP-Seq]]</b></td><td>2014</td><td>Nat Med</td><td>領域奠基：[[selector]] 設計</td><td>—</td></tr>
-<tr><td><b>[[iDES]]</b></td><td>2016</td><td>Nat Biotechnol</td><td>[[background polishing|背景拋光]]</td><td>—</td></tr>
-<tr><td><b>[[INVAR]]</b></td><td>2020</td><td>Sci Transl Med</td><td>多位點統計整合</td><td>✅</td></tr>
-<tr><td><b>[[PhasED-seq]]</b></td><td>2021</td><td>Nat Biotechnol</td><td>[[phased variant|同分子多突變]]</td><td>—</td></tr>
-<tr><td><b>[[Lung-CLiP]]</b></td><td>2020</td><td>Nature</td><td>樣本層級 ML 分類器</td><td>—</td></tr>
-<tr><td><b>[[ichorCNA]]</b></td><td>2017</td><td>Nat Commun</td><td>[[CNA]] ／ 腫瘤分數估計</td><td>✅</td></tr>
-<tr><td><b>[[AccuScan]]</b></td><td>2024</td><td>EMBO Mol Med</td><td>單讀取錯誤校正</td><td>—</td></tr>
-<tr><td><b>[[NanoRCS]]</b></td><td>2025</td><td>Genome Research</td><td>[[ONT simplex|ONT]] 共識定序</td><td>—</td></tr>
-</tbody>
-</table>
-</div>
-
-<p class="prose">選擇這 11 篇的判準有四項：期刊層級、年均引用數、有無開源程式碼、
-以及作者是否與該方法的商業利益綁定。
-<b>判準並非引用數優先</b> —— 年均引用最高的兩篇（GRAIL-CCGA 220／年、TRACERx 2017 195／年）
-均未列入，前者做的是癌症篩檢而非 MRD，後者為腫瘤演化生物學論文。
-完整分級與未收錄清單見專案的 <code>docs/paper/related/PAPER_TIERS.md</code>。</p>
-
-<h3>前置知識</h3>
-
-<p class="prose">本知識庫假設讀者已具備長讀長癌症基因體學的基礎，不重複說明。
-所需概念在實驗室既有教材中已完整涵蓋：</p>
-
-<div class="table-wrap">
-<table>
-<thead><tr><th>模組</th><th>已涵蓋</th></tr></thead>
-<tbody>
-<tr><td>M2</td><td>locus／allele／variant／genotype／haplotype 的區分；germline 與 somatic 的差異</td></tr>
-<tr><td>M3</td><td>ONT 的錯誤特性、homopolymer、長讀長的優勢與限制</td></tr>
-<tr><td>M7</td><td>somatic variant calling、PON、tumor-normal 與 tumor-only 的差別</td></tr>
-<tr><td>M8</td><td><b>VAF／purity／copy number 的關係式、tumor DNA fraction</b></td></tr>
-<tr><td>M9</td><td>5mC、MM/ML tag 的保留與遺失</td></tr>
-<tr><td>M10</td><td>precision／recall／F1、效能圖的批判性解讀</td></tr>
-</tbody>
-</table>
-</div>
-
-<p class="prose">MRD 專屬的術語則於本知識庫定義，共 91 條，
-可於內文以滑鼠停留查看，或見<a href="glossary.html">完整術語表</a>。</p>
+<p class="prose">六個問題本身是<b>歸納出來的</b> —— 沒有任何一篇論文宣稱自己遵循這個流程。
+它們是拆解 11 篇之後發現的共同結構，因而適合當作比較的框架。</p>
 </section>
 
 
 <section data-part="evidence">
-<h2>資料層與使用方式</h2>
+<h2>收錄了哪 11 篇</h2>
 
-<p class="prose">同一批拆解結果以兩種形式提供，來源相同，不會分歧。</p>
+<h3>它們在講什麼</h3>
+
+<p class="prose">這 11 篇跨越 2014 至 2025 年，可歸為<b>五條方法路線</b>。
+路線之間的差別不在細節，而在<b>用什麼當訊號、以及用什麼換取靈敏度</b>。</p>
 
 <div class="table-wrap">
 <table>
-<thead><tr><th>讀者</th><th>用哪一層</th><th>位置</th></tr></thead>
+<thead><tr><th>路線</th><th>核心主張</th><th>代表論文</th></tr></thead>
 <tbody>
-<tr><td>人（學習、查找）</td><td>本網站</td><td><code>site/</code></td></tr>
-<tr><td><b>AI agent</b>（當規格讀）</td><td><b>結構化 JSON</b></td><td><code>docs/paper/dissection/</code></td></tr>
+<tr>
+  <td><b>全基因體突變整合</b></td>
+  <td>單一位點的訊號太弱，改在全基因體上追蹤數萬個位點、把微弱訊號累加。
+      用<b>廣度</b>換靈敏度</td>
+  <td>[[MRDetect]] → [[MRD-EDGE]] → [[Landau gen3|Landau 第三代]]（同一團隊三代）、[[AccuScan]]</td>
+</tr>
+<tr>
+  <td><b>客製 panel</b></td>
+  <td>只追蹤數百至數千個位點，但每個位點定序到極深。
+      用<b>深度</b>換靈敏度</td>
+  <td>[[CAPP-Seq]] → [[iDES]]、[[INVAR]]</td>
+</tr>
+<tr>
+  <td><b>同分子多突變</b></td>
+  <td>改變偵測單元 —— 不看單一鹼基，改看同一條 DNA 分子上的多個突變。
+      兩處同時出錯的機率相乘，背景因此驟降</td>
+  <td>[[PhasED-seq]]</td>
+</tr>
+<tr>
+  <td><b>樣本層級分類器</b></td>
+  <td>不預先給突變清單，改用機器學習從多種特徵直接判斷「這份血樣含不含癌」</td>
+  <td>[[Lung-CLiP]]</td>
+</tr>
+<tr>
+  <td><b>拷貝數與腫瘤分數</b></td>
+  <td>不看點突變，改看染色體大片段的增減。訊號粗但便宜，
+      可在極低覆蓋度下運作</td>
+  <td>[[ichorCNA]]</td>
+</tr>
 </tbody>
 </table>
 </div>
 
-<p class="prose">AI agent 應讀 <code>docs/paper/dissection/README.md</code> 作為入口，
-再依需要讀 <code>_TABLES.json</code>（跨論文扁平表，含 68 項效能數字）
-或個別論文的 JSON。<b>不應讀本網站的 HTML</b> —— 內容相同但有標記雜訊且切散在多頁。</p>
+<p class="prose">另有 [[NanoRCS]] 屬全基因體路線，但使用
+[[ONT simplex|Oxford Nanopore]] 長讀長平台 ——
+是這 11 篇中唯一不在 Illumina 平台上的方法。</p>
 
-<h3>內容的四種來源，必須區分</h3>
+<h3>書目</h3>
 
 <div class="table-wrap">
 <table>
-<thead><tr><th>類型</th><th>來源</th><th>可信度</th></tr></thead>
+<thead><tr>
+  <th>方法</th><th>年</th><th>期刊</th><th>團隊</th><th>核心做法</th><th>開源碼</th>
+</tr></thead>
 <tbody>
-<tr><td>問題設定、方法規格、效能數字、作者自承限制</td><td>論文原文</td><td>忠實轉述</td></tr>
-<tr><td><b>實作細節</b>（3 篇）</td><td><b>開源程式碼</b></td><td><b>高於論文文字</b></td></tr>
-<tr><td>ONT 可移植性判斷</td><td>本專案推論</td><td>非論文說法</td></tr>
-<tr><td>跨論文的綜合</td><td>本知識庫</td><td>可回溯至上述來源</td></tr>
+<tr><td><b>[[MRDetect]]</b></td><td>2020</td><td>Nature Medicine</td>
+    <td>Landau lab（NYGC／Weill Cornell）</td>
+    <td>線性 SVM 對單條 read 去噪，5 個定序品質特徵</td><td>—</td></tr>
+<tr><td><b>[[MRD-EDGE]]</b></td><td>2024</td><td>Nature Medicine</td>
+    <td>Landau lab（MSKCC／NYGC）</td>
+    <td>CNN + MLP 集成，加入 ctDNA 生物特徵</td><td>—</td></tr>
+<tr><td><b>[[Landau gen3|Landau 第三代]]</b></td><td>2025</td><td>Nature Methods</td>
+    <td>Landau lab（NYGC／Weill Cornell）</td>
+    <td>改走定序化學：全基因體 [[duplex sequencing|duplex]] 錯誤校正</td><td>✅</td></tr>
+<tr><td><b>[[CAPP-Seq]]</b></td><td>2014</td><td>Nature Medicine</td>
+    <td>Diehn &amp; Alizadeh labs（Stanford）</td>
+    <td>用演算法設計捕捉探針組，使多數病人被覆蓋到多個突變</td><td>—</td></tr>
+<tr><td><b>[[iDES]]</b></td><td>2016</td><td>Nature Biotechnology</td>
+    <td>Diehn &amp; Alizadeh labs（Stanford）</td>
+    <td>[[background polishing|背景拋光]]：逐位置建背景分布再扣除</td><td>—</td></tr>
+<tr><td><b>[[INVAR]]</b></td><td>2020</td><td>Science Translational Medicine</td>
+    <td>Rosenfeld lab（CRUK Cambridge）</td>
+    <td>四層誤差抑制疊加，以概似比判定，不用機器學習</td><td>✅</td></tr>
+<tr><td><b>[[PhasED-seq]]</b></td><td>2021</td><td>Nature Biotechnology</td>
+    <td>Alizadeh &amp; Diehn labs（Stanford）</td>
+    <td>追蹤同一分子上的多個突變（[[phased variant|phased variants]]）</td><td>—</td></tr>
+<tr><td><b>[[Lung-CLiP]]</b></td><td>2020</td><td>Nature</td>
+    <td>Diehn &amp; Alizadeh labs（Stanford）</td>
+    <td>多層級機器學習，輸出病人層級的分類分數</td><td>—</td></tr>
+<tr><td><b>[[ichorCNA]]</b></td><td>2017</td><td>Nature Communications</td>
+    <td>Broad Institute／Dana-Farber／MIT</td>
+    <td>從 0.1 倍超低深度定序估腫瘤分數（[[HMM]]）</td><td>✅</td></tr>
+<tr><td><b>[[AccuScan]]</b></td><td>2024</td><td>EMBO Molecular Medicine</td>
+    <td>Yale／Genetron</td>
+    <td>[[RCA]] 串聯體：錯誤校正在單一 read 之內完成</td><td>—</td></tr>
+<tr><td><b>[[NanoRCS]]</b></td><td>2025</td><td>Genome Research</td>
+    <td>de Ridder lab（UMC Utrecht）</td>
+    <td><b>唯一 [[ONT simplex|ONT]] 平台</b>：長讀長共識定序，同時取三種訊號</td><td>—</td></tr>
 </tbody>
 </table>
 </div>
+
+<p class="prose">三篇有公開程式碼。對這三篇，本知識庫另記錄了<b>直接讀原始碼取得的實作細節</b> ——
+論文文字常省略關鍵參數，程式碼則給出實際值。</p>
 </section>
 
 
 <section data-part="predict">
-<h2>閱讀前的三個警告</h2>
+<h2>閱讀前的兩個提醒</h2>
 
 {{guard:1 | 偵測極限不可跨方法直接比較}}
-<p class="prose">各方法的 [[LLOD]] 是在不同條件下量得的。
-[[patient-specific panel|panel-based]] 方法（CAPP-Seq、iDES、INVAR、PhasED-seq）
-每個位點的深度達 10³–10⁴ 倍；
-[[breadth supplants depth|WGS-based]] 方法（MRDetect 世系、AccuScan、NanoRCS）只有 20–120 倍。
-兩者以完全不同的方式換取靈敏度。</p>
-<p class="prose"><b>引用任何 LLOD 數值時，必須連同深度、追蹤位點數與對應的 [[specificity|特異度]] 一併陳述。</b></p>
+<p class="prose">各方法宣稱的 [[LLOD|偵測極限]]是在完全不同的條件下量得的。</p>
+<p class="prose">[[patient-specific panel|panel]] 路線每個位點的深度達 10³–10⁴ 倍；
+全基因體路線只有 20–120 倍。追蹤的位點數從 30 個到 35,000 個不等。
+特異度的工作點也各不相同 —— 有的報 96%、有的報 99%。</p>
+<p class="prose"><b>引用任何偵測極限時，必須同時陳述三件事：定序深度、追蹤位點數、
+以及對應的 [[specificity|特異度]]。</b>缺一項就無法解讀。</p>
 {{/guard}}
 
-{{guard:2 | 「可移植性」是本專案的判斷，不是論文的說法}}
-<p class="prose">本知識庫在每一步標註該做法能否移植至 [[ONT simplex|ONT 平台]]，
-分為可移植、需調整、不可移植三級。66 格的分布為 45／15／6。</p>
-<p class="prose">此判斷<b>由本專案作出</b>，論文本身並未討論 ONT 的可行性。
-引用時必須與論文原文區分。</p>
-{{/guard}}
-
-{{guard:3 | 只有 11 篇有完整規格}}
-<p class="prose">蒐集的 28 篇中，僅 11 篇完成六步拆解，
-其餘 17 篇只有書目與一句話定位。</p>
-<p class="prose">若需要未拆解論文的方法細節，<b>必須先行拆解，不可從書目臆測</b>。
-另有少數格子因論文將細節置於未取得的補充資料而拆不出來，
-這些格子明確標示為「未公開」，不應解讀為該方法沒有這一步。</p>
+{{guard:2 | 「能不能移植」是本知識庫的判斷，不是論文的說法}}
+<p class="prose">後續頁面在每一步都標註了該做法能否移植到
+[[ONT simplex|ONT 長讀長平台]]，分為可移植、需調整、不可移植三級。</p>
+<p class="prose">此判斷<b>由本知識庫作出</b> —— 這些論文全部以 Illumina 為前提，
+本身並未討論 ONT 的可行性。閱讀時請與論文原文的陳述區分。</p>
 {{/guard}}
 </section>
 
@@ -184,15 +220,19 @@
 <table>
 <thead><tr><th>目的</th><th>讀哪一頁</th></tr></thead>
 <tbody>
-<tr><td>理解為什麼這個問題困難</td><td><a href="p01.html">p01 · 為什麼 MRD 偵測是個難題</a></td></tr>
-<tr><td>查某一步有哪些做法</td><td><a href="p02.html">p02</a> – <a href="p05.html">p05</a>（依骨架順序）</td></tr>
-<tr><td>查某一篇在某一步怎麼做</td><td><a href="p06.html">p06 · 逐篇完整規格矩陣</a></td></tr>
+<tr><td>理解為什麼加深定序解決不了這個問題</td><td><a href="p01.html">p01 · 為什麼 MRD 偵測是個難題</a></td></tr>
+<tr><td>查某一步有哪些做法、代價是什麼</td><td><a href="p02.html">p02</a> – <a href="p05.html">p05</a>（依骨架順序）</td></tr>
+<tr><td>查某一篇在某一步的完整規格</td><td><a href="p06.html">p06 · 逐篇完整規格矩陣</a></td></tr>
 <tr><td>了解 11 篇合起來說了什麼</td><td><a href="p07.html">p07 · 三條主線</a></td></tr>
-<tr><td>決定本專案該怎麼做</td><td><a href="p08.html">p08 · 本專案的位置與設計選單</a></td></tr>
+<tr><td>看這些方法能不能用在 ONT 平台上</td><td><a href="p08.html">p08 · 本專案的位置與設計選單</a></td></tr>
 </tbody>
 </table>
 </div>
 
-<p class="prose">依骨架順序閱讀（p01 → p05）可建立完整脈絡；
-若僅需查詢特定做法，可直接跳至 <a href="p06.html">p06</a> 的矩陣。</p>
+<p class="prose">依骨架順序閱讀（<a href="p01.html">p01</a> → <a href="p05.html">p05</a>）
+可建立完整脈絡；若僅需查詢特定做法，可直接跳至
+<a href="p06.html">p06</a> 的矩陣。</p>
+
+<p class="prose">內文的術語可用滑鼠停留查看定義，
+完整清單見<a href="glossary.html">術語表</a>。</p>
 </section>

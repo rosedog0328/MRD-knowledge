@@ -34,6 +34,7 @@ window.TW_GLOSSARY = {
   ],
   "slug": "cfdna",
   "modules": [
+   "p00",
    "p01"
   ]
  },
@@ -112,7 +113,6 @@ window.TW_GLOSSARY = {
   ],
   "slug": "breadth-supplants-depth",
   "modules": [
-   "p00",
    "p01"
   ]
  },
@@ -251,9 +251,7 @@ window.TW_GLOSSARY = {
    "reporter"
   ],
   "slug": "selector",
-  "modules": [
-   "p00"
-  ]
+  "modules": []
  },
  "patient-specific panel": {
   "zh_gloss": "個人化探針組",
@@ -508,6 +506,7 @@ window.TW_GLOSSARY = {
   ],
   "slug": "rca",
   "modules": [
+   "p00",
    "p03",
    "p05",
    "p06",
@@ -769,7 +768,6 @@ window.TW_GLOSSARY = {
   ],
   "slug": "cna",
   "modules": [
-   "p00",
    "p07",
    "p08"
   ]
@@ -931,6 +929,7 @@ window.TW_GLOSSARY = {
   ],
   "slug": "hmm",
   "modules": [
+   "p00",
    "p04"
   ]
  },
