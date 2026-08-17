@@ -40,6 +40,12 @@
 <p class="prose">一毫升血漿約含 1,000 至 10,000 個 [[genomic equivalents|基因組當量]]，
 亦即完整基因組的份數。這個數字構成一道物理上限。</p>
 
+<p class="prose">樣本中源自腫瘤的 DNA 佔全部 DNA 的比例，稱為
+<b>[[tumor fraction|腫瘤分數]]</b>（tumor fraction，以下一律縮寫為 <b>[[TF]]</b>）。
+本知識庫全篇以 TF 表示訊號的強度，是最常出現的一個量。</p>
+
+<p class="prose">設 {{m: n}} 為樣本中的基因組當量數，則帶有某個特定腫瘤突變的分子數期望值為：</p>
+
 {{eq}}
 E[\text{帶突變的分子數}] = n × TF
 {{note}}
@@ -61,7 +67,7 @@ E[\text{帶突變的分子數}] = n × TF
 <thead><tr><th>量</th><th>是什麼</th><th>典型數值</th><th>能不能改</th></tr></thead>
 <tbody>
 <tr>
-  <td><b>[[tumor fraction|腫瘤分數]]</b>（訊號強度）</td>
+  <td><b>[[tumor fraction|腫瘤分數]] [[TF]]</b>（訊號強度）</td>
   <td>樣本中源自腫瘤的 DNA 佔全部 DNA 的比例</td>
   <td>MRD 情境 10⁻⁵ – 10⁻⁶</td>
   <td>❌ 由病人的疾病狀態決定</td>
@@ -238,7 +244,7 @@ p = 1 − e^{−n·d·k}
 
 <p class="prose">臨床樣本的真實[[tumor fraction|腫瘤分數]]是未知的 ——
 無法用它證明「這個方法能測到 10⁻⁵」。
-因此所有方法都必須另外準備<b>已知 TF 的樣本</b>：
+因此所有方法都必須另外準備<b>已知 [[TF]] 的樣本</b>：
 把含腫瘤的樣本按已知比例稀釋進不含腫瘤的樣本，做成一系列濃度。</p>
 
 <p class="prose"><b>11 篇論文全部做了某種形式的[[dilution series|稀釋序列]]，無一例外。</b>
@@ -246,7 +252,7 @@ p = 1 − e^{−n·d·k}
 
 <h3>偵測極限必須附帶條件</h3>
 
-<p class="prose">[[LLOD|偵測極限]]是能被可靠偵測到的最低 TF。
+<p class="prose">[[LLOD|偵測極限]]是能被可靠偵測到的最低 [[TF]]。
 但單獨一個數字無法解讀 —— 它至少依賴三件事：</p>
 
 <div class="table-wrap">

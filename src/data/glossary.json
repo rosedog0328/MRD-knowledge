@@ -1153,5 +1153,15 @@
       "read-centric",
       "error suppression"
     ]
+  },
+  "TF": {
+    "zh_gloss": "腫瘤分數的縮寫",
+    "zh": "<code>tumor fraction</code>（腫瘤分數）的縮寫，本知識庫全篇使用。定義為樣本中源自腫瘤的 DNA 佔全部 DNA 的比例，代表<b>訊號的強度</b>。MRD 情境的量級為 10⁻⁵ – 10⁻⁶，與定序機本身的錯誤率同一個數量級 —— 這正是整個領域的核心困難。它由病人的疾病狀態決定，<b>不是可以由設計調整的參數</b>。",
+    "en": "Abbreviation for tumour fraction, used throughout this knowledge base. It is the proportion of DNA in a sample that originates from the tumour, and represents signal strength. In the MRD setting it is on the order of 1e-5 to 1e-6, the same order of magnitude as the sequencer's own error rate, which is the central difficulty of the whole field. It is set by the patient's disease state and is not a parameter the assay design can adjust.",
+    "see": [
+      "tumor fraction",
+      "background error rate",
+      "LLOD"
+    ]
   }
 }
