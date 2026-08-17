@@ -131,6 +131,44 @@ This <b>decreases the risk of model over-fitting leading to overly optimistic re
 因為它只由陰性樣本算出，不受陽性／陰性的組成比例影響。
 [[recall|敏感度]]則會隨檢體的難度組成而變動。</p>
 
+<h4>那 F1 呢？—— 用在哪、不用在哪</h4>
+
+<p class="prose">機器學習常用的 <b>F1</b> 與 <b>precision</b>，在本領域出現得很少，
+而且<b>幾乎不用在「這份檢體有沒有癌」這個判定上</b>。實際的分布是：</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>方法</th><th>用了什麼</th><th>判定單元</th><th>數值</th></tr></thead>
+<tbody>
+<tr><td>[[ichorCNA]]</td><td><b>F1</b>（F-measure）</td><td>1 Mb 的 CNA bin</td><td>CNA F1 = <b>0.991</b></td></tr>
+<tr><td>[[MRD-EDGE]]</td><td><b>F1</b>（用於<b>選模型</b>）</td><td>cfDNA fragment</td>
+    <td>比較各種 ML 模型時，取 F1 與 AUC 最高者</td></tr>
+<tr><td>[[iDES]]</td><td><b>PPV</b>（＝precision）</td><td>單一變異</td>
+    <td>分析驗證 98% – 100%；臨床 hotspot SNV 72%</td></tr>
+<tr><td>[[MRDetect]]</td><td><b>PPV / NPV</b></td><td><b>檢體</b></td>
+    <td>stage Ib LUAD：PPV 0.80 / NPV 0.84</td></tr>
+<tr><td>[[INVAR]]、[[PhasED-seq]]、[[CAPP-Seq]]、[[Lung-CLiP]]</td>
+    <td>—</td><td>—</td><td>未使用 F1 或 precision</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="prose">看得出一個模式：<b>F1 用在「哪些 bin 是 CNA」「哪些 fragment 可信」
+這類子檢體層級的任務</b>，而檢體層級的判定仍然回到敏感度與特異度。</p>
+
+<p class="prose">原因在於 <b>precision 與 F1 會被陽性／陰性的組成比例綁架</b>。
+這些研究的病例對照比是<b>研究者自己決定的</b>（想收幾個病人就收幾個），
+不代表任何真實盛行率 —— 同一個方法換一個組成比例，F1 就會變。
+[[specificity|特異度]]只由陰性樣本算出，沒有這個問題。</p>
+
+<p class="prose">[[MRD-EDGE]] 的作者顯然意識到這點：
+論文明寫 F1 是「<b>within balanced sets</b>」評估的 ——
+刻意把正負樣本數配平，才讓 F1 具可比性。</p>
+
+<p class="prose">臨床文獻習慣用的 <b>PPV</b>（陽性預測值）其實<b>就是 precision</b>，
+同一個量的兩個名字。它同樣受盛行率影響，
+所以 [[MRDetect]] 報 PPV 0.80 時特別註明是 <b>stage Ib LUAD</b> 這個特定情境。</p>
+
 <h3>③ 分層報告</h3>
 
 <p class="prose">把不同難度的檢體混算，數字會被組成比例綁架。
