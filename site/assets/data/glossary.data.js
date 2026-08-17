@@ -398,10 +398,11 @@ window.TW_GLOSSARY = {
   "modules": []
  },
  "read-centric": {
-  "zh_gloss": "以讀取為單位",
-  "zh": "MRDetect 的關鍵設計：因為 TF ≪ 1/depth，每個位點最多只期待<b>一條</b>支持 read，因此判斷單元是「單條 read 的真偽」，不能用「多條支持才算數」的傳統門檻。",
-  "en": "A key design in MRDetect: because TF is far below 1/depth, at most one supporting read is expected per site. The unit of judgement is therefore whether a single read is genuine, and conventional thresholds requiring multiple supporting reads do not apply.",
+  "zh_gloss": "以 read 為單位",
+  "zh": "與 <code>locus-centric</code> 相對：一次判斷的對象是<b>一條 read</b>，問「這一條 read 帶的突變是真的還是讀錯的」，證據來自這條 read 自身的性質（鹼基品質、比對品質、突變在 read 上的位置）。之所以必須這樣改，是因為 TF 遠小於 1／深度時每個位點最多只期待<b>一條</b>支持 read，使支持數門檻歸零、且位點層的 <code>VAF</code> 對每個被偵測到的位點都相同而失去鑑別力。",
+  "en": "The counterpart to locus-centric: the unit of judgement is a single read, and the question asked is whether the mutation carried by that read is genuine or a sequencing error. The evidence comes from properties of the read itself — base quality, mapping quality, the position of the mutation within the read. The shift is forced because when TF is far below 1/depth at most one supporting read is expected per site, which nullifies supporting-count thresholds and leaves the locus-level VAF identical across every detected site, hence uninformative.",
   "see": [
+   "locus-centric",
    "breadth supplants depth",
    "outlier suppression",
    "detection rate"
@@ -1645,5 +1646,31 @@ window.TW_GLOSSARY = {
   "_inherited": "lab-tutorial glossary（基礎術語，非 MRD 專屬）",
   "slug": "pon",
   "modules": []
+ },
+ "locus-centric": {
+  "zh_gloss": "以位點為單位",
+  "zh": "傳統變異判定的作法：一次判斷的對象是<b>一個位點</b>，問「這個位點上有沒有突變」，證據來自該位點上所有 read 的匯總（幾條支持、幾條不支持、<code>VAF</code> 多少），並常用「至少 N 條支持 read」當門檻。成立前提是 <code>VAF</code> 夠高、同一位點有多條支持 read —— 在 MRD 的量級下不成立。",
+  "en": "The conventional approach to variant calling: the unit of judgement is a single locus. The question asked is whether a mutation is present at that locus, and the evidence is the aggregate of all reads covering it (how many support, how many do not, the VAF), typically with a threshold of at least N supporting reads. This presumes the VAF is high enough for multiple supporting reads to exist at the same locus, which does not hold at MRD-level tumour fractions.",
+  "see": [
+   "read-centric",
+   "VAF"
+  ],
+  "slug": "locus-centric",
+  "modules": [
+   "p01"
+  ]
+ },
+ "SVM": {
+  "zh_gloss": "支援向量機",
+  "zh": "一種監督式分類器，在特徵空間中找一個能把兩類分開、且與兩類邊界距離最大的超平面。本領域用它判斷單條 read 是真突變還是定序錯誤 —— <code>MRDetect</code> 使用線性核與五個特徵，選它的理由是特徵少、可解釋，且各特徵的權重可直接讀出。",
+  "en": "A supervised classifier that finds the hyperplane separating two classes with the largest margin to the boundary of each. In this field it is used to judge whether a single read carries a genuine mutation or a sequencing error; MRDetect uses a linear kernel with five features, chosen because the feature set is small, the model is interpretable, and per-feature weights can be read off directly.",
+  "see": [
+   "read-centric",
+   "error suppression"
+  ],
+  "slug": "svm",
+  "modules": [
+   "p01"
+  ]
  }
 };
