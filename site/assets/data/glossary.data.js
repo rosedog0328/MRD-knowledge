@@ -113,7 +113,9 @@ window.TW_GLOSSARY = {
    "read-centric"
   ],
   "slug": "breadth-supplants-depth",
-  "modules": []
+  "modules": [
+   "p02"
+  ]
  },
  "LLOD": {
   "zh_gloss": "偵測極限",
@@ -249,7 +251,9 @@ window.TW_GLOSSARY = {
    "reporter"
   ],
   "slug": "selector",
-  "modules": []
+  "modules": [
+   "p02"
+  ]
  },
  "patient-specific panel": {
   "zh_gloss": "個人化探針組",
