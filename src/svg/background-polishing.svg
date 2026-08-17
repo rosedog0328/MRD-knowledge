@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560">
+  <title>位置專一背景模型：先量出每個位置平常有多吵，再判斷候選變異是否只是背景</title>
+  <desc>本圖說明 iDES 的背景拋光機制，分為訓練與套用兩個階段。
+        訓練階段使用十二個確定不含腫瘤的健康對照樣本。
+        對追蹤區域內每一個可能的單核苷酸變異位置，
+        逐一蒐集這十二個對照樣本在該位置觀察到的變異等位基因分率，排成一個向量。
+        建模前會先移除該向量的最大值，避免單一離群值造成過度擬合。
+        接著依非零數值的個數選擇分布：若少於五個則用高斯分布，估平均值與標準差；
+        否則對非零數值擬合韋伯分布，儲存形狀與尺度兩個參數。
+        另外還要記錄非零數值所佔的比例，用以描述該位置多數時候根本不出錯這件事。
+        全部位置的模型合起來構成背景資料庫。
+        套用階段處理一份待測樣本。
+        對每一個候選變異，到背景資料庫查出該位置的模型，
+        計算這個變異等位基因分率在該模型下的機率值，
+        高斯模型用單尾 z 檢定，韋伯模型用累積機率。
+        判定規則是：若該候選變異與正常對照的背景分布無法區分，就移除它；
+        若明顯高於背景，則保留。
+        圖下方強調這個設計的關鍵：
+        它不是無差別地剔除所有容易出錯的鹼基，
+        而是只在候選變異與背景無法區分時才移除，
+        因此在容易出錯的位置上仍然保留了偵測能力。
+        圖右下角標出限制：這個方法需要足夠的陰性訓練樣本，
+        iDES 使用十二個，而本專案目前只有五個獨立的陰性個體。</desc>
+
+  <text class="ttl bold zh" x="20" y="34">位置專一背景模型：先量出每個位置平常有多吵</text>
+
+  <defs>
+    <marker id="bp-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path class="conn" d="M0 0 L10 5 L0 10 z"/>
+    </marker>
+  </defs>
+
+  <!-- ══ 訓練階段 ══ -->
+  <rect class="box" x="20" y="56" width="470" height="404" rx="10"/>
+  <text class="anno bold accent zh" x="44" y="86">訓練階段：建一本「各位置平常長什麼樣」的帳</text>
+
+  <rect class="box plain" x="44" y="100" width="422" height="44" rx="7"/>
+  <text class="tick zh" x="66" y="128">輸入：12 個確定不含腫瘤的健康對照</text>
+
+  <path class="conn" d="M255 146 L255 164" marker-end="url(#bp-a)"/>
+
+  <rect class="box plain" x="44" y="170" width="422" height="66" rx="7"/>
+  <text class="tick zh" x="66" y="196">對區域內<tspan class="bold">每一個可能的 SNV 位置</tspan>，</text>
+  <text class="tick zh" x="66" y="220">蒐集 12 個對照在該位置的 VAF → 排成一個向量</text>
+
+  <path class="conn" d="M255 238 L255 256" marker-end="url(#bp-a)"/>
+
+  <rect class="box plain" x="44" y="262" width="422" height="44" rx="7"/>
+  <text class="tick zh" x="66" y="290">先<tspan class="bold">移除最大值</tspan> —— 避免單一離群值造成過度擬合</text>
+
+  <path class="conn" d="M255 308 L255 326" marker-end="url(#bp-a)"/>
+
+  <rect class="box plain" x="44" y="332" width="200" height="88" rx="7"/>
+  <text class="tick zh" x="64" y="358">非零值 &lt; 5 個</text>
+  <text class="anno bold zh" x="64" y="382">→ 高斯分布</text>
+  <text class="tick zh" x="64" y="406">存 μ、σ</text>
+
+  <rect class="box plain" x="266" y="332" width="200" height="88" rx="7"/>
+  <text class="tick zh" x="286" y="358">否則</text>
+  <text class="anno bold zh" x="286" y="382">→ 韋伯分布</text>
+  <text class="tick zh" x="286" y="406">存 shape、scale</text>
+
+  <text class="tick zh" x="44" y="446">另存<tspan class="bold">非零值的比例</tspan> —— 描述「這個位置多數時候根本不出錯」</text>
+
+  <!-- 中間箭頭 -->
+  <path class="conn thick" d="M496 258 L530 258" marker-end="url(#bp-a)"/>
+  <text class="tick mid zh" x="513" y="240">背景</text>
+  <text class="tick mid zh" x="513" y="290">資料庫</text>
+
+  <!-- ══ 套用階段 ══ -->
+  <rect class="box" x="546" y="56" width="434" height="404" rx="10"/>
+  <text class="anno bold accent zh" x="570" y="86">套用階段：判斷候選變異是不是只是背景</text>
+
+  <rect class="box plain" x="570" y="100" width="386" height="44" rx="7"/>
+  <text class="tick zh" x="592" y="128">輸入：一份待測樣本的候選變異</text>
+
+  <path class="conn" d="M763 146 L763 164" marker-end="url(#bp-a)"/>
+
+  <rect class="box plain" x="570" y="170" width="386" height="66" rx="7"/>
+  <text class="tick zh" x="592" y="196">查出<tspan class="bold">該位置</tspan>的模型，算這個 VAF 在</text>
+  <text class="tick zh" x="592" y="220">該模型下的機率（高斯用 z 檢定／韋伯用累積機率）</text>
+
+  <path class="conn" d="M763 238 L763 256" marker-end="url(#bp-a)"/>
+
+  <rect class="box plain" x="570" y="262" width="180" height="88" rx="7"/>
+  <text class="tick zh" x="590" y="288">與背景</text>
+  <text class="tick zh" x="590" y="312">無法區分</text>
+  <text class="anno bold somatic zh" x="590" y="338">→ 移除</text>
+
+  <rect class="box plain" x="776" y="262" width="180" height="88" rx="7"/>
+  <text class="tick zh" x="796" y="288">明顯高於</text>
+  <text class="tick zh" x="796" y="312">背景</text>
+  <text class="anno bold ok zh" x="796" y="338">→ 保留</text>
+
+  <rect class="box" x="570" y="366" width="386" height="80" rx="7"/>
+  <text class="anno bold zh" x="592" y="392">關鍵：不是無差別剔除易錯鹼基</text>
+  <text class="tick zh" x="592" y="416">只在「與背景無法區分」時才移除，</text>
+  <text class="tick zh" x="592" y="438">因此易錯位置上仍保有偵測能力</text>
+
+  <!-- ══ 限制 ══ -->
+  <rect class="box plain" x="20" y="472" width="960" height="70" rx="10"/>
+  <text class="anno bold somatic zh" x="44" y="500">限制：需要夠多的陰性訓練樣本</text>
+  <text class="tick zh" x="44" y="526">iDES 用 12 個；本專案目前只有 5 個獨立陰性個體 —— 這是唯一卡住的一項。</text>
+</svg>

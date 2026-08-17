@@ -1191,5 +1191,23 @@
       "germline filtering ladder",
       "compendium"
     ]
+  },
+  "PIR": {
+    "zh_gloss": "變異在 read 上的位置",
+    "zh": "position in read —— 候選變異落在該條 read 的第幾個鹼基。Illumina 的錯誤率隨定序循環數上升，因此靠近 read 末端的變異較可疑，<code>MRDetect</code> 用它當去噪特徵之一。⚠️ <b>這個假設在 ONT 上不成立</b>：長讀長的錯誤分布不是 cycle-error 模式，PIR 可保留但<b>必須重新校準</b>，不能沿用 Illumina 的解讀。本專案實測 PIR 相關特徵合計僅佔 1.5% 權重。",
+    "en": "Position in read: where the candidate variant falls along the read. On Illumina the error rate rises with sequencing cycle, so variants near the read end are more suspicious, and MRDetect uses this as a denoising feature. The assumption does not hold on ONT, whose error profile is not a cycle-error pattern: PIR may be kept but must be recalibrated rather than interpreted as on Illumina.",
+    "see": [
+      "read-centric",
+      "MRDetect"
+    ]
+  },
+  "edit distance": {
+    "zh_gloss": "整條片段的變異數",
+    "zh": "一條定序片段相對於參考基因組總共有幾個不一致的鹼基。<code>MRD-EDGE</code> 把它當去噪特徵：帶著大量其他錯誤的片段，其上的候選變異也比較可能是錯誤 —— 亦即<b>用整條 read 的整體品質，來評估其中單一位置的可信度</b>。",
+    "en": "The total number of bases on a sequenced fragment that differ from the reference. MRD-EDGE uses it as a denoising feature: a fragment carrying many other mismatches is more likely to carry an erroneous candidate variant too, i.e. the overall quality of the whole read informs the credibility of any single position on it.",
+    "see": [
+      "MRD-EDGE",
+      "read-centric"
+    ]
   }
 }

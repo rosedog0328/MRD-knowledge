@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 520">
+  <title>離群抑制：真訊號應該散開，集中在單一位點的訊號反而可疑</title>
+  <desc>本圖說明 INVAR 的離群抑制機制。
+        上半部說明推論的依據：在極低腫瘤分數下，每個位點最多只期待一條支持讀取，
+        因此真正的腫瘤訊號應該隨機散布在許多不同的位點上，多數位點是零條，少數位點是一條。
+        圖中以長條圖表示各個追蹤位點上的支持讀取數，
+        絕大多數位點高度為零，散落幾個高度為一的位點，這是預期中的樣子。
+        但其中有一個位點的高度異常地高，達到十二條。
+        在腫瘤分數十萬分之一的量級下，同一個位點出現十二條支持讀取的機率極低，
+        因此比較可能的解釋不是強烈的腫瘤訊號，
+        而是該位點的系統性錯誤、殘留的生殖系變異，或追蹤清單本身混入的偽陽性。
+        下半部說明實際的判定規則，取自 INVAR2 的開源程式碼。
+        對每一個位點，以該位點的背景錯誤率為機率參數做二項式檢定，
+        檢定該位點觀察到的支持讀取數是否顯著高於背景所能解釋的範圍。
+        顯著性門檻經 Bonferroni 多重檢定校正，
+        即零點零五除以位點總數。
+        檢定結果顯著者判定為離群並剔除。
+        圖最下方列出實測效果：
+        陰性對照樣本的訊號降低約三倍，而病人樣本的訊號保留百分之九十六點一。
+        這個做法完全不依賴任何平台特性，因此可以直接移植到長讀長資料。</desc>
+
+  <text class="ttl bold zh" x="20" y="34">離群抑制：真訊號應該散開，集中在單一位點反而可疑</text>
+
+  <!-- ══ 上：分布長相 ══ -->
+  <rect class="box" x="20" y="56" width="620" height="248" rx="10"/>
+  <text class="anno bold accent zh" x="44" y="86">低 TF 下，支持 read 應該長這樣</text>
+
+  <path class="axis" d="M70 258 L610 258"/>
+  <text class="tick zh" x="70" y="282">追蹤位點（依座標排列）→</text>
+  <text class="tick zh" x="44" y="252">0</text>
+  <text class="tick zh" x="44" y="212">1</text>
+
+  <!-- 正常：散落的 1 -->
+  <rect class="bar" x="110" y="218" width="10" height="40"/>
+  <rect class="bar" x="168" y="218" width="10" height="40"/>
+  <rect class="bar" x="236" y="218" width="10" height="40"/>
+  <rect class="bar" x="300" y="218" width="10" height="40"/>
+  <rect class="bar" x="392" y="218" width="10" height="40"/>
+  <rect class="bar" x="470" y="218" width="10" height="40"/>
+  <rect class="bar" x="556" y="218" width="10" height="40"/>
+
+  <!-- 離群：異常高 -->
+  <rect class="bar bad" x="340" y="110" width="10" height="148"/>
+  <text class="anno bold somatic zh" x="358" y="126">12 條 —— 這一個可疑</text>
+  <text class="tick zh" x="358" y="148">TF 1e-5 下同位點出現 12 條的</text>
+  <text class="tick zh" x="358" y="170">機率極低</text>
+
+  <text class="tick zh" x="44" y="300">多數位點 0 條、少數 1 條 = 預期的樣子</text>
+
+  <!-- ══ 右：可疑的原因 ══ -->
+  <rect class="box" x="660" y="56" width="320" height="248" rx="10"/>
+  <text class="anno bold zh" x="684" y="86">為什麼「太多」反而可疑</text>
+  <text class="tick zh" x="684" y="118">比較可能的解釋不是強烈訊號，</text>
+  <text class="tick zh" x="684" y="140">而是以下三者之一：</text>
+  <text class="tick zh" x="684" y="176">① 該位點的系統性錯誤</text>
+  <text class="tick zh" x="684" y="210">② 殘留的 germline 變異</text>
+  <text class="tick zh" x="684" y="244">③ 清單本身混入的偽陽性</text>
+  <text class="tick zh" x="684" y="284">三者都會讓分母被灌水</text>
+
+  <!-- ══ 下：判定規則 ══ -->
+  <rect class="box" x="20" y="322" width="620" height="126" rx="10"/>
+  <text class="anno bold accent zh" x="44" y="352">實際規則（取自 INVAR2 開源碼）</text>
+  <text class="tick zh" x="44" y="384">對每個位點，以<tspan class="bold">該位點的背景錯誤率</tspan>為機率做二項式檢定，</text>
+  <text class="tick zh" x="44" y="408">問「這麼多支持 read，背景解釋得了嗎」</text>
+  <text class="tick zh" x="44" y="432">門檻經 Bonferroni 校正：0.05 ÷ 位點總數 → 顯著者剔除</text>
+
+  <!-- ══ 右下：效果 ══ -->
+  <rect class="box" x="660" y="322" width="320" height="126" rx="10"/>
+  <text class="anno bold zh" x="684" y="352">實測效果</text>
+  <text class="anno bold ok zh" x="684" y="386">陰性對照訊號 ↓ 3 倍</text>
+  <text class="anno bold ok zh" x="684" y="416">病人訊號保留 96.1%</text>
+
+  <!-- ══ 底線 ══ -->
+  <rect class="box plain" x="20" y="462" width="960" height="42" rx="8"/>
+  <text class="tick zh" x="44" y="490">不依賴分子條碼、不依賴雙端定序、不依賴特殊建庫 —— 可直接移植到 ONT。</text>
+</svg>

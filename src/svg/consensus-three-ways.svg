@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 530">
+  <title>讓同一個分子被看很多次的三種方式</title>
+  <desc>本圖比較前三種降噪做法，它們的原理相同，差別只在「多次觀測」從哪裡來。
+        共同原理是：定序錯誤是隨機發生的，同一個位置連續錯很多次的機率極低，
+        因此只要能讓同一個原始分子被觀測很多次，取多數決就能把隨機錯誤消掉。
+        真正的突變則會出現在每一次觀測裡。
+        第一種是分子條碼讀取家族。一個游離去氧核醣核酸分子經聚合酶連鎖反應複製成多份，
+        每一份都帶有相同的分子條碼，因此可以事後認出它們來自同一個原始分子。
+        這些複製品成為多條各自獨立的讀取，判定規則是同一條碼的讀取取多數決，
+        不一致者判為錯誤。INVAR 要求家族大小至少為二。
+        代價是必須使用帶分子條碼的建庫流程。
+        第二種是雙股定序。一個雙股分子的正股與反股分別被定序，兩股互為獨立的觀測。
+        判定規則是突變必須在正反兩股都出現，只出現在單股者判為錯誤。
+        Landau 第三代達到的殘餘錯誤率為七點七乘以十的負七次方，
+        代價是只回收百分之十九的原始分子。
+        第三種是滾環擴增串聯體的讀取內共識。
+        分子先環化再滾環擴增，拷貝串成一條長鏈，因此一條讀取之內就含有同一分子的多份拷貝。
+        判定規則是讀取內的各份拷貝必須一致，AccuScan 要求至少兩份、NanoRCS 要求至少三份。
+        AccuScan 在 Illumina 上達到四點二乘以十的負七次方，
+        NanoRCS 在 ONT 上達到七點二乘以十的負四次方，
+        代價是去重後只有百分之三十五到五十一的讀取能貢獻共識。
+        圖最下方指出關鍵差別：前兩種把多份拷貝放在讀取「之間」，
+        第三種把多份拷貝放在讀取「之內」，
+        因此讀取越長能容納的拷貝越多，這是長讀長平台的結構優勢。</desc>
+
+  <text class="ttl bold zh" x="20" y="34">讓同一個分子被看很多次的三種方式</text>
+
+  <rect class="box plain" x="20" y="52" width="960" height="46" rx="8"/>
+  <text class="tick zh" x="44" y="80">共同原理：定序錯誤是隨機的，同一位置連續錯很多次的機率極低 —— 讓同一個原始分子被觀測多次，取共識即可消掉隨機錯誤。</text>
+
+  <defs>
+    <marker id="c3-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path class="conn" d="M0 0 L10 5 L0 10 z"/>
+    </marker>
+  </defs>
+
+  <!-- ══ A：UMI read family ══ -->
+  <text class="anno bold accent mid zh" x="155" y="130">① 分子條碼 read family</text>
+  <rect class="box plain" x="20" y="146" width="270" height="46" rx="7"/>
+  <text class="tick mid zh" x="155" y="174">一個 cfDNA 分子</text>
+  <path class="conn" d="M155 194 L155 214" marker-end="url(#c3-a)"/>
+  <rect class="box" x="20" y="220" width="270" height="90" rx="7"/>
+  <text class="tick zh" x="42" y="246">PCR 複製成多份</text>
+  <text class="tick zh" x="42" y="270">每份帶<tspan class="bold">相同的分子條碼</tspan></text>
+  <text class="tick zh" x="42" y="294">→ 多條各自獨立的 read</text>
+  <path class="conn" d="M155 312 L155 332" marker-end="url(#c3-a)"/>
+  <rect class="box" x="20" y="338" width="270" height="66" rx="7"/>
+  <text class="tick zh" x="42" y="364">同一條碼的 read 取多數決</text>
+  <text class="tick zh" x="42" y="388">INVAR：family size ≥ 2</text>
+  <rect class="box plain" x="20" y="416" width="270" height="66" rx="7"/>
+  <text class="tick zh" x="42" y="442">代價：需要條碼建庫</text>
+  <text class="tick zh" x="42" y="466">拷貝在 read <tspan class="bold">之間</tspan></text>
+
+  <!-- ══ B：duplex ══ -->
+  <text class="anno bold accent mid zh" x="500" y="130">② duplex 雙股定序</text>
+  <rect class="box plain" x="365" y="146" width="270" height="46" rx="7"/>
+  <text class="tick mid zh" x="500" y="174">一個<tspan class="bold">雙股</tspan> cfDNA 分子</text>
+  <path class="conn" d="M500 194 L500 214" marker-end="url(#c3-a)"/>
+  <rect class="box" x="365" y="220" width="270" height="90" rx="7"/>
+  <text class="tick zh" x="387" y="246">正股與反股分別定序</text>
+  <text class="tick zh" x="387" y="270">兩股互為<tspan class="bold">獨立觀測</tspan></text>
+  <text class="tick zh" x="387" y="294">→ 一組正反配對</text>
+  <path class="conn" d="M500 312 L500 332" marker-end="url(#c3-a)"/>
+  <rect class="box" x="365" y="338" width="270" height="66" rx="7"/>
+  <text class="tick zh" x="387" y="364">突變要<tspan class="bold">兩股都出現</tspan></text>
+  <text class="tick zh" x="387" y="388">只有一股 → 判為錯誤</text>
+  <rect class="box plain" x="365" y="416" width="270" height="66" rx="7"/>
+  <text class="anno bold ok zh" x="387" y="442">7.7e-7</text>
+  <text class="tick zh" x="387" y="466">代價：<tspan class="somatic bold">只回收 19% 分子</tspan></text>
+
+  <!-- ══ C：RCA ══ -->
+  <text class="anno bold accent mid zh" x="845" y="130">③ RCA read 內共識</text>
+  <rect class="box plain" x="710" y="146" width="270" height="46" rx="7"/>
+  <text class="tick mid zh" x="845" y="174">一個 cfDNA 分子</text>
+  <path class="conn" d="M845 194 L845 214" marker-end="url(#c3-a)"/>
+  <rect class="box" x="710" y="220" width="270" height="90" rx="7"/>
+  <text class="tick zh" x="732" y="246">環化後滾環擴增</text>
+  <text class="tick zh" x="732" y="270">拷貝串成一條長鏈</text>
+  <text class="tick zh" x="732" y="294">→ <tspan class="bold">一條 read 內含多份</tspan></text>
+  <path class="conn" d="M845 312 L845 332" marker-end="url(#c3-a)"/>
+  <rect class="box" x="710" y="338" width="270" height="66" rx="7"/>
+  <text class="tick zh" x="732" y="364">read 內各拷貝必須一致</text>
+  <text class="tick zh" x="732" y="388">AccuScan ≥2 · NanoRCS ≥3</text>
+  <rect class="box plain" x="710" y="416" width="270" height="66" rx="7"/>
+  <text class="anno bold ok zh" x="732" y="442">4.2e-7　ONT 7.2e-4</text>
+  <text class="tick zh" x="732" y="466">拷貝在 read <tspan class="bold">之內</tspan></text>
+
+  <!-- ══ 底線 ══ -->
+  <rect class="box plain" x="20" y="494" width="960" height="30" rx="8"/>
+  <text class="tick zh" x="44" y="514">關鍵差別：①② 的拷貝在 read 之間，③ 的拷貝在 read 之內 —— read 越長能容納的拷貝越多，這是長讀長的結構優勢。</text>
+</svg>

@@ -1,7 +1,7 @@
 <!--tw
 {
   "objectives": [
-    "區分四類壓低錯誤率的做法，並說明各自依賴什麼條件",
+    "說明七種判斷「一條 read 是真是假」的方式各自怎麼運作，以及依據什麼",
     "以量化方式陳述錯誤率與定序深度之間的換算關係",
     "說明每一種降噪手段的隱藏成本，並指出哪一種宣稱可避開該成本",
     "判斷哪些做法可移植至標準 ONT 資料，並說明無法移植者的具體原因"
@@ -20,101 +20,153 @@
 兩者在極低 [[tumor fraction|腫瘤分數]]下出現的頻率同一個數量級，
 若不做任何處理即無從區分。</p>
 
-<p class="prose">11 篇論文提出了七種做法，可歸為四類。
-其中三類依賴 [[ONT simplex|標準 ONT 資料]]所缺乏的條件。</p>
+<p class="prose">11 篇論文給出了<b>七種判斷方式</b>。
+它們回答的是同一個問題，但依據完全不同 ——
+有的靠濕實驗讓分子被看很多次，有的靠統計量出「這個位置平常有多吵」，
+有的靠機器學習，還有一種乾脆改掉被判斷的對象。</p>
+
+<p class="prose">以下逐一說明每一種<b>實際上怎麼運作</b>。</p>
 </section>
 
 
 <section data-part="concept">
-<h2>四類七種做法</h2>
+<h2>七種判斷方式</h2>
 
-<h3>A 類：靠濕實驗化學</h3>
+<h3>① 分子條碼 read family：讓同一分子被複製多份</h3>
 
-<div class="table-wrap">
-<table>
-<thead><tr><th>做法</th><th>方法</th><th>達到的錯誤率</th><th>依賴什麼</th></tr></thead>
-<tbody>
-<tr><td>[[UMI]] [[read family|read family]]</td><td>[[INVAR]]</td><td>—（四層之一）</td><td>分子條碼</td></tr>
-<tr><td><b>[[duplex sequencing|duplex 定序]]</b></td><td>[[Landau gen3|Landau 第三代]]</td><td><b>7.7e-7</b></td><td>正反兩股都被讀到</td></tr>
-<tr><td><b>[[RCA]] concatemer</b>（Illumina）</td><td>[[AccuScan]]</td><td><b>4.2e-7</b></td><td>滾環擴增建庫</td></tr>
-<tr><td><b>[[RCA]] concatemer</b>（ONT）</td><td>[[NanoRCS]]</td><td><b>7.2e-4（Q31）</b></td><td>滾環擴增建庫</td></tr>
-</tbody>
-</table>
+<p class="prose"><b>判斷依據</b>：同一個原始分子的多份複製品，內容應該一致。</p>
+
+<p class="prose">建庫時給每個原始分子貼上一段隨機序列（[[UMI|分子條碼]]），
+之後 PCR 複製出來的每一份都帶著<b>相同的條碼</b>。
+定序完成後依條碼分組，同一組的 read 就是同一個分子的多次觀測 ——
+取多數決，不一致的判為錯誤。</p>
+
+<p class="prose">[[INVAR]] 要求 family size <b>至少 2</b>（同一分子至少被讀到兩次才採用）。
+門檻越高越乾淨，但丟掉的分子也越多。</p>
+
+<h3>② duplex 雙股定序：要求正反兩股都出現</h3>
+
+<p class="prose"><b>判斷依據</b>：定序錯誤只會出現在其中一股；真突變兩股都有。</p>
+
+<p class="prose">DNA 是雙股的。把正股與反股<b>分別</b>定序，兩者就是對同一個分子的兩次獨立觀測。
+突變若只在單股出現，代表是那一次定序或那一股的損傷造成的，判為錯誤。</p>
+
+<p class="prose">[[Landau gen3|Landau 第三代]]達到殘餘錯誤率 <b>7.7e-7</b>。
+但代價很重：<b>只回收 19% 的原始分子</b> ——
+必須正反兩股都恰好被讀到才算數，多數分子達不到這個條件。</p>
+
+<h3>③ RCA read 內共識：把多份拷貝放進<b>同一條 read</b></h3>
+
+<p class="prose"><b>判斷依據</b>：與 ①② 相同（同一分子多次觀測），但拷貝的位置不同。</p>
+
+<p class="prose">做法是把 cfDNA 分子<b>環化</b>，再用[[RCA|滾環擴增]]沿著環一圈一圈複製，
+產出一條含有同一段序列多份拷貝的長鏈（[[concatemer|串聯體]]）。
+定序這條長鏈，等於<b>一條 read 之內</b>就有同一分子的多次觀測。</p>
+
+<p class="prose">判定規則：read 內各拷貝必須一致 ——
+[[AccuScan]] 要求至少 2 份且全部一致（並限定 Q-score &gt; 24 的位置），
+[[NanoRCS]] 要求至少 3 份取共識。</p>
+
+<p class="prose">錯誤率：[[AccuScan]]（Illumina）<b>4.2e-7</b>、[[NanoRCS]]（ONT）<b>7.2e-4</b>。
+代價是去重後只有 <b>35–51%</b> 的 read 能貢獻共識。</p>
+
+{{svg:consensus-three-ways | ①②③ 的原理相同 —— 讓同一分子被觀測多次再取共識 —— 差別只在「多次」從哪裡來。}}
+
+<p class="prose">這三種是<b>同一個想法的三種實現</b>。值得注意的是 ③ 把拷貝從 read 之間搬到 read 之內，
+因此 <b>read 越長，能容納的拷貝越多</b>（[[NanoRCS]] 中位 6 個
+[[subread|子讀取]]）—— 這是[[read length advantage|長讀長平台的結構優勢]]。</p>
+
+<h3>④ 位置專一背景模型：先量出每個位置平常有多吵</h3>
+
+<p class="prose"><b>判斷依據</b>：這個位置在確定沒有腫瘤時就常出這種錯嗎？</p>
+
+<p class="prose">前三種都要改建庫。這一種是<b>純計算</b> ——
+拿一批確定不含腫瘤的樣本，對追蹤區域內<b>每一個可能的 SNV 位置</b>
+量出它平常的錯誤分布，建成一本帳。之後看到候選變異，就查這本帳：
+如果它的頻率跟該位置的正常背景<b>分不出來</b>，就移除。</p>
+
+{{svg:background-polishing | iDES 背景拋光的兩個階段。關鍵是它不無差別剔除易錯鹼基，只在「與背景無法區分」時才移除。}}
+
+<p class="prose">[[iDES]] 的實作細節值得記下來，因為它們都是踩過坑的設計：</p>
+
+<ul class="prose">
+<li><b>建模前先移除向量的最大值</b> —— 避免單一離群值主導模型。</li>
+<li><b>依非零值個數選分布</b>：少於 5 個用高斯（估 μ、σ），否則對非零值擬合 Weibull（存 shape、scale）。</li>
+<li><b>另存非零值的比例</b>（zero-inflation）—— 描述「這個位置多數時候根本不出錯」這件事。</li>
+<li>訓練用<b>去重前</b>的資料，理由是立體型背景錯誤無法被分子條碼可靠壓抑。</li>
+</ul>
+
+<p class="prose">[[INVAR]] 的<b>[[trinucleotide context|三核苷酸脈絡分層]]</b>是同一個想法的另一種切法：
+不看單一位置，而是依「突變類型 + 前後各一個鹼基」分組估背景。
+實測<b>最吵與最靜的 context 差超過兩個數量級</b> ——
+把它們混在一起用同一個背景率，等於同時高估靜的、低估吵的。</p>
+
+<p class="prose">效果：背景拋光約 3 倍（與分子條碼合併達約 15 倍）。
+限制是<b>需要 12 個陰性訓練樣本</b>。</p>
+
+<h3>⑤ 離群抑制：真訊號應該散開，集中在單一位點反而可疑</h3>
+
+<p class="prose"><b>判斷依據</b>：這個位點的支持 read <b>多到不合理</b>嗎？</p>
+
+<p class="prose">這一種的推論方向和直覺相反，來自 [[read-centric]] 的前提：
+低 TF 下每個位點最多期待一條支持 read，所以真訊號應該
+<b>隨機散布</b>在許多位點上 —— 多數位點 0 條、少數 1 條。
+若某個位點冒出 12 條，比較可能的解釋不是強烈的腫瘤訊號，而是那個位點有問題。</p>
+
+{{svg:outlier-suppression | INVAR 的離群抑制。判定規則取自 INVAR2 開源碼：以該位點的背景錯誤率做二項式檢定，門檻經 Bonferroni 校正。}}
+
+<p class="prose">實際規則（取自 [[INVAR|INVAR2]] 開源碼）：對每個位點，
+以<b>該位點的背景錯誤率</b>為機率參數做二項式檢定，
+問「這麼多支持 read，背景解釋得了嗎」；
+顯著性門檻經 Bonferroni 校正（0.05 ÷ 位點總數），顯著者剔除。</p>
+
+<p class="prose">效果：<b>陰性對照訊號降約 3 倍，病人樣本保留 96.1%</b> ——
+這個不對稱正是它有用的原因。</p>
+
+<p class="prose">[[AccuScan]] 的<b>[[single-molecule rule|單分子準則]]</b>是同一直覺的簡化版：
+在極低 TF 下，一個位點只接受一個分子的支持。</p>
+
+<h3>⑥ 機器學習分類器：讓模型自己學什麼樣的 read 可信</h3>
+
+<p class="prose"><b>判斷依據</b>：不預先寫規則，改成給模型一堆特徵讓它自己找。</p>
+
+<p class="prose">[[MRDetect]] 用 <b>線性 [[SVM]]</b>，五個特徵：
+變異鹼基品質（VBQ）、整條 read 平均品質（MRBQ）、
+變異在 read 上的位置（[[PIR]]）、
+<b>[[R1/R2 concordance|R1/R2 一致性]]</b>、比對品質（MQ）。
+訓練正例取自已知 SNP 位點的 read、負例取自低 VAF 的 mismatch。
+效果是把定序噪音再降<b>中位 14.4 倍</b>（範圍 11–17），且優於 random forest。</p>
+
+<p class="prose">[[MRD-EDGE]] 用 <b>CNN + MLP 集成</b>，特徵大幅擴充：
+除了品質類特徵，還加入 SBS 三核苷酸 context、片段長度、
+[[edit distance|整條片段的變異數]]，以及<b>區域表觀基因體特徵</b>
+（該區域對體細胞突變的傾向：PCAWG 的癌別 SNV 密度、ChIP-seq、ATAC peak…）。
+訊噪比提升 <b>118 倍</b>。</p>
+
+<p class="prose">[[Lung-CLiP]] 則是<b>變異層級機率模型</b>，
+特徵含背景頻率、cfDNA 片段大小、受影響的基因、
+以及該突變來自[[clonal hematopoiesis|克隆造血]]的可能性 ——
+它用片段化模式來區分「腫瘤來源」與「CH 來源」，而不是直接當偵測訊號。</p>
+
+<div class="guardrail guardrail--warn">
+<p class="guardrail__hd">這一類對本專案的移植性最差，而且原因不是效能</p>
+<p class="prose">兩個模型的核心特徵都<b>假設雙端定序</b>：
+[[MRDetect]] 的五特徵裡有一個是 R1/R2 一致性，
+[[MRD-EDGE]] 的 CNN 直接把 R1、R2 編進 18×240 的 tensor。
+ONT 是單分子長讀、<b>沒有 read pair</b>，這些特徵不存在，
+不是「效果差一點」而是<b>算不出來</b>。</p>
 </div>
 
-<p class="prose">四者的共同原理是<b>讓同一個原始分子被觀測多次</b>，再取共識。
-差別只在「多次」從哪裡來：UMI 靠 PCR 重複、duplex 靠正反兩股、
-[[RCA]] 靠 [[concatemer|串聯體]]內的多份拷貝。</p>
+<h3>⑦ 換偵測單元：改看同一條分子上的多個突變</h3>
 
-<p class="prose">[[AccuScan]] 與 [[NanoRCS]] 是<b>同一個想法在兩個平台上的實現</b>：
-把「多份拷貝」從 read 之間搬到 read 之內。
-[[read length advantage|ONT 的長讀長]]在此有結構優勢 ——
-read 越長，一條 read 內能容納的 [[subread|子讀取]]越多（NanoRCS 中位 6 個）。</p>
+<p class="prose"><b>判斷依據</b>：不再問「這條 read 對不對」，改問「這條 read 上<b>好幾個</b>突變同時對不對」。</p>
 
-<h3>B 類：靠統計建模 —— 純計算，不需特殊化學</h3>
+<p class="prose">[[PhasED-seq]] 沒有增加任何過濾層 —— 它改變了被計數的對象。
+要求同一條定序片段上出現<b>兩個以上</b>非參考鹼基
+（[[phased variant|phased variant]]，PV）。</p>
 
-<div class="table-wrap">
-<table>
-<thead><tr><th>做法</th><th>方法</th><th>效果</th><th>需要什麼</th></tr></thead>
-<tbody>
-<tr>
-  <td><b>[[background polishing|背景拋光]]</b></td><td>[[iDES]]</td>
-  <td>約 3 倍（與條碼合併達 ~15 倍）</td>
-  <td><b>n=12 陰性訓練樣本</b></td>
-</tr>
-<tr>
-  <td><b>[[trinucleotide context|三核苷酸脈絡]]分層</b></td><td>[[INVAR]]</td>
-  <td>最吵與最靜的 context 差 <b>逾 2 個數量級</b></td><td>無特殊需求</td>
-</tr>
-<tr>
-  <td><b>[[outlier suppression|離群抑制]]</b></td><td>[[INVAR]]</td>
-  <td>對照訊號 ↓3 倍，病人保留 <b>96.1%</b></td><td>無特殊需求</td>
-</tr>
-<tr>
-  <td><b>[[single-molecule rule|單分子準則]]</b></td><td>[[AccuScan]]</td>
-  <td>—</td><td>無特殊需求</td>
-</tr>
-<tr>
-  <td><b>依 variant type 分層估自身錯誤率</b></td><td>[[AccuScan]]</td>
-  <td>—</td><td><b>不需 [[control cohort|對照世代]]</b></td>
-</tr>
-<tr>
-  <td>位點層級 [[blacklist|黑名單]]</td><td>全部</td>
-  <td>INVAR 排除 0.5% 位點</td><td>陰性樣本</td>
-</tr>
-</tbody>
-</table>
-</div>
-
-<div class="guardrail guardrail--info">
-<p class="guardrail__hd">B 類是本專案唯一完整可用的一類，而目前一項都還沒做</p>
-<p class="prose">這六個做法皆不依賴分子條碼、不依賴雙端定序、不依賴特殊建庫 ——
-在標準 ONT 資料上全部可以執行。</p>
-<p class="prose">其中 [[iDES]] 的[[background polishing|背景拋光]]受限於陰性樣本數
-（需 12 個，本專案僅有 5 個獨立陰性個體），
-其餘五項無此限制。</p>
-</div>
-
-<h3>C 類：靠機器學習</h3>
-
-<div class="table-wrap">
-<table>
-<thead><tr><th>做法</th><th>方法</th><th>特徵</th><th>訊噪比提升</th></tr></thead>
-<tbody>
-<tr><td>線性 SVM</td><td>[[MRDetect]]</td>
-    <td>VBQ、MRBQ、PIR、<b>[[R1/R2 concordance|R1/R2 一致性]]</b>、MQ</td><td>8.3 倍</td></tr>
-<tr><td>CNN + MLP 集成</td><td>[[MRD-EDGE]]</td>
-    <td>SBS context、片段長度、edit distance、區域表觀基因體</td><td><b>118 倍</b></td></tr>
-<tr><td>變異層級機率模型</td><td>[[Lung-CLiP]]</td>
-    <td>背景頻率、片段大小、基因、[[clonal hematopoiesis|CH]] 可能性</td><td>—</td></tr>
-</tbody>
-</table>
-</div>
-
-<h3>D 類：換偵測單元</h3>
-
-<p class="prose">[[PhasED-seq]] 沒有增加任何過濾層，而是改變了被計數的對象：
-不看單一鹼基，改看<b>同一條分子上的多個突變</b>。</p>
+<p class="prose">原理是<b>機率相乘</b>：兩個獨立的定序錯誤要同時出現在同一條分子的
+特定兩個位置上，機率是各自機率的乘積。這不需要任何特殊建庫。</p>
 
 {{svg:phased-variant | 同相變異的原理與實測背景率。因兩個特定位置同時出錯的機率相乘，背景可降至單鹼基的數十至數百分之一。}}
 
@@ -128,6 +180,44 @@ read 越長，一條 read 內能容納的 [[subread|子讀取]]越多（NanoRCS 
 <tr><td><b>3× PV（三重）</b></td><td><b>3.4e-8</b></td><td><b>否</b></td></tr>
 </tbody>
 </table>
+</div>
+
+<p class="prose">2× PV 的背景率比 duplex 低 <b>15 倍</b>、3× 低 <b>350 倍</b>，
+<b>而且不需要分子條碼</b>。這是七種裡唯一宣稱不損失分子的做法。</p>
+
+<h3>七種一覽</h3>
+
+<div class="table-wrap">
+<table>
+<thead><tr>
+  <th>做法</th><th>判斷依據</th><th>效果</th><th>代價／依賴</th><th>ONT 可用？</th>
+</tr></thead>
+<tbody>
+<tr><td><b>① [[UMI]] read family</b></td><td>同分子的複製品應一致</td>
+    <td>—（四層之一）</td><td>需條碼建庫</td><td>❌</td></tr>
+<tr><td><b>② [[duplex sequencing|duplex]]</b></td><td>錯誤只出現在單股</td>
+    <td>7.7e-7</td><td>只回收 19% 分子</td><td>❌</td></tr>
+<tr><td><b>③ [[RCA]] read 內共識</b></td><td>read 內拷貝應一致</td>
+    <td>4.2e-7／ONT 7.2e-4</td><td>需 RCA 建庫；35–51% 可用</td><td>❌<br><span class="tick">（需改建庫）</span></td></tr>
+<tr><td><b>④ [[background polishing|位置專一背景模型]]</b></td><td>此位置平常有多吵</td>
+    <td>約 3 倍（+條碼 ~15 倍）</td><td><b>需 12 個陰性樣本</b></td><td>🔶</td></tr>
+<tr><td><b>⑤ [[outlier suppression|離群抑制]]</b></td><td>支持 read 多到不合理</td>
+    <td>對照 ↓3 倍，病人留 96.1%</td><td>無特殊需求</td><td>✅</td></tr>
+<tr><td><b>⑥ 機器學習分類器</b></td><td>模型自己學</td>
+    <td>14.4 倍／<b>118 倍</b></td><td>核心特徵假設雙端定序</td><td>❌</td></tr>
+<tr><td><b>⑦ [[phased variant|換偵測單元]]</b></td><td>同分子上多個突變</td>
+    <td>2× 8.0e-7、3× 3.4e-8</td><td><b>幾乎不損失分子</b></td><td>✅<br><span class="tick">（且 ONT 佔優）</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="guardrail guardrail--info">
+<p class="guardrail__hd">看這張表要注意：可用的兩種都是純計算，而本專案一項都還沒做</p>
+<p class="prose">④⑤⑦ 不依賴分子條碼、不依賴雙端定序、不依賴特殊建庫，
+在標準 ONT 資料上可以執行。其中 ④ 卡在陰性樣本數
+（需 12 個，本專案僅 5 個獨立陰性個體），⑤⑦ 無此限制。</p>
+<p class="prose">①②③ 卡在<b>建庫</b>，不是演算法問題 ——
+要用它們必須重做濕實驗，這不是分析階段能補的。</p>
 </div>
 </section>
 
