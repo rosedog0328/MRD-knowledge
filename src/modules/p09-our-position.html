@@ -27,6 +27,10 @@
 
 <h3>結構性優勢</h3>
 
+<p class="prose">分兩類。<b>上半是已經確定的量化優勢</b>，
+<b>下半是 11 篇全都沒有的資訊</b> —— 後者的價值還沒被驗證過，
+但它們是本專案最可能做出方法學新意的地方。</p>
+
 <div class="table-wrap">
 <table>
 <thead><tr><th>優勢</th><th>本專案</th><th>文獻對照</th></tr></thead>
@@ -51,9 +55,28 @@
   <td>模擬混合，replicate 成本低</td>
   <td>濕實驗稀釋成本高、replicate 少</td>
 </tr>
+
+<tr>
+  <td><b>每分子的甲基化標籤</b><br>
+      <span class="tick">5mCG／5hmCG（MM／ML）</span></td>
+  <td><b>逐分子、逐 CpG</b> 直接量到</td>
+  <td><b>11 篇全部沒有</b>。[[MRD-EDGE]] 雖用表觀基因體特徵把訊噪比推到 118 倍，
+      但那是<b>從資料庫查該區域的族群平均</b>，不是 per-molecule 的量測</td>
+</tr>
+<tr>
+  <td><b>haplotype 標籤</b><br>
+      <span class="tick">HP tag</span></td>
+  <td>可判斷兩個位點<b>是否在同一條染色體上</b></td>
+  <td><b>11 篇全部沒有</b> —— 短讀長做不出可靠的長程 phasing</td>
+</tr>
 </tbody>
 </table>
 </div>
+
+<p class="prose">最後兩列是<b>質的差異，不是量的差異</b> ——
+不是「我們的比較好」，而是<b>短讀長平台物理上拿不到這兩樣東西</b>。
+它們的具體用途、有無論文佐證、以及該先量什麼，
+見下方<a href="#part-evidence">「我們有、而 11 篇都沒有的東西」</a>。</p>
 
 <h3>結構性劣勢</h3>
 
