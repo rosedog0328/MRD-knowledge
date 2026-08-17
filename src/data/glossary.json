@@ -1,12 +1,12 @@
 {
   "MRD": {
-    "zh_gloss": "分子殘存疾病",
+    "zh_gloss": "微量殘存疾病",
     "aka": [
-      "molecular residual disease",
-      "minimal residual disease"
+      "Minimal Residual Disease",
+      "molecular residual disease"
     ],
-    "zh": "治療（多為手術）後體內殘存、但影像看不到的極少量癌細胞。偵測 MRD 的目的是在臨床復發之前就發現它，據以決定要不要追加治療。",
-    "en": "The small amount of cancer remaining after treatment, below the detection limit of imaging. Detecting it before clinical relapse guides whether further therapy is needed.",
+    "zh": "治療（多為手術）後體內殘存、但影像看不到的極少量癌細胞。<b>MRD 偵測</b>是用定序技術從血液中找出這些微量的癌症訊號，目的是在臨床復發之前就發現它，據以決定要不要追加治療。⚠️ 部分論文（如 AccuScan）展開為 molecular residual disease，兩者指同一件事。",
+    "en": "The small amount of cancer remaining after treatment, below the detection limit of imaging. MRD detection uses sequencing to find these trace cancer signals in blood, aiming to detect relapse before it becomes clinically apparent. Some papers expand the acronym as molecular residual disease; both refer to the same concept.",
     "see": [
       "ctDNA",
       "tumor fraction",
@@ -61,7 +61,7 @@
       "hGE",
       "haploid genome equivalents"
     ],
-    "zh": "樣本中含有的完整基因組份數。1 mL 血漿約只有 1,000–10,000 個 GE，這構成一個**物理上限**：若帶突變的分子根本沒被抽進樣本，再深的定序也測不到。",
+    "zh": "樣本中含有的完整基因組份數。1 mL 血漿約只有 1,000–10,000 個 GE，這構成一個<b>物理上限</b>：若帶突變的分子根本沒被抽進樣本，再深的定序也測不到。",
     "en": "The number of complete genome copies present in a sample. One millilitre of plasma contains only about 1,000 to 10,000 GE, imposing a physical ceiling: if a mutation-bearing molecule was never sampled, no amount of sequencing depth can recover it.",
     "see": [
       "breadth supplants depth",
@@ -85,7 +85,7 @@
       "LOD",
       "limit of detection"
     ],
-    "zh": "能被可靠偵測到的最低 TF。**報告時必須附條件**：定序深度、位點數、以及對應的 specificity。不同方法的 LLOD 若深度與位點數不同，不可直接比較。",
+    "zh": "能被可靠偵測到的最低 TF。<b>報告時必須附條件</b>：定序深度、位點數、以及對應的 specificity。不同方法的 LLOD 若深度與位點數不同，不可直接比較。",
     "en": "The lowest tumour fraction reliably detectable. Reporting it requires stating the conditions: sequencing depth, number of tracked sites, and the corresponding specificity. LLODs from methods with different depths or site counts are not directly comparable.",
     "see": [
       "tumor fraction",
@@ -190,7 +190,7 @@
   },
   "informative reads": {
     "zh_gloss": "有效讀取",
-    "zh": "實際覆蓋到 compendium 位點、因而能提供資訊的 read 數。INVAR 用它作為分母，並據此**為每個樣本各自估計偵測極限**，而非全體共用一條線。",
+    "zh": "實際覆蓋到 compendium 位點、因而能提供資訊的 read 數。INVAR 用它作為分母，並據此<b>為每個樣本各自估計偵測極限</b>，而非全體共用一條線。",
     "en": "The number of reads that actually cover compendium sites and therefore carry information. INVAR uses this as the denominator and estimates a per-sample detection limit from it, rather than applying one threshold to all samples.",
     "see": [
       "detection rate",
@@ -213,7 +213,7 @@
     "aka": [
       "det_rate"
     ],
-    "zh": "本專案的定義（2026-08-09 定案）：帶到突變（ALT）的 read 數 ÷ 在 compendium 位點上檢查過的 read 數。⚠️ 論文的分子是**被偵測到的位點數 M**，低 TF 下兩者相同，高 TF 或有 germline 汙染時會分岔。",
+    "zh": "本專案的定義（2026-08-09 定案）：帶到突變（ALT）的 read 數 ÷ 在 compendium 位點上檢查過的 read 數。⚠️ 論文的分子是<b>被偵測到的位點數 M</b>，低 TF 下兩者相同，高 TF 或有 germline 汙染時會分岔。",
     "en": "As defined in this project: the number of ALT-bearing reads divided by the number of reads examined at compendium sites. Note that the papers use the number of detected sites as numerator; the two coincide at low TF but diverge at high TF or under germline contamination.",
     "see": [
       "informative reads",
@@ -239,7 +239,7 @@
     "aka": [
       "integrated mutant allele fraction"
     ],
-    "zh": "INVAR 的量化輸出：跨所有病人專屬位點取**背景扣除後、深度加權**的平均 allele fraction。用整合取代單點量測，以降低抽樣噪音。",
+    "zh": "INVAR 的量化輸出：跨所有病人專屬位點取<b>背景扣除後、深度加權</b>的平均 allele fraction。用整合取代單點量測，以降低抽樣噪音。",
     "en": "INVAR's quantitative output: the background-subtracted, depth-weighted mean allele fraction across all patient-specific loci. Integration replaces single-site measurement to reduce sampling noise.",
     "see": [
       "cVAF",
@@ -280,7 +280,7 @@
   },
   "read-centric": {
     "zh_gloss": "以讀取為單位",
-    "zh": "MRDetect 的關鍵設計：因為 TF ≪ 1/depth，每個位點最多只期待**一條**支持 read，因此判斷單元是「單條 read 的真偽」，不能用「多條支持才算數」的傳統門檻。",
+    "zh": "MRDetect 的關鍵設計：因為 TF ≪ 1/depth，每個位點最多只期待<b>一條</b>支持 read，因此判斷單元是「單條 read 的真偽」，不能用「多條支持才算數」的傳統門檻。",
     "en": "A key design in MRDetect: because TF is far below 1/depth, at most one supporting read is expected per site. The unit of judgement is therefore whether a single read is genuine, and conventional thresholds requiring multiple supporting reads do not apply.",
     "see": [
       "breadth supplants depth",
@@ -323,18 +323,18 @@
   },
   "duplex sequencing": {
     "zh_gloss": "雙股定序",
-    "zh": "同時定序同一 DNA 分子的**正反兩股**，只有兩股一致的變異才算真。能校正單股損傷（如氧化造成的 G>T），錯誤率可壓到 1e-7 級。⚠️ 代價極高：**只回收約 19% 的獨立分子**。",
+    "zh": "同時定序同一 DNA 分子的<b>正反兩股</b>，只有兩股一致的變異才算真。能校正單股損傷（如氧化造成的 G>T），錯誤率可壓到 1e-7 級。⚠️ 代價極高：<b>只回收約 19% 的獨立分子</b>。",
     "en": "Sequencing both strands of the same DNA molecule and accepting a variant only when both agree. This corrects single-strand damage such as oxidative G-to-T, reaching error rates around 1e-7. The cost is severe: only about 19% of unique molecules are recovered.",
     "see": [
       "UMI",
       "single-strand consensus",
       "error suppression"
     ],
-    "long_zh": "同時定序同一 DNA 分子的正反兩股，只有兩股一致的變異才算真。<br><br>能校正**只發生在單股上**的損傷（如 8-oxoguanine 造成的 G&gt;T 轉換），因此錯誤率遠低於單股共識。實測：Landau 第三代達 7.7e-7、NanoSeq 達 2e-7、CODEC 達 4.5e-7。<br><br>⚠️ **代價要一併計入**：PhasED-seq 量測顯示 duplex 只回收約 19% 的獨立 cfDNA 片段；Landau 第三代作者亦自承「捕獲的獨立分子數少一個數量級」。且該作者指出，在 **tumor-informed** 情境下，加大輸入量的標準 WGS 預期可達到比 duplex 更低的偵測極限。"
+    "long_zh": "同時定序同一 DNA 分子的正反兩股，只有兩股一致的變異才算真。<br><br>能校正<b>只發生在單股上</b>的損傷（如 8-oxoguanine 造成的 G&gt;T 轉換），因此錯誤率遠低於單股共識。實測：Landau 第三代達 7.7e-7、NanoSeq 達 2e-7、CODEC 達 4.5e-7。<br><br>⚠️ <b>代價要一併計入</b>：PhasED-seq 量測顯示 duplex 只回收約 19% 的獨立 cfDNA 片段；Landau 第三代作者亦自承「捕獲的獨立分子數少一個數量級」。且該作者指出，在 <b>tumor-informed</b> 情境下，加大輸入量的標準 WGS 預期可達到比 duplex 更低的偵測極限。"
   },
   "single-strand consensus": {
     "zh_gloss": "單股共識",
-    "zh": "只用同一股的多條重複 read 取共識。能消除 PCR 與定序錯誤，但**無法**校正建庫前就發生在單股上的 DNA 損傷。錯誤率介於未校正與 duplex 之間（約 5.8e-5）。",
+    "zh": "只用同一股的多條重複 read 取共識。能消除 PCR 與定序錯誤，但<b>無法</b>校正建庫前就發生在單股上的 DNA 損傷。錯誤率介於未校正與 duplex 之間（約 5.8e-5）。",
     "en": "Building a consensus from multiple duplicate reads of the same strand. This removes PCR and sequencing errors but cannot correct single-strand DNA damage arising before library preparation. Error rates fall between uncorrected and duplex, around 5.8e-5.",
     "see": [
       "duplex sequencing",
@@ -347,7 +347,7 @@
     "aka": [
       "rolling circle amplification"
     ],
-    "zh": "把 DNA 環化後沿環複製，產生含同一模板多份**串聯拷貝**的長分子（concatemer）。因此共識可以在**單一 read 之內**完成，不需要多條 read 或正反股配對。AccuScan 與 NanoRCS 皆採此法。",
+    "zh": "把 DNA 環化後沿環複製，產生含同一模板多份<b>串聯拷貝</b>的長分子（concatemer）。因此共識可以在<b>單一 read 之內</b>完成，不需要多條 read 或正反股配對。AccuScan 與 NanoRCS 皆採此法。",
     "en": "Circularising DNA and replicating around the circle to produce a long molecule containing multiple tandem copies of the same template. Consensus can therefore be formed within a single read, without needing multiple reads or paired strands. Used by both AccuScan and NanoRCS.",
     "see": [
       "concatemer",
@@ -386,7 +386,7 @@
   },
   "repeat confirmation": {
     "zh_gloss": "重複確認",
-    "zh": "AccuScan 的判定規則：某個 base call 必須被 read pair 內**所有串聯拷貝一致支持**、且至少 2 份支持，才算 repeat confirmed；拷貝之間不一致者視為隨機錯誤丟棄。",
+    "zh": "AccuScan 的判定規則：某個 base call 必須被 read pair 內<b>所有串聯拷貝一致支持</b>、且至少 2 份支持，才算 repeat confirmed；拷貝之間不一致者視為隨機錯誤丟棄。",
     "en": "AccuScan's decision rule: a base call must be consistently supported by all tandem copies within a read pair, with at least two supporting, to count as repeat confirmed. Inconsistencies between copies are discarded as random errors.",
     "see": [
       "consensus calling",
@@ -396,14 +396,14 @@
   },
   "background polishing": {
     "zh_gloss": "背景拋光",
-    "zh": "iDES 提出的**純計算**去噪法：用陰性對照世代為每個位置、每種取代類型各建一個背景分布（非零 AF <5 個用 Gaussian，否則擬合 Weibull，另存零值比例），新樣本的候選變異若與該分布無法區分就移除。",
+    "zh": "iDES 提出的<b>純計算</b>去噪法：用陰性對照世代為每個位置、每種取代類型各建一個背景分布（非零 AF <5 個用 Gaussian，否則擬合 Weibull，另存零值比例），新樣本的候選變異若與該分布無法區分就移除。",
     "en": "A purely computational denoising method from iDES: using a cohort of negative controls, a background distribution is fitted for every position and substitution type (Gaussian if fewer than five non-zero AFs, otherwise a Weibull fit, plus the zero fraction). Candidate variants in a new sample are removed if indistinguishable from that null.",
     "see": [
       "position-specific error",
       "Weibull background model",
       "zero-inflated"
     ],
-    "long_zh": "iDES 提出的純計算去噪法，**不依賴分子條碼、不依賴 paired-end、不依賴任何 Illumina 專屬特性** —— 因此是本專案最直接可移植的降噪手段。<br><br><b>建模</b>：用 n=12 個高背景的健康 cfDNA 對照（**pre-duplication-removal** 資料，因為立體型背景無法被分子條碼可靠壓抑）。對 selector 內每一個可能的 SNV，排除 germline SNP 後，蒐集各對照樣本的 AF 成向量 v，**移除 v 的最大值**以降低 outlier 影響。<br><br><b>分布選擇</b>：若 v 中非零 AF 少於 5 個，用 Gaussian 建模（μ、σ）；否則對非零 AF 擬合 Weibull（R <code>fitdistrplus</code>），另存非零比例以納入 zero-inflation。<br><br><b>拋光</b>：新樣本的候選 allele，Gaussian 走單尾 z 檢定、Weibull 走 <code>pweibull</code> 累積機率。<b>不是無差別剔除易錯鹼基</b>，只在候選變異與 null 分布無法區分時才移除。<br><br>⚠️ 需要 n=12 的陰性訓練樣本；本專案目前只有 5 個獨立陰性個體。"
+    "long_zh": "iDES 提出的純計算去噪法，<b>不依賴分子條碼、不依賴 paired-end、不依賴任何 Illumina 專屬特性</b> —— 因此是本專案最直接可移植的降噪手段。<br><br><b>建模</b>：用 n=12 個高背景的健康 cfDNA 對照（<b>pre-duplication-removal</b> 資料，因為立體型背景無法被分子條碼可靠壓抑）。對 selector 內每一個可能的 SNV，排除 germline SNP 後，蒐集各對照樣本的 AF 成向量 v，<b>移除 v 的最大值</b>以降低 outlier 影響。<br><br><b>分布選擇</b>：若 v 中非零 AF 少於 5 個，用 Gaussian 建模（μ、σ）；否則對非零 AF 擬合 Weibull（R <code>fitdistrplus</code>），另存非零比例以納入 zero-inflation。<br><br><b>拋光</b>：新樣本的候選 allele，Gaussian 走單尾 z 檢定、Weibull 走 <code>pweibull</code> 累積機率。<b>不是無差別剔除易錯鹼基</b>，只在候選變異與 null 分布無法區分時才移除。<br><br>⚠️ 需要 n=12 的陰性訓練樣本；本專案目前只有 5 個獨立陰性個體。"
   },
   "position-specific error": {
     "zh_gloss": "位置專一錯誤",
@@ -411,7 +411,7 @@
       "stereotyped error",
       "立體型錯誤"
     ],
-    "zh": "**背景錯誤不是隨機的** —— 特定位置的特定取代類型會反覆出錯。iDES 發現 cfDNA 的背景以 G>T 為大宗（源自 hybrid capture 期間的氧化損傷）。既然有規律，就能建模並移除。",
+    "zh": "<b>背景錯誤不是隨機的</b> —— 特定位置的特定取代類型會反覆出錯。iDES 發現 cfDNA 的背景以 G>T 為大宗（源自 hybrid capture 期間的氧化損傷）。既然有規律，就能建模並移除。",
     "en": "Background errors are not random: specific substitutions recur at specific positions. iDES found that cfDNA background is dominated by G-to-T changes arising from oxidative damage during hybrid capture. Because the pattern is systematic, it can be modelled and removed.",
     "see": [
       "background polishing",
@@ -421,7 +421,7 @@
   },
   "trinucleotide context": {
     "zh_gloss": "三核苷酸脈絡",
-    "zh": "變異位置及其前後各一個鹼基構成的序列脈絡。INVAR 實測顯示：**最吵與最靜的 trinucleotide context 之間，背景錯誤率相差超過兩個數量級**。分層估計背景可大幅提升靈敏度。",
+    "zh": "變異位置及其前後各一個鹼基構成的序列脈絡。INVAR 實測顯示：<b>最吵與最靜的 trinucleotide context 之間，背景錯誤率相差超過兩個數量級</b>。分層估計背景可大幅提升靈敏度。",
     "en": "The sequence context formed by a variant position and its immediate flanking bases. INVAR measured a difference of more than two orders of magnitude in background error rate between the noisiest and quietest contexts; stratifying background estimates by context substantially improves sensitivity.",
     "see": [
       "position-specific error",
@@ -431,7 +431,7 @@
   },
   "outlier suppression": {
     "zh_gloss": "離群抑制",
-    "zh": "INVAR 的關鍵步驟：低 TF 下訊號應**隨機散布**在各位點、多數位點為零。對此分布找 outlier 並剔除不一致的單點訊號 → control 訊號降約 3 倍，病人訊號保留 96.1%。**不依賴任何平台特性。**",
+    "zh": "INVAR 的關鍵步驟：低 TF 下訊號應<b>隨機散布</b>在各位點、多數位點為零。對此分布找 outlier 並剔除不一致的單點訊號 → control 訊號降約 3 倍，病人訊號保留 96.1%。<b>不依賴任何平台特性。</b>",
     "en": "A key step in INVAR: at low TF, signal should be randomly scattered across sites with most sites at zero. Outliers against this distribution are identified and removed, reducing control signal roughly threefold while retaining 96.1% of patient signal. It depends on no platform-specific feature.",
     "see": [
       "read-centric",
@@ -441,7 +441,7 @@
   },
   "single-molecule rule": {
     "zh_gloss": "單分子準則",
-    "zh": "AccuScan 的等價設計：低腫瘤負荷時，真 somatic 變異幾乎都只出現在**單一分子**上，因此**排除支持分子數 >1 的位點**。與 INVAR 的 outlier suppression 是兩個獨立團隊得出的同一個洞見。",
+    "zh": "AccuScan 的等價設計：低腫瘤負荷時，真 somatic 變異幾乎都只出現在<b>單一分子</b>上，因此<b>排除支持分子數 >1 的位點</b>。與 INVAR 的 outlier suppression 是兩個獨立團隊得出的同一個洞見。",
     "en": "AccuScan's equivalent design: at low tumour burden, genuine somatic variants almost always appear on a single molecule, so sites supported by more than one molecule are excluded. This is the same insight as INVAR's outlier suppression, reached independently.",
     "see": [
       "outlier suppression",
@@ -455,7 +455,7 @@
       "PV",
       "phased variants"
     ],
-    "zh": "位於**同一條 DNA 分子上**的兩個以上體細胞突變。因為兩個特定位置同時出錯的機率是相乘的，PV 的背景率遠低於單鹼基：2x PV 為 8.0e-7、3x 為 3.4e-8，**且不需要分子條碼**。",
+    "zh": "位於<b>同一條 DNA 分子上</b>的兩個以上體細胞突變。因為兩個特定位置同時出錯的機率是相乘的，PV 的背景率遠低於單鹼基：2x PV 為 8.0e-7、3x 為 3.4e-8，<b>且不需要分子條碼</b>。",
     "en": "Two or more somatic mutations located on the same DNA molecule. Because the probability of two specific positions erring simultaneously is multiplicative, PV background rates are far lower than single-base rates: 8.0e-7 for doublets and 3.4e-8 for triplets, without requiring molecular barcodes.",
     "see": [
       "PhasED-seq",
@@ -476,7 +476,7 @@
   },
   "fragmentomics": {
     "zh_gloss": "片段體學",
-    "zh": "利用 cfDNA 的**片段長度模式**判斷腫瘤存在（腫瘤來源片段通常較短）。DELFI 用 5 Mb window 內短/長片段比值餵入 gradient boosting。⚠️ **本專案不適用** —— 純化細胞株 gDNA 沒有 cfDNA 的凋亡片段分布。",
+    "zh": "利用 cfDNA 的<b>片段長度模式</b>判斷腫瘤存在（腫瘤來源片段通常較短）。DELFI 用 5 Mb window 內短/長片段比值餵入 gradient boosting。⚠️ <b>本專案不適用</b> —— 純化細胞株 gDNA 沒有 cfDNA 的凋亡片段分布。",
     "en": "Using cfDNA fragment length patterns to infer tumour presence, since tumour-derived fragments tend to be shorter. DELFI feeds short-to-long fragment ratios in 5 Mb windows into gradient boosting. Not applicable in this project: purified cell-line gDNA lacks the apoptotic fragment distribution of cfDNA.",
     "see": [
       "cfDNA",
@@ -532,7 +532,7 @@
       "CNV",
       "copy number alteration"
     ],
-    "zh": "染色體片段的擴增或缺失。作為 MRD 訊號的優勢是片段大、即使極低覆蓋也看得到；**劣勢是靈敏度天花板低** —— ichorCNA 的偵測下限為 TF 3%，NanoRCS 亦報告 TF <3% 時 CNA 失效。",
+    "zh": "染色體片段的擴增或缺失。作為 MRD 訊號的優勢是片段大、即使極低覆蓋也看得到；<b>劣勢是靈敏度天花板低</b> —— ichorCNA 的偵測下限為 TF 3%，NanoRCS 亦報告 TF <3% 時 CNA 失效。",
     "en": "Amplification or deletion of chromosomal segments. As an MRD signal its advantage is large segment size, visible even at very low coverage; its weakness is a low sensitivity ceiling — ichorCNA's detection floor is TF 3%, and NanoRCS likewise reports CNA failing below TF 3%.",
     "see": [
       "ichorCNA",
@@ -545,7 +545,7 @@
     "aka": [
       "B-allele frequency"
     ],
-    "zh": "雜合 germline SNP 位點上，兩個等位基因的相對比例。腫瘤的等位基因失衡會使其偏離 0.5，因此能偵測 **copy-neutral LOH** —— 這是純看覆蓋度會漏掉的。",
+    "zh": "雜合 germline SNP 位點上，兩個等位基因的相對比例。腫瘤的等位基因失衡會使其偏離 0.5，因此能偵測 <b>copy-neutral LOH</b> —— 這是純看覆蓋度會漏掉的。",
     "en": "The relative proportion of the two alleles at a heterozygous germline SNP. Tumour allelic imbalance shifts it away from 0.5, allowing detection of copy-neutral LOH, which depth-only analysis would miss.",
     "see": [
       "CNA",
@@ -557,7 +557,7 @@
     "aka": [
       "copy-neutral LOH"
     ],
-    "zh": "一個等位基因缺失、同時另一個複製補上，總拷貝數不變但雜合性喪失。**只看 read depth 完全看不到**，必須靠 BAF。",
+    "zh": "一個等位基因缺失、同時另一個複製補上，總拷貝數不變但雜合性喪失。<b>只看 read depth 完全看不到</b>，必須靠 BAF。",
     "en": "Loss of one allele accompanied by duplication of the other, leaving total copy number unchanged but heterozygosity lost. It is invisible to read-depth analysis alone and requires BAF.",
     "see": [
       "BAF",
@@ -586,7 +586,7 @@
   },
   "Z-score": {
     "zh_gloss": "標準分數",
-    "zh": "把偵測分數對陰性對照世代的分布標準化：Z = (det_rate − μ)/σ。⚠️ **本專案已降級為選項之一**（2026-08-08）—— 常態假設未經檢定，且會把稀缺的陰性樣本綁去估參數。",
+    "zh": "把偵測分數對陰性對照世代的分布標準化：Z = (det_rate − μ)/σ。⚠️ <b>本專案已降級為選項之一</b>（2026-08-08）—— 常態假設未經檢定，且會把稀缺的陰性樣本綁去估參數。",
     "en": "Standardising a detection score against the distribution of a negative control cohort: Z = (det_rate − μ)/σ. Downgraded to one option among several in this project, since the normality assumption is untested and it consumes scarce negative samples for parameter estimation.",
     "see": [
       "detection rate",
@@ -672,7 +672,7 @@
   },
   "specificity": {
     "zh_gloss": "特異度",
-    "zh": "陰性樣本被正確判為陰性的比例：TN/(TN+FP)。**因為只由陰性樣本算出，不受陽性/陰性樣本組成比例影響**，是跨研究比較的主指標（Precision 與 F1 則會被 prevalence 綁架）。",
+    "zh": "陰性樣本被正確判為陰性的比例：TN/(TN+FP)。<b>因為只由陰性樣本算出，不受陽性/陰性樣本組成比例影響</b>，是跨研究比較的主指標（Precision 與 F1 則會被 prevalence 綁架）。",
     "en": "The proportion of negative samples correctly classified as negative: TN/(TN+FP). Because it is computed only from negatives, it is unaffected by the positive-to-negative composition and is the main metric for cross-study comparison, unlike precision and F1 which depend on prevalence.",
     "see": [
       "sensitivity",
@@ -685,7 +685,7 @@
     "aka": [
       "recall"
     ],
-    "zh": "陽性樣本被正確判為陽性的比例：TP/(TP+FN)。**本專案要求分 TF 分層報告** —— 混算會把「TF 越低越難」這件事藏起來。",
+    "zh": "陽性樣本被正確判為陽性的比例：TP/(TP+FN)。<b>本專案要求分 TF 分層報告</b> —— 混算會把「TF 越低越難」這件事藏起來。",
     "en": "The proportion of positive samples correctly classified as positive: TP/(TP+FN). This project requires it to be reported stratified by TF, since pooling hides the fact that lower TF is harder.",
     "see": [
       "specificity",
@@ -694,7 +694,7 @@
   },
   "nominal specificity": {
     "zh_gloss": "名目特異度",
-    "zh": "由統計模型**預先設定**的特異度目標（如 AccuScan 的 99%），門檻直接由背景錯誤模型反推。**優點是不需要陰性樣本世代來定門檻** —— 對陰性樣本稀缺的情境特別有價值。",
+    "zh": "由統計模型<b>預先設定</b>的特異度目標（如 AccuScan 的 99%），門檻直接由背景錯誤模型反推。<b>優點是不需要陰性樣本世代來定門檻</b> —— 對陰性樣本稀缺的情境特別有價值。",
     "en": "A specificity target set in advance by the statistical model (AccuScan uses 99%), with the threshold derived directly from the background error model. Its advantage is that no negative-sample cohort is needed to set the threshold, which matters when negatives are scarce.",
     "see": [
       "specificity",
@@ -704,7 +704,7 @@
   },
   "control cohort": {
     "zh_gloss": "對照世代",
-    "zh": "用於估計噪音水準或決定門檻的陰性樣本集合。MRDetect 用 30 個 control plasma、iDES 用 12 個、ichorCNA 用 27 個健康捐贈者。⚠️ **本專案只有 5 個獨立陰性個體**，這是主要約束。",
+    "zh": "用於估計噪音水準或決定門檻的陰性樣本集合。MRDetect 用 30 個 control plasma、iDES 用 12 個、ichorCNA 用 27 個健康捐贈者。⚠️ <b>本專案只有 5 個獨立陰性個體</b>，這是主要約束。",
     "en": "The set of negative samples used to estimate noise levels or set thresholds. MRDetect used 30 control plasmas, iDES 12, and ichorCNA 27 healthy donors. This project has only five independent negative individuals, which is a principal constraint.",
     "see": [
       "cross-sample normal",
@@ -724,7 +724,7 @@
   },
   "held-out": {
     "zh_gloss": "保留測試集",
-    "zh": "完全不參與任何擬合步驟（模型、門檻、scaler、μ/σ）的樣本，凍結後只跑一次，用以產生對外報告的數字。**提供過任何擬合量的樣本不得再充當 held-out。**",
+    "zh": "完全不參與任何擬合步驟（模型、門檻、scaler、μ/σ）的樣本，凍結後只跑一次，用以產生對外報告的數字。<b>提供過任何擬合量的樣本不得再充當 held-out。</b>",
     "en": "Samples that take no part in any fitting step (model, threshold, scaler, μ/σ), evaluated once after everything is frozen to produce the reported numbers. Any sample that contributed to a fitted quantity cannot serve as held-out.",
     "see": [
       "cross-validation leakage",
@@ -733,7 +733,7 @@
   },
   "cross-validation leakage": {
     "zh_gloss": "交叉驗證洩漏",
-    "zh": "在同一批樣本內做交叉驗證卻宣稱為獨立驗證，導致效能被高估。Lung-CLiP 在 Nature 上明文批評此做法。⚠️ 本專案的等價陷阱是**對 read 而非樣本做隨機切分**。",
+    "zh": "在同一批樣本內做交叉驗證卻宣稱為獨立驗證，導致效能被高估。Lung-CLiP 在 Nature 上明文批評此做法。⚠️ 本專案的等價陷阱是<b>對 read 而非樣本做隨機切分</b>。",
     "en": "Performing cross-validation within a single cohort while claiming independent validation, which inflates apparent performance. Lung-CLiP criticised this explicitly in Nature. The equivalent pitfall in this project is splitting randomly by read rather than by sample.",
     "see": [
       "held-out",
@@ -742,7 +742,7 @@
   },
   "sample-level evaluation": {
     "zh_gloss": "樣本層級評估",
-    "zh": "本專案的硬性規定：TP/FP/FN/TN 的判斷單元是**一個檢體（一個 BAM）**，不是一條 read、不是一個位點。read 層去噪器的 F1/AUC 是內部品質指標，**不得**當成偵測效能報告。",
+    "zh": "本專案的硬性規定：TP/FP/FN/TN 的判斷單元是<b>一個檢體（一個 BAM）</b>，不是一條 read、不是一個位點。read 層去噪器的 F1/AUC 是內部品質指標，<b>不得</b>當成偵測效能報告。",
     "en": "A hard rule in this project: the unit for TP/FP/FN/TN is one specimen (one BAM), not one read and not one site. The read-level denoiser's F1 or AUC is an internal quality metric and must not be reported as detection performance.",
     "see": [
       "held-out",
@@ -752,7 +752,7 @@
   },
   "prevalence": {
     "zh_gloss": "盛行率",
-    "zh": "樣本中陽性所佔的比例。本專案的陽性/陰性數量是**人為決定的**，不代表任何真實盛行率，因此 Precision 與 F1 只在本設計內可比，跨研究比較須看 Recall 與 Specificity。",
+    "zh": "樣本中陽性所佔的比例。本專案的陽性/陰性數量是<b>人為決定的</b>，不代表任何真實盛行率，因此 Precision 與 F1 只在本設計內可比，跨研究比較須看 Recall 與 Specificity。",
     "en": "The proportion of positives among samples. In this project the positive-to-negative ratio is chosen by design and reflects no real prevalence, so precision and F1 are comparable only within this design; cross-study comparison must rely on recall and specificity.",
     "see": [
       "specificity",
@@ -771,7 +771,7 @@
   },
   "Q-score": {
     "zh_gloss": "品質分數",
-    "zh": "Phred 品質分數，Q = −10·log₁₀(錯誤率)。Q21 ≈ 6.7e-3、Q31 ≈ 7.2e-4、Q40 ≈ 1e-4、Q70 ≈ 1e-7。NanoRCS 指出：tumor-naive 的 SNV 分析需要 **Q70 以上**才能偵測 TF >1%。",
+    "zh": "Phred 品質分數，Q = −10·log₁₀(錯誤率)。Q21 ≈ 6.7e-3、Q31 ≈ 7.2e-4、Q40 ≈ 1e-4、Q70 ≈ 1e-7。NanoRCS 指出：tumor-naive 的 SNV 分析需要 <b>Q70 以上</b>才能偵測 TF >1%。",
     "en": "The Phred quality score, Q = −10·log10(error rate). Q21 is about 6.7e-3, Q31 about 7.2e-4, Q40 1e-4 and Q70 1e-7. NanoRCS notes that tumour-naive SNV analysis requires Q70 or better to detect TF above 1%.",
     "see": [
       "ONT simplex",
@@ -780,7 +780,7 @@
   },
   "R1/R2 concordance": {
     "zh_gloss": "雙端一致性",
-    "zh": "Illumina paired-end 定序中，同一片段的兩端 read 在重疊區是否給出相同鹼基。不一致即視為錯誤。**ONT 無 read pair，此特徵與其對應的過濾完全不可移植** —— 這是 MRDetect 去噪在 ONT 上受阻的主因之一。",
+    "zh": "Illumina paired-end 定序中，同一片段的兩端 read 在重疊區是否給出相同鹼基。不一致即視為錯誤。<b>ONT 無 read pair，此特徵與其對應的過濾完全不可移植</b> —— 這是 MRDetect 去噪在 ONT 上受阻的主因之一。",
     "en": "In Illumina paired-end sequencing, whether the two reads of a fragment agree at overlapping bases; disagreement indicates error. ONT has no read pairs, so this feature and its associated filter are entirely non-transferable — a principal reason MRDetect's denoising is blocked on ONT.",
     "see": [
       "ONT simplex",
@@ -812,7 +812,7 @@
   },
   "in silico admixture": {
     "zh_gloss": "電腦模擬混合",
-    "zh": "以程式（`samtools view --subsample` + `merge`）按比例混合腫瘤與正常的 read，模擬不同 TF 的檢體。本專案 Phase 2 即此法。優點是 TF 精確已知且 replicate 便宜。",
+    "zh": "以程式（<code>samtools view --subsample</code> + <code>merge</code>）按比例混合腫瘤與正常的 read，模擬不同 TF 的檢體。本專案 Phase 2 即此法。優點是 TF 精確已知且 replicate 便宜。",
     "en": "Mixing tumour and normal reads computationally in defined proportions (samtools view --subsample plus merge) to simulate specimens at various TF. This is Phase 2 of the project; TF is exactly known and replicates are cheap.",
     "see": [
       "tumor fraction",
@@ -822,7 +822,7 @@
   },
   "dilution series": {
     "zh_gloss": "稀釋序列",
-    "zh": "濕實驗版的混合：把高負荷樣本的 DNA 實際稀釋進陰性樣本。比 in silico 更貼近實況（含建庫變異），但成本高、replicate 少。11 篇 Tier A 論文**全部**做了某種形式的稀釋序列來量測 LLOD。",
+    "zh": "濕實驗版的混合：把高負荷樣本的 DNA 實際稀釋進陰性樣本。比 in silico 更貼近實況（含建庫變異），但成本高、replicate 少。11 篇 Tier A 論文<b>全部</b>做了某種形式的稀釋序列來量測 LLOD。",
     "en": "The wet-lab counterpart of admixture: physically diluting DNA from a high-burden sample into a negative sample. Closer to reality since it includes library-preparation variation, but costly with few replicates. All eleven Tier A papers performed some form of dilution series to measure LLOD.",
     "see": [
       "in silico admixture",
@@ -831,7 +831,7 @@
   },
   "TF0 replicate": {
     "zh_gloss": "零腫瘤重複樣本",
-    "zh": "本專案的陰性混合樣本：純 normal，只換 subsample seed。⚠️ **同一批 normal 的多個 seed 屬 pseudoreplication**，只反映抽樣變異，不能當成多個獨立陰性檢體。",
+    "zh": "本專案的陰性混合樣本：純 normal，只換 subsample seed。⚠️ <b>同一批 normal 的多個 seed 屬 pseudoreplication</b>，只反映抽樣變異，不能當成多個獨立陰性檢體。",
     "en": "This project's negative admixtures: pure normal differing only in subsample seed. Multiple seeds from the same normal constitute pseudoreplication, capturing only sampling variation, and cannot be treated as independent negative specimens.",
     "see": [
       "cross-sample normal",
@@ -841,7 +841,7 @@
   },
   "cross-sample normal": {
     "zh_gloss": "跨個體正常樣本",
-    "zh": "來自**不同個體**的正常樣本，是本專案真正獨立的陰性檢體（目前 4 個 UCSC normal + held-out COLO829BL）。與 INVAR 的 cross-patient control 是同一個概念。",
+    "zh": "來自<b>不同個體</b>的正常樣本，是本專案真正獨立的陰性檢體（目前 4 個 UCSC normal + held-out COLO829BL）。與 INVAR 的 cross-patient control 是同一個概念。",
     "en": "Normal samples from different individuals, the project's genuinely independent negative specimens (currently four UCSC normals plus a held-out COLO829BL). Conceptually the same as INVAR's cross-patient control.",
     "see": [
       "cross-patient control",
@@ -851,7 +851,7 @@
   },
   "germline filtering ladder": {
     "zh_gloss": "生殖系過濾階梯",
-    "zh": "本專案建 compendium 的分層過濾流程：C0（ClairS 原始約 11 萬位點）→ C2（+gnomAD）→ C3（+matched-normal ≥2）→ C4（+dbSNP）→ **C5（+CoLoRSdb 長讀長 PON，35,603 位點）**。⚠️ CoLoRSdb 是關鍵一步：短讀來源的資料庫漏掉的 ONT germline 要靠長讀長 PON 補抓。",
+    "zh": "本專案建 compendium 的分層過濾流程：C0（ClairS 原始約 11 萬位點）→ C2（+gnomAD）→ C3（+matched-normal ≥2）→ C4（+dbSNP）→ <b>C5（+CoLoRSdb 長讀長 PON，35,603 位點）</b>。⚠️ CoLoRSdb 是關鍵一步：短讀來源的資料庫漏掉的 ONT germline 要靠長讀長 PON 補抓。",
     "en": "This project's layered filtering pipeline for building the compendium: C0 (about 110,000 raw ClairS sites) to C2 (plus gnomAD), C3 (plus matched-normal with two or more supporting reads), C4 (plus dbSNP) and C5 (plus the CoLoRSdb long-read PON, 35,603 sites). CoLoRSdb is the decisive step, catching ONT germline variants missed by short-read databases.",
     "see": [
       "compendium",
@@ -896,7 +896,7 @@
       "WGSDuplex",
       "Cheng 2025"
     ],
-    "zh": "Landau lab 2025 年的第三代（Nat Methods）。改從**定序化學**解決：低成本 Ultima 平台做 ~120X 深度，加上全基因體 duplex 錯誤校正，錯誤率達 7.7e-7。**三代中唯一開源。** ⚠️ 作者自承 tumor-informed 情境下標準 WGS + 高輸入量可能更好。",
+    "zh": "Landau lab 2025 年的第三代（Nat Methods）。改從<b>定序化學</b>解決：低成本 Ultima 平台做 ~120X 深度，加上全基因體 duplex 錯誤校正，錯誤率達 7.7e-7。<b>三代中唯一開源。</b> ⚠️ 作者自承 tumor-informed 情境下標準 WGS + 高輸入量可能更好。",
     "en": "The Landau lab's 2025 third generation (Nat Methods), solving the problem through sequencing chemistry: about 120X depth on the low-cost Ultima platform plus genome-wide duplex error correction, reaching an error rate of 7.7e-7. The only open-source generation. The authors note that in the tumour-informed setting, standard WGS with higher input may achieve lower detection limits than duplex.",
     "see": [
       "duplex sequencing",
@@ -919,7 +919,7 @@
     "aka": [
       "integrated digital error suppression"
     ],
-    "zh": "Stanford 2016 年的 CAPP-Seq 改良（Nat Biotechnol）。整合分子條碼與 **background polishing**（逐位置逐取代類型建背景分布），兩者各約 3× 改善、合併達 ~15×，偵測極限降到 0.0025%。**其 background polishing 是本專案最可直接移植的降噪法。**",
+    "zh": "Stanford 2016 年的 CAPP-Seq 改良（Nat Biotechnol）。整合分子條碼與 <b>background polishing</b>（逐位置逐取代類型建背景分布），兩者各約 3× 改善、合併達 ~15×，偵測極限降到 0.0025%。<b>其 background polishing 是本專案最可直接移植的降噪法。</b>",
     "en": "The 2016 Stanford refinement of CAPP-Seq (Nat Biotechnol), integrating molecular barcoding with background polishing that models background per position and substitution type. Each contributes about threefold, combining to roughly fifteenfold, lowering the detection limit to 0.0025%. Its background polishing is the most directly transferable denoising method for this project.",
     "see": [
       "background polishing",
@@ -932,7 +932,7 @@
     "aka": [
       "integration of variant reads"
     ],
-    "zh": "劍橋 Rosenfeld lab 2020 年的方法（Sci Transl Med）。與 MRDetect 同期同目標但**走純統計路線不用 ML**：四層誤差抑制疊加（背景降 131×），以 likelihood ratio 判定，並**用其他病人的樣本當陰性對照定門檻**。有開源碼（INVAR2）。",
+    "zh": "劍橋 Rosenfeld lab 2020 年的方法（Sci Transl Med）。與 MRDetect 同期同目標但<b>走純統計路線不用 ML</b>：四層誤差抑制疊加（背景降 131×），以 likelihood ratio 判定，並<b>用其他病人的樣本當陰性對照定門檻</b>。有開源碼（INVAR2）。",
     "en": "The 2020 method from Rosenfeld's lab in Cambridge (Sci Transl Med). Contemporaneous with MRDetect and sharing its goal but taking a purely statistical route without machine learning: four stacked layers of error suppression (131-fold background reduction), decisions by likelihood ratio, and thresholds set using other patients' samples as negative controls. Open source as INVAR2.",
     "see": [
       "outlier suppression",
@@ -942,7 +942,7 @@
   },
   "PhasED-seq": {
     "zh_gloss": "PhasED-seq",
-    "zh": "Stanford 2021 年的方法（Nat Biotechnol）。**改變偵測單元**：不看單鹼基而看同一分子上的多個突變（phased variants），背景率降至 8.0e-7（2x）與 3.4e-8（3x），且不需分子條碼、不犧牲分子回收率。**其限制正好是 ONT 的優勢。**",
+    "zh": "Stanford 2021 年的方法（Nat Biotechnol）。<b>改變偵測單元</b>：不看單鹼基而看同一分子上的多個突變（phased variants），背景率降至 8.0e-7（2x）與 3.4e-8（3x），且不需分子條碼、不犧牲分子回收率。<b>其限制正好是 ONT 的優勢。</b>",
     "en": "The 2021 Stanford method (Nat Biotechnol) that changes the unit of detection: instead of single bases it tracks multiple mutations on the same molecule (phased variants), lowering background to 8.0e-7 for doublets and 3.4e-8 for triplets without molecular barcodes and without sacrificing molecule recovery. Its key limitation is precisely where ONT holds an advantage.",
     "see": [
       "phased variant",
@@ -952,7 +952,7 @@
   },
   "Lung-CLiP": {
     "zh_gloss": "Lung-CLiP",
-    "zh": "Stanford 2020 年的 tumor-naive 早期肺癌偵測（Nature）。**多層級 ML**：先估每個變異是腫瘤來源的機率，再與全基因體 CNA 整合成**病人層級分類器**。**切分紀律最嚴謹的一篇** —— 用不同機構前瞻收案的獨立驗證世代，並明文批評同世代交叉驗證。",
+    "zh": "Stanford 2020 年的 tumor-naive 早期肺癌偵測（Nature）。<b>多層級 ML</b>：先估每個變異是腫瘤來源的機率，再與全基因體 CNA 整合成<b>病人層級分類器</b>。<b>切分紀律最嚴謹的一篇</b> —— 用不同機構前瞻收案的獨立驗證世代，並明文批評同世代交叉驗證。",
     "en": "The 2020 Stanford tumour-naive early lung cancer detector (Nature). A multi-tiered machine learning design first estimates the probability that each variant is tumour-derived, then integrates this with genome-wide CNA into a patient-level classifier. It has the strictest split discipline of the set, using an independent validation cohort prospectively enrolled at a different institution and explicitly criticising within-cohort cross-validation.",
     "see": [
       "cross-validation leakage",
@@ -962,7 +962,7 @@
   },
   "ichorCNA": {
     "zh_gloss": "ichorCNA",
-    "zh": "Broad Institute 2017 年的工具（Nat Commun）。從 **0.1× 超低深度 WGS** 估 tumor fraction，不需事先知道腫瘤變異。用 HMM 同時預測 CNA 片段與估 TF。**MRDetect 三代都在用它。** ⚠️ 偵測下限 TF 3%，遠高於 MRD 目標區間。",
+    "zh": "Broad Institute 2017 年的工具（Nat Commun）。從 <b>0.1× 超低深度 WGS</b> 估 tumor fraction，不需事先知道腫瘤變異。用 HMM 同時預測 CNA 片段與估 TF。<b>MRDetect 三代都在用它。</b> ⚠️ 偵測下限 TF 3%，遠高於 MRD 目標區間。",
     "en": "The 2017 Broad Institute tool (Nat Commun) estimating tumour fraction from 0.1x ultra-low-pass WGS without prior knowledge of tumour variants, using an HMM to jointly predict CNA segments and TF. All three MRDetect generations use it. Its detection floor of TF 3% is far above the MRD target range.",
     "see": [
       "ULP-WGS",
@@ -972,7 +972,7 @@
   },
   "AccuScan": {
     "zh_gloss": "AccuScan",
-    "zh": "2024 年的 WGS MRD 方法（EMBO Mol Med）。用 **RCA concatemer** 讓錯誤校正在單一 read 內完成，錯誤率 4.2e-7、LOD 達 cVAF 1e-6。**背景錯誤率由樣本自身量測、門檻由統計模型反推，皆不需 control 世代。**",
+    "zh": "2024 年的 WGS MRD 方法（EMBO Mol Med）。用 <b>RCA concatemer</b> 讓錯誤校正在單一 read 內完成，錯誤率 4.2e-7、LOD 達 cVAF 1e-6。<b>背景錯誤率由樣本自身量測、門檻由統計模型反推，皆不需 control 世代。</b>",
     "en": "A 2024 WGS MRD method (EMBO Mol Med) using RCA concatemers so that error correction happens within a single read, reaching an error rate of 4.2e-7 and an LOD of cVAF 1e-6. Its background error rate is measured from the sample itself and its threshold derived from the statistical model, neither requiring a control cohort.",
     "see": [
       "RCA",
@@ -982,7 +982,7 @@
   },
   "NanoRCS": {
     "zh_gloss": "NanoRCS",
-    "zh": "UMC Utrecht 2025 年的方法（Genome Research）。**唯一一篇在 ONT 平台上做 cfDNA 腫瘤偵測的方法論文。** RCA + 長讀共識把 ONT 錯誤率從 Q21 降到 Q31（改善 9.4×），LOD 為 TF 0.24%。同時取 SNV、CNA、fragmentomics 三種訊號。",
+    "zh": "UMC Utrecht 2025 年的方法（Genome Research）。<b>唯一一篇在 ONT 平台上做 cfDNA 腫瘤偵測的方法論文。</b> RCA + 長讀共識把 ONT 錯誤率從 Q21 降到 Q31（改善 9.4×），LOD 為 TF 0.24%。同時取 SNV、CNA、fragmentomics 三種訊號。",
     "en": "The 2025 method from UMC Utrecht (Genome Research) and the only methods paper performing cfDNA tumour detection on the ONT platform. RCA plus long-read consensus lowers ONT error from Q21 to Q31, a 9.4-fold improvement, achieving an LOD of TF 0.24% while extracting SNV, CNA and fragmentomics signals simultaneously.",
     "see": [
       "RCA",

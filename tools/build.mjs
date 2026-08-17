@@ -850,9 +850,9 @@ function writeIndex(modules, shell) {
        文字刻意壓到兩句，重量放在下面那張圖上。 */
     `<div class="home-hook">` +
     `<p class="home-hook__q">病人開完刀，影像上看不到腫瘤了 —— 但體內可能還殘存極少量癌細胞。</p>` +
-    `<p>等到影像重新看得見時，往往已經復發。` +
-    `<b>MRD 偵測</b>（molecular residual disease，分子殘存疾病）` +
-    `就是想在那之前，從一管血裡把它測出來。</p>` +
+    `<p>等到影像重新看得見時，往往已經復發。</p>` +
+    `<p><b>MRD</b>（Minimal Residual Disease，微量殘存疾病）<b>偵測</b>，` +
+    `就是用<b>定序技術</b>從一管血裡，把這些微量的癌症訊號找出來 —— 在影像看得見之前。</p>` +
     `</div>` +
 
     whatFig +
