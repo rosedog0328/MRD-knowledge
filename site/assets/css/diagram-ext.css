@@ -1,0 +1,33 @@
+/* diagram-ext.css — 本知識庫新增的圖形 class 組合
+ *
+ * 為什麼需要這個檔：diagram.css 沿用自 lab-tutorial，未修改。
+ * 但本知識庫的圖用到一些它沒定義的「基底 + 修飾」組合，
+ * 例如 .mark.ok、.guide.thick。這類問題不會報錯 ——
+ * 瀏覽器只是套用基底樣式、忽略未定義的修飾，
+ * 於是「本來想標成綠色的點」靜靜地變成預設色，看起來像設計如此。
+ * 實際踩過：tradeoff-triangle 的四個資料點原本應以顏色分級，
+ * 全部渲染成同一色，圖的資訊量少了一半而沒人發現。
+ *
+ * 因此新增的組合一律寫在這裡（不動 diagram.css），
+ * 並由 check_svg_layout.py 的 class 稽核確保 SVG 只用得到已定義的組合。
+ */
+
+/* 資料點的語意色 —— 對齊 .anno / .tick 既有的同名修飾 */
+.dia-svg .mark.accent { fill: var(--accent); stroke: var(--accent); }
+.dia-svg .mark.ok     { fill: var(--ok);     stroke: var(--ok); }
+.dia-svg .mark.bad    { fill: var(--bad);    stroke: var(--bad); }
+.dia-svg .mark.warn   { fill: var(--warn);   stroke: var(--warn); }
+
+/* 長條的第二種中性色（用於「另一組同性質的資料」，例如另一位病人） */
+.dia-svg .bar.alt   { fill: var(--muted-fill); stroke: var(--muted); }
+/* 淡化的長條：表示「被排除／不計入」 */
+.dia-svg .bar.ghost { fill: none; stroke: var(--rule); stroke-dasharray: 4 3; }
+
+/* 加粗的輔助線（門檻線等）—— .conn.thick 已有，.guide 先前沒有對應者 */
+.dia-svg .guide.thick { stroke-width: 3; }
+
+/* 基因體軌道底條：比 .chr 中性，用於「這是一條座標軸式的底」 */
+.dia-svg .track { fill: var(--muted-fill); stroke: var(--rule); stroke-width: 1; }
+
+/* 機率密度曲線 */
+.dia-svg .curve { fill: none; stroke: var(--rule-strong); stroke-width: 2; }

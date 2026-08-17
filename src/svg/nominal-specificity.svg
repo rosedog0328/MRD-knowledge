@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 580">
+  <title>由統計模型直接推導門檻，完全不用陰性樣本</title>
+  <desc>本圖說明第三類門檻決定方式，並與第一類對照。
+        左半部是第一類的作法，用來當參照：
+        必須先收集一批確定不含腫瘤的樣本，每一份都跑完整條流程算出分數，
+        得到一個實際量出來的分布，門檻畫在這個分布的上緣。
+        需要的樣本數從七個到三十個不等。
+        右半部是第三類的作法，分為四個步驟。
+        第一步是就地量測背景錯誤率：不借用任何別人的樣本，
+        而是在這份樣本自己的資料上，對隨機選取的大量位置估計錯誤率，
+        並且依變異類型分開估計，因為不同的鹼基取代類型錯誤率差很多。
+        第二步是由這個背景錯誤模型推導出理論分布：
+        假如這份樣本完全不含腫瘤，它的分數會落在哪裡，
+        這條分布是算出來的，不是量出來的。
+        第三步是設定一個名目特異度，例如百分之九十九。
+        第四步是取該理論分布的第九十九百分位當作門檻。
+        兩者的核心差異在於分布的來源：
+        第一類用的是實際量測的分布，因此必須付出樣本的代價；
+        第三類用的是模型推導的分布，因此不需要任何樣本。
+        圖最下方是警語：
+        名目特異度百分之九十九，只有在背景錯誤模型正確時，才會等於實際的特異度百分之九十九。
+        這個做法把全部的風險押在模型假設是否成立上，因此必須實測驗證。
+        AccuScan 的驗證結果是：在腫瘤分數為零時，
+        模擬的實測特異度在所有條件下都達到百分之九十八點八以上，
+        而二十一個混合樣本的實測特異度在四種標的數下都達到百分之九十九以上。</desc>
+
+  <text class="ttl bold zh" x="20" y="34">由統計模型直接推導門檻：完全不用陰性樣本</text>
+
+  <defs>
+    <marker id="ns-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path class="conn" d="M0 0 L10 5 L0 10 z"/>
+    </marker>
+  </defs>
+
+  <!-- ══ 左：第一類（對照組）══ -->
+  <rect class="box" x="20" y="52" width="380" height="430" rx="10"/>
+  <text class="anno bold zh" x="44" y="82">對照：第一類的作法</text>
+
+  <rect class="box plain" x="44" y="98" width="332" height="64" rx="7"/>
+  <text class="tick zh" x="66" y="124">收 7–30 個確定不含腫瘤的樣本</text>
+  <text class="tick zh" x="66" y="148">每一份都跑完整條流程算分數</text>
+
+  <path class="conn" d="M210 164 L210 186" marker-end="url(#ns-a)"/>
+
+  <rect class="box plain" x="44" y="192" width="332" height="140" rx="7"/>
+  <text class="anno bold mid zh" x="210" y="218">實際量出來的分布</text>
+  <path class="axis" d="M70 296 L350 296"/>
+  <circle class="mark ref" cx="112" cy="296" r="7"/>
+  <circle class="mark ref" cx="136" cy="296" r="7"/>
+  <circle class="mark ref" cx="156" cy="296" r="7"/>
+  <circle class="mark ref" cx="178" cy="296" r="7"/>
+  <circle class="mark ref" cx="198" cy="296" r="7"/>
+  <circle class="mark ref" cx="222" cy="296" r="7"/>
+  <path class="guide thick" d="M262 272 L262 314"/>
+  <text class="anno bold accent zh" x="272" y="282">門檻</text>
+  <text class="tick mid zh" x="210" y="324">畫在分布的上緣</text>
+
+  <rect class="box plain" x="44" y="352" width="332" height="110" rx="7"/>
+  <text class="anno bold somatic zh" x="66" y="380">代價</text>
+  <text class="tick zh" x="66" y="406">必須付出樣本，</text>
+  <text class="tick zh" x="66" y="430">而且這些樣本用掉之後</text>
+  <text class="tick zh" x="66" y="452">就不能再拿去算特異度</text>
+
+  <!-- ══ 右：第三類 ══ -->
+  <rect class="box" x="420" y="52" width="560" height="430" rx="10"/>
+  <text class="anno bold accent zh" x="444" y="82">第三類：由模型推導</text>
+
+  <rect class="box plain" x="444" y="98" width="512" height="72" rx="7"/>
+  <text class="anno bold zh" x="466" y="124">① 就地量測背景錯誤率</text>
+  <text class="tick zh" x="466" y="150">不借別人的樣本 —— 在這份樣本自己的資料上，</text>
+  <text class="tick zh" x="466" y="164">對隨機選取的大量位置估計，並<tspan class="bold">依變異類型分開估</tspan></text>
+
+  <path class="conn" d="M700 172 L700 190" marker-end="url(#ns-a)"/>
+
+  <rect class="box plain" x="444" y="196" width="512" height="150" rx="7"/>
+  <text class="anno bold zh" x="466" y="222">② 推導出理論分布</text>
+  <text class="tick zh" x="466" y="246">「假如完全沒有腫瘤，分數會落在哪裡」</text>
+  <path class="axis" d="M490 316 L930 316"/>
+  <path class="curve" d="M510 316 C 560 316, 580 254, 640 254 C 700 254, 720 316, 800 316 L930 316"/>
+  <path class="guide thick" d="M786 288 L786 334"/>
+  <text class="anno bold accent zh" x="796" y="300">門檻</text>
+  <text class="anno bold ok zh" x="466" y="338">這條分布是<tspan class="bold">算出來</tspan>的，不是量出來的</text>
+
+  <rect class="box plain" x="444" y="366" width="248" height="96" rx="7"/>
+  <text class="anno bold zh" x="466" y="392">③ 設定名目特異度</text>
+  <text class="anno bold mid accent zh" x="568" y="428">例如 99%</text>
+  <text class="tick mid zh" x="568" y="452">這是自己選的目標</text>
+
+  <rect class="box plain" x="708" y="366" width="248" height="96" rx="7"/>
+  <text class="anno bold zh" x="730" y="392">④ 取第 99 百分位</text>
+  <text class="tick mid zh" x="832" y="424">從理論分布上直接讀出</text>
+  <text class="anno bold mid ok zh" x="832" y="452">＝ 門檻</text>
+
+  <!-- ══ 底：核心差異與警語 ══ -->
+  <rect class="box plain" x="20" y="494" width="960" height="34" rx="8"/>
+  <text class="tick zh" x="44" y="516">核心差異只有一個：第一類的分布是<tspan class="bold">量出來的</tspan>（要付樣本），第三類的分布是<tspan class="bold">算出來的</tspan>（不用樣本）。</text>
+
+  <rect class="box" x="20" y="536" width="960" height="34" rx="8"/>
+  <text class="tick zh" x="44" y="558"><tspan class="somatic bold">⚠ 風險全押在模型上</tspan> —— 名目 99% 只有在背景錯誤模型正確時才等於實際 99%。AccuScan 實測驗證：cVAF=0 時特異度 ≥99%。</text>
+</svg>

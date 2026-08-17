@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600">
+  <title>借用其他病人的樣本當陰性對照</title>
+  <desc>本圖說明為何可以拿其他病人的樣本充當陰性對照，以及實際的操作流程。
+        上半部說明前提。圖中畫出兩條基因體，
+        第一條標出病人甲的體細胞突變位置，第二條標出病人乙的體細胞突變位置。
+        兩排標記幾乎完全錯開，沒有任何一個位置重疊。
+        原因是體細胞突變是每個人的腫瘤各自獨立發生的，
+        在三十億個鹼基中恰好撞在同一個位置的機率極低。
+        這就是整個做法的基礎。
+        下半部說明操作流程，共分三段。
+        第一段是把病人甲的突變清單套用到不同的血漿資料上。
+        套到甲自己的血漿時，若甲體內確實有殘存腫瘤，就會在那些位點上找到支持讀取，
+        算出的分數偏高，這是陽性樣本。
+        套到病人乙的血漿時，因為甲的突變位點在乙身上根本不存在，
+        理論上找不到任何訊號，算出的分數應該落在背景水準，這是陰性樣本。
+        套到病人丙同理，也是陰性樣本。
+        第二段是重複這個動作，蒐集所有配對得到的分數，
+        陰性分數會聚集在低處，陽性分數則明顯偏高。
+        第三段是用這批分數做受試者操作特徵曲線分析，
+        在曲線上選出符合特異度要求的工作點，該點對應的分數即為門檻。
+        INVAR 的硬性要求是特異度至少百分之九十，實際達到中位數百分之九十五。
+        圖最下方標出這個做法的代價：
+        它不需要專門收集健康人的樣本，但需要多位病人的資料；
+        而且借來的是其他病人而非健康人，
+        若那些病人本身帶有循環腫瘤去氧核醣核酸，仍可能貢獻少量背景。</desc>
+
+  <text class="ttl bold zh" x="20" y="34">借用其他病人的樣本當陰性對照</text>
+
+  <defs>
+    <marker id="cp-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path class="conn" d="M0 0 L10 5 L0 10 z"/>
+    </marker>
+  </defs>
+
+  <!-- ══ 上：為什麼可行 ══ -->
+  <rect class="box" x="20" y="52" width="960" height="196" rx="10"/>
+  <text class="anno bold accent zh" x="44" y="82">前提：任兩個人的體細胞突變幾乎不重疊</text>
+
+  <text class="tick zh" x="44" y="122">病人 A 的突變</text>
+  <rect class="track" x="190" y="106" width="760" height="24" rx="4"/>
+  <rect class="bar somatic" x="228" y="106" width="7" height="24"/>
+  <rect class="bar somatic" x="303" y="106" width="7" height="24"/>
+  <rect class="bar somatic" x="391" y="106" width="7" height="24"/>
+  <rect class="bar somatic" x="468" y="106" width="7" height="24"/>
+  <rect class="bar somatic" x="559" y="106" width="7" height="24"/>
+  <rect class="bar somatic" x="641" y="106" width="7" height="24"/>
+  <rect class="bar somatic" x="722" y="106" width="7" height="24"/>
+  <rect class="bar somatic" x="812" y="106" width="7" height="24"/>
+  <rect class="bar somatic" x="893" y="106" width="7" height="24"/>
+
+  <text class="tick zh" x="44" y="176">病人 B 的突變</text>
+  <rect class="track" x="190" y="160" width="760" height="24" rx="4"/>
+  <rect class="bar alt" x="262" y="160" width="7" height="24"/>
+  <rect class="bar alt" x="345" y="160" width="7" height="24"/>
+  <rect class="bar alt" x="425" y="160" width="7" height="24"/>
+  <rect class="bar alt" x="502" y="160" width="7" height="24"/>
+  <rect class="bar alt" x="592" y="160" width="7" height="24"/>
+  <rect class="bar alt" x="674" y="160" width="7" height="24"/>
+  <rect class="bar alt" x="757" y="160" width="7" height="24"/>
+  <rect class="bar alt" x="848" y="160" width="7" height="24"/>
+  <rect class="bar alt" x="925" y="160" width="7" height="24"/>
+
+  <text class="tick zh" x="44" y="220">兩排標記<tspan class="bold">完全錯開</tspan> —— 體細胞突變是各自獨立發生的，在 30 億個鹼基中撞在同一位置的機率極低。</text>
+
+  <!-- ══ 下：流程 ══ -->
+  <text class="anno bold accent zh" x="20" y="288">操作流程</text>
+
+  <rect class="box" x="20" y="302" width="300" height="120" rx="10"/>
+  <text class="anno bold mid zh" x="170" y="330">A 的清單 × <tspan class="somatic">A 的血漿</tspan></text>
+  <text class="tick mid zh" x="170" y="360">位點確實存在</text>
+  <text class="tick mid zh" x="170" y="384">→ 找得到支持 read</text>
+  <text class="anno bold mid somatic zh" x="170" y="410">分數偏高 ＝ 陽性</text>
+
+  <rect class="box" x="350" y="302" width="300" height="120" rx="10"/>
+  <text class="anno bold mid zh" x="500" y="330">A 的清單 × <tspan class="ok">B 的血漿</tspan></text>
+  <text class="tick mid zh" x="500" y="360">那些位點在 B 身上不存在</text>
+  <text class="tick mid zh" x="500" y="384">→ 理論上找不到訊號</text>
+  <text class="anno bold mid ok zh" x="500" y="410">分數在背景 ＝ 陰性</text>
+
+  <rect class="box" x="680" y="302" width="300" height="120" rx="10"/>
+  <text class="anno bold mid zh" x="830" y="330">A 的清單 × <tspan class="ok">C 的血漿</tspan></text>
+  <text class="tick mid zh" x="830" y="360">同理</text>
+  <text class="tick mid zh" x="830" y="384">→ 理論上找不到訊號</text>
+  <text class="anno bold mid ok zh" x="830" y="410">分數在背景 ＝ 陰性</text>
+
+  <path class="conn thick" d="M500 424 L500 446" marker-end="url(#cp-a)"/>
+
+  <rect class="box" x="20" y="454" width="620" height="100" rx="10"/>
+  <text class="anno bold zh" x="44" y="482">蒐集所有配對的分數</text>
+  <path class="axis" d="M60 528 L600 528"/>
+  <circle class="mark ok" cx="110" cy="528" r="7"/>
+  <circle class="mark ok" cx="138" cy="528" r="7"/>
+  <circle class="mark ok" cx="162" cy="528" r="7"/>
+  <circle class="mark ok" cx="192" cy="528" r="7"/>
+  <circle class="mark ok" cx="218" cy="528" r="7"/>
+  <path class="guide thick" d="M270 516 L270 552"/>
+  <text class="anno bold accent zh" x="282" y="548">門檻</text>
+  <circle class="mark somatic" cx="420" cy="528" r="9"/>
+  <circle class="mark somatic" cx="470" cy="528" r="9"/>
+  <text class="tick zh" x="44" y="506">陰性分數聚在低處，陽性明顯偏高 → 用 ROC 選出符合特異度要求的工作點</text>
+
+  <rect class="box" x="660" y="454" width="320" height="100" rx="10"/>
+  <text class="anno bold ok zh" x="684" y="482">INVAR 的要求</text>
+  <text class="tick zh" x="684" y="510">硬性門檻：特異度 ≥ 90%</text>
+  <text class="anno bold zh" x="684" y="538">實測中位 95%</text>
+
+  <rect class="box plain" x="20" y="566" width="960" height="28" rx="8"/>
+  <text class="tick zh" x="44" y="586">代價：不必收健康人樣本，但需要<tspan class="bold">多位病人</tspan>的資料；且借的是其他病人而非健康人，他們自身若帶 ctDNA 仍會貢獻少量背景。</text>
+</svg>

@@ -18,6 +18,54 @@ import sys
 import xml.etree.ElementTree as ET
 
 SVG_DIR = pathlib.Path("src/svg")
+CSS_FILES = [
+    pathlib.Path("site/assets/css/diagram.css"),
+    pathlib.Path("site/assets/css/diagram-ext.css"),
+]
+
+# 這些 token 只管排版（字級、對齊、字重），不影響顏色，
+# 因此不參與「組合是否已定義」的比對。
+LAYOUT_TOKENS = {"zh", "bold", "mid", "mono", "end"}
+
+
+def defined_combos():
+    """CSS 裡定義過的 class 組合，例如 `.dia-svg .bar.somatic` → {bar, somatic}。"""
+    combos = set()
+    for f in CSS_FILES:
+        if not f.exists():
+            continue
+        src = f.read_text(encoding="utf-8")
+        for m in re.finditer(r"\.dia-svg\s+((?:\.[a-z0-9-]+)+)", src):
+            combos.add(frozenset(m.group(1).strip(".").split(".")))
+    return combos
+
+
+def check_classes(name, src, combos):
+    """抓「基底 class 有定義，但修飾組合沒定義」的情形。
+
+    為什麼要抓：這種錯誤完全不會報錯。瀏覽器只是套用基底樣式、
+    忽略未定義的修飾 —— 於是「本來想標成綠色的資料點」靜靜地變成預設色，
+    看起來就像設計如此。實際踩過：tradeoff-triangle 的四個資料點原本
+    要以顏色分級（.mark.ok / .bad / .warn / .accent），
+    但 diagram.css 只定義了 .mark.somatic / .germline / .artifact / .ref /
+    .hp1 / .hp2，四個點全部渲染成同一色，圖的資訊量少了一半而沒人發現。
+
+    ⚠️ 逐 token 比對會漏掉這類問題：`.anno.ok` 存在就讓 `ok` 變成「已知」，
+    於是 `.mark.ok` 看起來也合法。必須比對**組合**。
+    """
+    bad = 0
+    seen = set()
+    for _tag, cls in re.findall(r'<(\w+)[^>]*class="([^"]+)"', src):
+        toks = frozenset(cls.split()) - LAYOUT_TOKENS
+        if not toks or cls in seen:
+            continue
+        if toks in combos or any(toks <= d for d in combos):
+            continue
+        seen.add(cls)
+        print(f"  {name}: class 組合未定義 「{cls}」"
+              f" —— 修飾會被靜默忽略，改用已定義的組合或補進 diagram-ext.css")
+        bad += 1
+    return bad
 
 # class → font-size，對應 diagram.css 裡的定義
 SIZE = {"ttl": 30, "lbl": 22, "anno": 18, "tick": 15, "base": 20}
@@ -92,6 +140,7 @@ def parse_transform(attrs: str):
 
 def main():
     problems = 0
+    combos = defined_combos()
     for f in sorted(SVG_DIR.glob("*.svg")):
         if f.name.startswith("_"):
             continue
@@ -110,6 +159,8 @@ def main():
             print(f"  {f.name}: XML 不合法 —— {e}")
             problems += 1
             continue
+
+        problems += check_classes(f.name, src_nc, combos)
 
         vb = re.search(r'viewBox="0 0 (\d+) (\d+)"', src_nc)
         if not vb:
@@ -212,7 +263,7 @@ def main():
     if problems:
         print(f"\n  共 {problems} 個版面問題")
         sys.exit(1)
-    print("  ✓ 所有 SVG 版面正常（無文字重疊、無壓住資料點、無超出畫布）")
+    print("  ✓ 所有 SVG 正常（class 組合、文字重疊、壓住資料點、超出畫布）")
 
 
 if __name__ == "__main__":

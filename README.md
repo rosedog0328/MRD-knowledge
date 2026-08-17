@@ -79,7 +79,7 @@ tools/                    不會發佈
 ├─ verify.mjs             file:// 安全 + 內容 linter
 ├─ guards.mjs             「不要搞混」警告框的唯一名冊（15 個）
 ├─ gen_matrix_module.py   ★ 從 dissection/*.json 產生 p07
-└─ check_svg_layout.py    SVG 版面檢查（CJK 全形字用的）
+└─ check_svg_layout.py    SVG 檢查：class 組合、文字重疊、壓住資料點、超出畫布
 
 site/                     ★ 交付物，整包複製就能用
 ```
@@ -102,7 +102,8 @@ site/                     ★ 交付物，整包複製就能用
 |---|---|---|
 | `tools/guards.mjs` | 換成本知識庫的 15 個警告框 | 主題不同 |
 | `tools/verify.mjs` 第 10 項 | **不再擋「N 篇論文」** | lab-tutorial 的讀者手上沒有那些投影片；本知識庫的論文就收在 `docs/paper/`，讀者拿得到 |
-| `site/assets/css/matrix.css` | 新增 `.matrix` 與 `.pill` | lab-tutorial 沒有「多篇 × 多步驟」的可展開矩陣 |
+| `site/assets/css/matrix.css` | 新增 `.matrix` | lab-tutorial 沒有「多篇 × 多步驟」的可展開矩陣 |
+| `site/assets/css/diagram-ext.css` | **新檔**：補上 diagram.css 沒定義的 class 組合（`.mark.ok`、`.guide.thick` 等） | 未定義的修飾會被瀏覽器**靜默忽略**，圖看起來正常但少了顏色分級；不動 diagram.css，新增一律寫這裡 |
 
 其餘（`build.mjs`、`mathml.mjs`、`audit_order.mjs`、全部 CSS 與 JS）未修改。
 
