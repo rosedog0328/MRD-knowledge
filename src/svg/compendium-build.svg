@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560">
+  <title>一份追蹤清單是怎麼被做出來的</title>
+  <desc>本圖說明建立病人專屬追蹤標的清單的實際步驟，由上而下分為四個階段。
+        第一階段是輸入，需要兩份定序資料：病人的腫瘤組織全基因體定序，
+        以及同一位病人的配對正常樣本全基因體定序，後者通常取自血球或鄰近正常組織。
+        兩份都要是同一個人的，這是關鍵。
+        第二階段是體細胞變異呼叫，將兩份資料逐位置比對，
+        找出只在腫瘤出現而正常樣本沒有的變異，輸出為候選清單。
+        本專案在此階段得到約十一萬個候選位點。
+        第三階段是移除生殖系變異，是整個流程中最關鍵也最容易做不乾淨的一步，
+        通常疊加多層過濾：族群資料庫過濾會剔除在人群中常見的變異，
+        配對正常樣本過濾會剔除在自己的正常樣本中出現任何支持讀取的位點，
+        長讀長族群變異庫則補抓短讀長資料庫漏掉的變異。
+        本專案經此階段由十一萬降至三萬五千六百零三個位點。
+        第四階段是輸出，得到病人專屬的追蹤清單。
+        圖右側標註每一階段的實際產出數量與該階段的關鍵風險：
+        體細胞變異呼叫階段的風險是單一呼叫器的偽陽性，
+        移除生殖系變異階段的風險是漏網的生殖系位點會以百分之五十的變異等位基因分率
+        淹沒十萬分之一量級的腫瘤訊號，
+        輸出階段的風險是清單中有部分位點屬於未釋出循環腫瘤去氧核醣核酸的次選殖，
+        永遠不會出現在血漿中。</desc>
+
+  <text class="ttl bold zh" x="20" y="34">一份追蹤清單是怎麼被做出來的</text>
+
+  <defs>
+    <marker id="cb-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path class="conn" d="M0 0 L10 5 L0 10 z"/>
+    </marker>
+  </defs>
+
+  <!-- ① 輸入 -->
+  <rect class="box" x="20" y="56" width="620" height="96" rx="10"/>
+  <text class="anno bold accent zh" x="44" y="84">① 輸入：同一位病人的兩份定序資料</text>
+  <rect class="box plain" x="44" y="96" width="280" height="40" rx="7"/>
+  <text class="tick mid zh" x="184" y="121">腫瘤組織 WGS</text>
+  <rect class="box plain" x="340" y="96" width="280" height="40" rx="7"/>
+  <text class="tick mid zh" x="480" y="121">配對正常樣本 WGS</text>
+
+  <path class="conn thick" d="M330 158 L330 178" marker-end="url(#cb-a)"/>
+
+  <!-- ② somatic calling -->
+  <rect class="box" x="20" y="186" width="620" height="92" rx="10"/>
+  <text class="anno bold accent zh" x="44" y="214">② 體細胞變異呼叫</text>
+  <text class="tick zh" x="44" y="240">逐位置比對兩份資料，找出<tspan class="bold">只在腫瘤出現</tspan>、</text>
+  <text class="tick zh" x="44" y="262">正常樣本沒有的變異</text>
+
+  <path class="conn thick" d="M330 284 L330 304" marker-end="url(#cb-a)"/>
+
+  <!-- ③ germline 移除 -->
+  <rect class="box" x="20" y="312" width="620" height="140" rx="10"/>
+  <text class="anno bold somatic zh" x="44" y="340">③ 移除 germline —— 最關鍵的一步</text>
+  <rect class="box plain" x="44" y="352" width="184" height="42" rx="7"/>
+  <text class="tick mid zh" x="136" y="378">族群資料庫</text>
+  <rect class="box plain" x="240" y="352" width="184" height="42" rx="7"/>
+  <text class="tick mid zh" x="332" y="378">配對正常樣本</text>
+  <rect class="box plain" x="436" y="352" width="184" height="42" rx="7"/>
+  <text class="tick mid zh" x="528" y="378">長讀長 PON</text>
+  <text class="tick zh" x="44" y="418">剔除人群常見的變異／自己的正常樣本有支持 read 的位點／</text>
+  <text class="tick zh" x="44" y="440">短讀長資料庫漏抓的 ONT germline</text>
+
+  <path class="conn thick" d="M330 458 L330 478" marker-end="url(#cb-a)"/>
+
+  <!-- ④ 輸出 -->
+  <rect class="box" x="20" y="486" width="620" height="56" rx="10"/>
+  <text class="anno bold ok zh" x="44" y="520">④ 輸出：這位病人專屬的追蹤清單</text>
+
+  <!-- 右欄：產出與風險 -->
+  <rect class="box" x="660" y="186" width="320" height="92" rx="10"/>
+  <text class="anno bold zh" x="684" y="214">本專案：約 11 萬個候選</text>
+  <text class="tick zh" x="684" y="240">⚠ 單一 caller 的偽陽性</text>
+  <text class="tick zh" x="684" y="262">會一路帶到下游</text>
+
+  <rect class="box" x="660" y="312" width="320" height="140" rx="10"/>
+  <text class="anno bold zh" x="684" y="340">本專案：11 萬 → 35,603</text>
+  <text class="tick zh" x="684" y="368">⚠ 漏網的 germline 位點</text>
+  <text class="tick zh" x="684" y="390">VAF 約 0.5，比 10⁻⁵ 的</text>
+  <text class="tick zh" x="684" y="412">腫瘤訊號高四個數量級 ——</text>
+  <text class="anno bold somatic zh" x="684" y="438">一個就足以淹沒訊號</text>
+
+  <rect class="box" x="660" y="486" width="320" height="56" rx="10"/>
+  <text class="tick zh" x="684" y="510">⚠ 部分位點屬未釋出 ctDNA 的</text>
+  <text class="tick zh" x="684" y="532">次選殖，永遠不會出現在血漿</text>
+</svg>

@@ -24,7 +24,70 @@
 
 
 <section data-part="concept">
-<h2>① 追蹤標的：五種做法</h2>
+<h2>① 追蹤標的</h2>
+
+<h3>先看實際上發生什麼</h3>
+
+<p class="prose">「建 [[compendium|追蹤清單]]」講起來像一個動作，實際上是<b>四個階段</b>。
+五種做法的差別都落在其中某一個階段，所以先把共同的流程走一遍。</p>
+
+{{svg:compendium-build | 建立追蹤清單的四個階段。五種做法的差別集中在階段②（要找哪一類標的）與階段③（過濾多嚴）。}}
+
+<h4>階段① 輸入：<b>同一位病人</b>的兩份定序資料</h4>
+
+<p class="prose">一份是<b>腫瘤組織</b>的 WGS，一份是<b>配對正常樣本</b>的 WGS
+（通常取自血球或鄰近的正常組織）。
+兩份必須來自同一個人 —— 這是整件事成立的前提，
+因為接下來要靠「兩者的差異」來定義什麼叫腫瘤特有。</p>
+
+<h4>階段② 體細胞變異呼叫：找出「只在腫瘤出現」的變異</h4>
+
+<p class="prose">把兩份資料逐個位置比對，挑出<b>腫瘤有、正常樣本沒有</b>的變異。
+這一步由 somatic caller 完成（本專案用 [[ClairS]]，
+文獻多用 MuTect／Strelka／LoFreq 等）。</p>
+
+<p class="prose">輸出是<b>候選</b>清單，不是成品 ——
+本專案在此得到約 <b>11 萬個</b>候選位點。
+數量看起來很多，但其中混了大量不該留的東西。</p>
+
+<h4>階段③ 移除 germline：最關鍵、也最容易做不乾淨的一步</h4>
+
+<p class="prose">為什麼一定要做：germline 位點在血漿中的 [[VAF]] 約為 <b>0.5</b>，
+比 10⁻⁵ 量級的腫瘤訊號高<b>四個數量級</b>。
+清單裡只要漏了幾個，它們貢獻的支持 read 就會蓋過所有真訊號 ——
+不是讓結果差一點，是讓整份清單失去意義。</p>
+
+<p class="prose">實際做法是<b>疊加多層過濾</b>，每層抓不同的漏網對象：</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>過濾層</th><th>剔除什麼</th><th>為什麼單靠它不夠</th></tr></thead>
+<tbody>
+<tr><td><b>族群資料庫</b><br>（gnomAD、dbSNP、1000G）</td>
+    <td>在人群中已知的常見變異</td>
+    <td>個人特有的罕見 germline 不在庫裡</td></tr>
+<tr><td><b>配對正常樣本</b></td>
+    <td>在自己的正常樣本中有支持 read 的位點</td>
+    <td>正常樣本深度不足時會漏抓</td></tr>
+<tr><td><b>長讀長 PON</b><br>（[[CoLoRSdb]]）</td>
+    <td>短讀長資料庫系統性漏掉的 ONT germline</td>
+    <td>—（本專案的臨門一腳）</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="prose">本專案經此階段由 11 萬降到 <b>35,603</b> 個位點 ——
+換句話說，<b>約 68% 的候選位點被判定為不該留</b>。</p>
+
+<h4>階段④ 輸出：這位病人專屬的追蹤清單</h4>
+
+<p class="prose">成品就是一份位點座標的清單。後面每一步都只在這些位置上做事。</p>
+
+<h3>五種做法的差別在哪</h3>
+
+<p class="prose">下表的五種做法，差別集中在<b>階段②要找哪一類標的</b>
+（全基因體的 SNV？少數幾個深度定序的位點？同一條分子上的多個突變？），
+以及<b>要不要做這整件事</b>（最後一列根本不建清單）。</p>
 
 <div class="table-wrap">
 <table>
@@ -68,9 +131,8 @@
 
 <h3>共同點：germline 移除，無一例外</h3>
 
-<p class="prose">五種做法在其他方面差異極大，但<b>全部都必須移除 germline 變異</b>。
-這是唯一貫穿所有方法的步驟，因為 germline 位點在血漿中的 [[VAF]] 約為 0.5，
-會完全淹沒 10⁻⁵ 量級的腫瘤訊號。</p>
+<p class="prose">五種做法在其他方面差異極大，但<b>全部都做了階段③</b>。
+這是唯一貫穿所有方法的步驟。以下是各篇實際用的手段：</p>
 
 <div class="table-wrap">
 <table>
@@ -119,29 +181,84 @@ WGS 路線提高 {{m: k}}（位點數多兩至三個數量級）。</p>
 
 
 <section data-part="evidence">
-<h2>② 驗證資料：三種設計</h2>
+<h2>② 驗證資料</h2>
 
-<p class="prose"><b>11 篇全部都以某種形式的稀釋序列量測偵測極限，無一例外。</b>
+<h3>要解決的是什麼問題</h3>
+
+<p class="prose">臨床樣本的<b>真實 [[TF]] 是未知的</b>。
+拿一份病人的血漿，測到了訊號，你不知道那代表 TF 是 10⁻³ 還是 10⁻⁵；
+測不到，也不知道是方法不夠靈敏還是那份樣本本來就沒有腫瘤。</p>
+
+<p class="prose">所以要量[[LLOD|偵測極限]]，必須先<b>自己做出一批答案已知的樣本</b> ——
+明知這一份的 TF 就是 10⁻⁴，然後看方法測不測得到。
+這就是稀釋序列在做的事。</p>
+
+<p class="prose"><b>11 篇全部都做了，無一例外。</b>
 沒有任何一篇僅憑臨床樣本宣稱 LLOD。</p>
+
+<h3>實際上怎麼做出一份「TF 已知」的樣本</h3>
+
+{{svg:dilution-designs | 三種設計的實際操作。A 動的是資料檔案，B 動的是真正的 DNA 分子，C 完全不使用腫瘤。}}
+
+<h4>A · 電腦模擬混合：在<b>資料檔案</b>上動手</h4>
+
+<p class="prose">兩份 BAM 都已經定序完成了。做法是<b>各自抽出一部分 read 再合併</b>：
+從腫瘤 BAM 抽出佔目標深度 {{m: TF}} 比例的 read，
+從正常 BAM 抽出其餘的，合併成一個新檔。
+新檔中來自腫瘤的 read 佔比，就是這份樣本的 TF。</p>
+
+<p class="prose">以本專案的實際數字為例。目標總深度 25 倍、想要 {{m: TF = 10^{-3}}}：</p>
+
+{{eq}}
+\text{腫瘤端貢獻} = 25 × 10^{-3} = 0.025 \text{倍}
+{{note}}
+正常端則貢獻 {{m: 25 − 0.025 = 24.975}} 倍。
+再各自除以來源 BAM 的原始深度（腫瘤 81.10 倍、正常 26.38 倍），
+即得兩端的抽樣比例。TF 越低，腫瘤端抽得越少。
+{{/eq}}
+
+<p class="prose">代價是<b>抽樣是在既有的 read 上做的</b>。
+那些 read 早就建完庫、定完序了，所以模擬混合<b>不會重現建庫過程產生的變異</b> ——
+DNA 損傷、[[hybrid capture|捕捉]]偏差、PCR 誤差通通不在裡面。</p>
+
+<h4>B · 濕實驗稀釋序列：在<b>真正的 DNA</b> 上動手</h4>
+
+<p class="prose">取腫瘤來源與正常來源的 DNA，<b>依質量比例在試管裡實際混合</b>，
+然後把混合後的樣本<b>走完整條建庫與定序流程</b>。</p>
+
+<p class="prose">關鍵差別就在最後這句：因為建庫是在混合之後才做的，
+上面 A 缺的那些東西全都涵蓋進來了。代價是每一份樣本都要真的做一次實驗 ——
+成本高，因此 replicate 數少。</p>
+
+<h4>C · 以 germline 當代理標的：完全不使用腫瘤</h4>
+
+<p class="prose">[[AccuScan]] 的做法：把健康捐贈者 A 的 [[cfDNA]] 稀釋進健康捐贈者 B，
+追蹤標的取<b>兩人之間基因型相異的 germline SNV</b>（超過 10 萬個）。</p>
+
+<p class="prose">優點是<b>真值完全精確</b>：germline 位點的基因型可以事先定序確定，
+不像 somatic 清單那樣受 caller 偽陽性影響。
+所以測不到就是方法的問題，不會是清單的問題。</p>
+
+<h3>三者能支持的結論不同</h3>
 
 <div class="table-wrap">
 <table>
-<thead><tr><th>設計</th><th>方法</th><th>特徵</th></tr></thead>
+<thead><tr><th>設計</th><th>採用的方法</th><th>能支持什麼結論</th></tr></thead>
 <tbody>
 <tr>
-  <td><b>[[in silico admixture|電腦模擬混合]]</b></td>
-  <td>MRDetect、MRD-EDGE、Landau 第三代</td>
-  <td>TF 精確已知、replicate 便宜；不含建庫變異</td>
+  <td><b>[[in silico admixture|A · 電腦模擬混合]]</b></td>
+  <td>MRDetect、MRD-EDGE、Landau 第三代、<b>本專案</b></td>
+  <td>此演算法在此錯誤率下的極限為何<br><b>不足以</b>宣稱實際檢體上的效能</td>
 </tr>
 <tr>
-  <td><b>[[dilution series|濕實驗稀釋序列]]</b></td>
+  <td><b>[[dilution series|B · 濕實驗稀釋序列]]</b></td>
   <td>INVAR、iDES、PhasED-seq、AccuScan、NanoRCS</td>
-  <td>含建庫變異、貼近實況；成本高、replicate 少</td>
+  <td>此方法在實際檢體上的效能</td>
 </tr>
 <tr>
-  <td><b>germline 當代理標的</b></td>
+  <td><b>C · germline 代理標的</b></td>
   <td>AccuScan</td>
-  <td>用兩位健康捐贈者間相異的 germline SNV 當標的，真值精確</td>
+  <td>排除 compendium 品質因素後的純偵測效能</td>
 </tr>
 </tbody>
 </table>

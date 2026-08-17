@@ -35,7 +35,8 @@ window.TW_GLOSSARY = {
   "slug": "cfdna",
   "modules": [
    "p00",
-   "p01"
+   "p01",
+   "p02"
   ]
  },
  "ctDNA": {
@@ -1705,6 +1706,32 @@ window.TW_GLOSSARY = {
   "slug": "panel",
   "modules": [
    "p01"
+  ]
+ },
+ "ClairS": {
+  "zh_gloss": "ONT 體細胞變異呼叫器",
+  "zh": "專為長讀長資料設計的深度學習 somatic caller，需要腫瘤與配對正常樣本兩份輸入。本專案用它產生 compendium 的候選位點（約 11 萬個）。與文獻常用的 MuTect／Strelka／LoFreq 概念相同、工具不同；因本專案<b>只有單一 caller</b>，無法比照文獻做多 caller 共識過濾，偽陽性須改由後續的 germline 過濾階梯承擔。",
+  "en": "A deep-learning somatic variant caller designed for long-read data, taking a tumour sample and a matched normal as input. This project uses it to generate the candidate sites for the compendium (roughly 110,000). It is conceptually equivalent to the MuTect/Strelka/LoFreq callers common in the literature. Because this project has only a single caller, multi-caller consensus filtering is not available and false positives must instead be absorbed by the downstream germline filtering ladder.",
+  "see": [
+   "compendium",
+   "germline filtering ladder"
+  ],
+  "slug": "clairs",
+  "modules": [
+   "p02"
+  ]
+ },
+ "CoLoRSdb": {
+  "zh_gloss": "長讀長族群變異庫",
+  "zh": "以長讀長定序建立的族群變異資料庫，本專案用作 panel of normals（PON）。作用是補抓 dbSNP／gnomAD 等<b>短讀長來源</b>系統性漏掉的 ONT germline 變異。本專案的 germline 過濾階梯中，它是<b>臨門一腳</b>：加入後 cross-sample 的雜訊比值由自家 TF0 的 40 倍降至 1.1 倍。",
+  "en": "A population variant database built from long-read sequencing, used here as a panel of normals. Its role is to catch ONT germline variants that short-read-derived resources such as dbSNP and gnomAD systematically miss. It is the decisive final step of this project's germline filtering ladder: adding it brought the cross-sample noise ratio down from 40x the in-house TF0 level to 1.1x.",
+  "see": [
+   "germline filtering ladder",
+   "compendium"
+  ],
+  "slug": "colorsdb",
+  "modules": [
+   "p02"
   ]
  }
 };

@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620">
+  <title>三種驗證資料的實際做法</title>
+  <desc>本圖說明如何做出一份腫瘤分數已知的樣本，用以量測偵測極限，共三種設計。
+        第一種是電腦模擬混合，操作對象是已經定序完成的資料檔案。
+        從腫瘤的比對檔中依比例抽出讀取，從正常樣本的比對檔中抽出其餘部分，
+        兩者合併成一個新檔案，該檔案的腫瘤分數即為抽樣比例。
+        圖中以本專案為例：目標總深度二十五倍，欲得到腫瘤分數千分之一，
+        則需要腫瘤來源零點零二五倍深度、正常樣本來源二十四點九七五倍深度，
+        各自的抽樣比例由該來源的原始深度換算而得。
+        此設計的特點是腫瘤分數精確已知、重複樣本幾乎免費，
+        但因為抽樣是在既有讀取上進行，不會重現建庫過程產生的變異。
+        第二種是濕實驗稀釋序列，操作對象是真正的去氧核醣核酸分子。
+        取腫瘤來源與正常來源的去氧核醣核酸，依質量比例混合，
+        然後把混合後的樣本走完整條建庫與定序流程。
+        此設計涵蓋建庫變異、去氧核醣核酸損傷與捕捉偏差，貼近真實情況，
+        但成本高，因此重複樣本數少。
+        第三種是以生殖系變異作為代理標的。
+        取健康捐贈者甲的游離去氧核醣核酸，稀釋進健康捐贈者乙的游離去氧核醣核酸，
+        追蹤標的取兩人之間基因型相異的生殖系單核苷酸變異，數量超過十萬個。
+        此設計完全不使用腫瘤，其優點是真值精確，
+        因為生殖系位點的基因型可事先確定，不受體細胞變異呼叫器的偽陽性影響。
+        圖最下方標出關鍵差異：前者能支持的結論是演算法在特定錯誤率下的極限，
+        後者才能支持該方法在實際檢體上的效能。</desc>
+
+  <text class="ttl bold zh" x="20" y="34">怎麼做出一份「腫瘤分數已知」的樣本</text>
+
+  <defs>
+    <marker id="dd-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path class="conn" d="M0 0 L10 5 L0 10 z"/>
+    </marker>
+  </defs>
+
+  <!-- ══ A：電腦模擬混合 ══ -->
+  <rect class="box" x="20" y="56" width="960" height="176" rx="10"/>
+  <text class="anno bold accent zh" x="44" y="84">A · 電腦模擬混合　　操作對象：已經定序完成的<tspan class="bold">資料檔案</tspan></text>
+
+  <rect class="box plain" x="44" y="98" width="200" height="46" rx="7"/>
+  <text class="tick mid zh" x="144" y="118">腫瘤 BAM</text>
+  <text class="tick mid zh" x="144" y="136">81.10 倍</text>
+
+  <rect class="box plain" x="44" y="156" width="200" height="46" rx="7"/>
+  <text class="tick mid zh" x="144" y="176">正常 BAM</text>
+  <text class="tick mid zh" x="144" y="194">26.38 倍</text>
+
+  <path class="conn" d="M252 121 L292 121" marker-end="url(#dd-a)"/>
+  <path class="conn" d="M252 179 L292 179" marker-end="url(#dd-a)"/>
+
+  <rect class="box plain" x="300" y="98" width="230" height="104" rx="7"/>
+  <text class="anno bold mid zh" x="415" y="124">各自依比例抽 read</text>
+  <text class="tick mid zh" x="415" y="152">腫瘤端 0.025 倍</text>
+  <text class="tick mid zh" x="415" y="176">正常端 24.975 倍</text>
+
+  <path class="conn thick" d="M538 150 L578 150" marker-end="url(#dd-a)"/>
+
+  <rect class="box plain" x="586" y="110" width="200" height="80" rx="7"/>
+  <text class="anno bold mid ok zh" x="686" y="138">合併成新檔</text>
+  <text class="tick mid zh" x="686" y="164">總深度 25 倍</text>
+  <text class="anno bold mid somatic zh" x="686" y="184">TF = 1e-3</text>
+
+  <text class="tick zh" x="806" y="132">✅ TF 精確已知</text>
+  <text class="tick zh" x="806" y="156">✅ replicate 幾乎免費</text>
+  <text class="anno bold somatic zh" x="806" y="182">❌ 不含建庫變異</text>
+
+  <!-- ══ B：濕實驗稀釋 ══ -->
+  <rect class="box" x="20" y="248" width="960" height="176" rx="10"/>
+  <text class="anno bold accent zh" x="44" y="276">B · 濕實驗稀釋序列　　操作對象：真正的 <tspan class="bold">DNA 分子</tspan></text>
+
+  <rect class="box plain" x="44" y="290" width="200" height="46" rx="7"/>
+  <text class="tick mid zh" x="144" y="318">腫瘤來源 DNA</text>
+
+  <rect class="box plain" x="44" y="348" width="200" height="46" rx="7"/>
+  <text class="tick mid zh" x="144" y="376">正常來源 DNA</text>
+
+  <path class="conn" d="M252 313 L292 313" marker-end="url(#dd-a)"/>
+  <path class="conn" d="M252 371 L292 371" marker-end="url(#dd-a)"/>
+
+  <rect class="box plain" x="300" y="290" width="230" height="104" rx="7"/>
+  <text class="anno bold mid zh" x="415" y="330">依<tspan class="bold">質量比例</tspan>混合</text>
+  <text class="tick mid zh" x="415" y="362">在試管裡實際稀釋</text>
+
+  <path class="conn thick" d="M538 342 L578 342" marker-end="url(#dd-a)"/>
+
+  <rect class="box plain" x="586" y="302" width="200" height="80" rx="7"/>
+  <text class="anno bold mid zh" x="686" y="330">走完整條</text>
+  <text class="anno bold mid zh" x="686" y="356">建庫 + 定序流程</text>
+
+  <text class="anno bold ok zh" x="806" y="324">✅ 含建庫變異</text>
+  <text class="tick zh" x="806" y="348">✅ 貼近真實情況</text>
+  <text class="tick zh" x="806" y="372">❌ 成本高，replicate 少</text>
+
+  <!-- ══ C：germline 代理 ══ -->
+  <rect class="box" x="20" y="440" width="960" height="112" rx="10"/>
+  <text class="anno bold accent zh" x="44" y="468">C · 以 germline 當代理標的　　<tspan class="bold">完全不使用腫瘤</tspan></text>
+
+  <rect class="box plain" x="44" y="482" width="486" height="52" rx="7"/>
+  <text class="tick zh" x="66" y="504">把健康捐贈者 A 的 cfDNA 稀釋進健康捐贈者 B，</text>
+  <text class="tick zh" x="66" y="526">追蹤標的取<tspan class="bold">兩人之間相異的 germline SNV</tspan>（超過 10 萬個）</text>
+
+  <path class="conn thick" d="M538 508 L578 508" marker-end="url(#dd-a)"/>
+
+  <rect class="box plain" x="586" y="482" width="200" height="52" rx="7"/>
+  <text class="anno bold mid ok zh" x="686" y="514">真值完全精確</text>
+
+  <text class="tick zh" x="806" y="494">germline 基因型可事先</text>
+  <text class="tick zh" x="806" y="514">確定，不受 somatic</text>
+  <text class="tick zh" x="806" y="534">caller 偽陽性影響</text>
+
+  <!-- ══ 底線：能支持什麼結論 ══ -->
+  <rect class="box plain" x="20" y="568" width="960" height="40" rx="10"/>
+  <text class="tick zh" x="44" y="594">A 能支持「此演算法在此錯誤率下的極限為何」；要宣稱「在實際檢體上的效能」，必須有 B。</text>
+</svg>
