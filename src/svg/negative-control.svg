@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 450">
+  <title>陰性對照的角色：沒有它就不知道「沒有腫瘤時分數長什麼樣」</title>
+  <desc>本圖說明為何判定必須依賴陰性對照。
+        上半部呈現核心問題：對一份待測檢體算出一個分數之後，
+        單看這個數字無法判斷它是高還是低，因為沒有比較的基準。
+        圖中以一條數線表示分數，待測檢體落在某個位置，
+        但數線上沒有任何刻度可以判斷該位置代表有腫瘤還是沒有。
+        下半部呈現解法：先取一批確定不含腫瘤的樣本，
+        用完全相同的流程各自算出分數，得到一個分布。
+        這個分布就是「沒有腫瘤時分數長什麼樣」的基準。
+        門檻畫在該分布的上緣，待測檢體超過門檻才判為陽性。
+        圖右側標出本領域的實際限制：
+        各方法所需的陰性樣本數差異極大，
+        從三十個、二十七個、十二個到七個不等，
+        而另有兩種做法完全不需要專用的陰性樣本，
+        分別是借用其他病人的樣本、以及由統計模型直接推導門檻。
+        陰性樣本因此是稀缺資源，這個限制貫穿門檻決定與效能評估兩個步驟。</desc>
+
+  <text class="ttl bold zh" x="20" y="34">陰性對照：判定的基準從哪裡來</text>
+
+  <!-- ══ 上：沒有基準的問題 ══ -->
+  <rect class="box plain" x="20" y="58" width="620" height="150" rx="10"/>
+  <text class="anno bold zh" x="44" y="88">問題：單一個分數無法解讀</text>
+
+  <path class="axis" d="M70 156 L590 156"/>
+  <text class="tick zh" x="70" y="180">低</text>
+  <text class="tick zh" x="566" y="180">高</text>
+  <circle class="mark somatic" cx="392" cy="156" r="10"/>
+  <text class="anno bold somatic zh" x="392" y="136" text-anchor="middle">待測檢體</text>
+
+  <text class="tick zh" x="44" y="200">這個位置算高還是低？數線上沒有刻度，無從判斷。</text>
+
+  <!-- ══ 右：實際限制 ══ -->
+  <rect class="box" x="660" y="58" width="320" height="150" rx="10"/>
+  <text class="anno bold zh" x="684" y="88">各方法需要幾個陰性樣本</text>
+  <text class="tick zh" x="684" y="116">MRDetect　30 個</text>
+  <text class="tick zh" x="684" y="138">ichorCNA　27 個</text>
+  <text class="tick zh" x="684" y="160">iDES　　　12 個</text>
+  <text class="tick zh" x="684" y="182">NanoRCS　　7 個</text>
+
+  <!-- ══ 下：解法 ══ -->
+  <rect class="box" x="20" y="228" width="620" height="200" rx="10"/>
+  <text class="anno bold zh" x="44" y="258">解法：先量「沒有腫瘤時長什麼樣」</text>
+
+  <text class="tick zh" x="44" y="284">取一批確定不含腫瘤的樣本，用完全相同的流程各自算分數</text>
+
+  <path class="axis" d="M70 366 L590 366"/>
+
+  <!-- 陰性分布 -->
+  <circle class="mark ref" cx="150" cy="366" r="8"/>
+  <circle class="mark ref" cx="178" cy="366" r="8"/>
+  <circle class="mark ref" cx="204" cy="366" r="8"/>
+  <circle class="mark ref" cx="226" cy="366" r="8"/>
+  <circle class="mark ref" cx="248" cy="366" r="8"/>
+  <circle class="mark ref" cx="272" cy="366" r="8"/>
+  <text class="tick mid zh" x="210" y="336">陰性樣本的分數分布</text>
+
+  <!-- 門檻 -->
+  <path class="guide thick" d="M310 320 L310 392"/>
+  <text class="anno bold accent zh" x="310" y="312" text-anchor="middle">門檻</text>
+
+  <!-- 待測 -->
+  <circle class="mark somatic" cx="392" cy="366" r="10"/>
+  <text class="anno bold somatic zh" x="392" y="336" text-anchor="middle">待測檢體</text>
+  <text class="anno bold ok zh" x="430" y="371">→ 超過門檻，判為陽性</text>
+
+  <text class="tick zh" x="44" y="412">門檻畫在陰性分布的上緣 —— 陰性樣本越少，這條線的位置越不可靠。</text>
+
+  <!-- 右下：兩條不需陰性樣本的路 -->
+  <rect class="box" x="660" y="228" width="320" height="200" rx="10"/>
+  <text class="anno bold ok zh" x="684" y="258">兩種不需專用陰性樣本的做法</text>
+
+  <text class="anno bold zh" x="684" y="292">① 借用其他病人的樣本</text>
+  <text class="tick zh" x="684" y="314">任兩人的腫瘤突變幾乎不重疊，</text>
+  <text class="tick zh" x="684" y="334">故 B 的樣本天然是 A 的陰性對照</text>
+
+  <text class="anno bold zh" x="684" y="370">② 由統計模型推導門檻</text>
+  <text class="tick zh" x="684" y="392">設定名目特異度，</text>
+  <text class="tick zh" x="684" y="412">由背景錯誤模型直接反推</text>
+</svg>

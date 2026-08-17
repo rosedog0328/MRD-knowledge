@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>為什麼 MRD 偵測是個難題 · MRD 偵測方法知識庫</title>
-<meta name="description" content="由血漿分子數的物理上限推導出「廣度取代深度」，並說明 read-centric 判斷單元的由來。">
+<title>基本介紹 · MRD 偵測方法知識庫</title>
+<meta name="description" content="血漿的分子數有物理上限，因此加深定序無效。由此建立三個基本量與三個共同前提，並走完一次完整流程。">
 <link rel="stylesheet" href="assets/css/tokens.css">
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/layout.css">
@@ -53,38 +53,34 @@
 
 <div class="wrap ">
   <main class="main" id="main">
-    <header class="mhead"><p class="mhead__kicker">模組 1 · Why MRD detection is hard</p><h1>為什麼 MRD 偵測是個難題</h1><p class="mhead__sub">由血漿分子數的物理上限推導出「廣度取代深度」，並說明 read-centric 判斷單元的由來。</p><p class="mhead__meta"><span class="chip">約 25 分鐘</span><a class="chip" href="p00.html">建議先修：導覽</a></p></header><section class="objectives"><h2>本模組學習目標</h2><ul><li>由血漿分子數的物理上限，說明加深定序在低腫瘤分數時為何無效</li><li>以偵測機率式說明「廣度取代深度」的數學基礎，並能就三個參數討論取捨</li><li>說明 read-centric 判斷單元的由來，以及它與傳統支持數門檻的衝突</li><li>由 read-centric 推導出兩個獨立團隊各自得到的同一個過濾設計</li></ul></section>
+    <header class="mhead"><p class="mhead__kicker">模組 1 · Foundations</p><h1>基本介紹</h1><p class="mhead__sub">血漿的分子數有物理上限，因此加深定序無效。由此建立三個基本量與三個共同前提，並走完一次完整流程。</p><p class="mhead__meta"><span class="chip">約 30 分鐘</span><a class="chip" href="p00.html">建議先修：導覽</a></p></header><section class="objectives"><h2>本模組學習目標</h2><ul><li>由血漿分子數的物理上限，說明加深定序在低腫瘤分數時為何無效</li><li>說出決定偵測能力的三個基本量，以及它們之間的關係式</li><li>走完一次完整的偵測流程，並說明每一步為何不可省略</li><li>說明為何一個方法必須靠稀釋序列證明有效，以及偵測極限為何必須附帶條件</li></ul></section>
 
 <section data-part="why" class="part" id="part-why">
 <h2 data-num="①" id="為什麼重要">為什麼重要</h2>
 
-<p class="prose"><span class="term" data-term="MRD" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-mrd-0">MRD<span class="term__pop" id="gd-mrd-0" role="tooltip"><b class="term__hd">MRD <i>微量殘存疾病</i></b><span class="term__def" data-lang="zh">治療（多為手術）後體內殘存、但影像看不到的極少量癌細胞。<b>MRD 偵測</b>是用定序技術從血液中找出這些微量的癌症訊號，目的是在臨床復發之前就發現它，據以決定要不要追加治療。⚠️ 部分論文（如 AccuScan）展開為 molecular residual disease，兩者指同一件事。</span><span class="term__def" data-lang="en" lang="en">The small amount of cancer remaining after treatment, below the detection limit of imaging. MRD detection uses sequencing to find these trace cancer signals in blood, aiming to detect relapse before it becomes clinically apparent. Some papers expand the acronym as molecular residual disease; both refer to the same concept.</span><a class="term__more" href="glossary.html#mrd">完整條目 →</a></span></span> 的定義是治療後殘存、但影像看不到的極少量癌細胞。
-在此情境下，血漿中的 <span class="term" data-term="ctDNA" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-ctdna-1">ctDNA<span class="term__pop" id="gd-ctdna-1" role="tooltip"><b class="term__hd">ctDNA <i>循環腫瘤 DNA</i></b><span class="term__def" data-lang="zh">cfDNA 中源自腫瘤的那一部分，帶有腫瘤的體細胞變異。在 MRD 情境下它只佔 cfDNA 的極小比例（常低於百萬分之一），這是所有偵測困難的根源。</span><span class="term__def" data-lang="en" lang="en">The tumour-derived fraction of cfDNA, carrying the tumour's somatic alterations. In the MRD setting it constitutes an extremely small share of total cfDNA, often below one part per million — the root of the detection problem.</span><a class="term__more" href="glossary.html#ctdna">完整條目 →</a></span></span> 只佔 <span class="term" data-term="cfDNA" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-cfdna-2">cfDNA<span class="term__pop" id="gd-cfdna-2" role="tooltip"><b class="term__hd">cfDNA <i>游離 DNA</i></b><span class="term__def" data-lang="zh">血漿中游離的短 DNA 片段，主要由凋亡與壞死的細胞釋出，長度以約 166 bp 為眾數（對應核小體）。健康人與癌症病人都有。</span><span class="term__def" data-lang="en" lang="en">Short DNA fragments circulating freely in plasma, released mainly by apoptotic and necrotic cells, with a modal length of about 166 bp reflecting nucleosome protection. Present in both healthy and cancer subjects.</span><a class="term__more" href="glossary.html#cfdna">完整條目 →</a></span></span> 的極小比例 ——
-<span class="term" data-term="tumor fraction" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-tumor-fraction-3">腫瘤分數<span class="term__pop" id="gd-tumor-fraction-3" role="tooltip"><b class="term__hd">tumor fraction <i>腫瘤分數</i></b><span class="term__def" data-lang="zh">樣本中源自腫瘤的 DNA 佔全部 DNA 的比例。MRD 情境常低至 10⁻⁵ 甚至 10⁻⁶。本專案因使用純細胞株（purity≈1），混合時的 tumor read 比例即等同 TF。</span><span class="term__def" data-lang="en" lang="en">The proportion of DNA in a sample that derives from tumour. In MRD settings it can be as low as 1e-5 to 1e-6. In this project, because pure cell lines are used (purity approximately 1), the tumour read ratio during admixture equals TF directly.</span><a class="term__more" href="glossary.html#tumor-fraction">完整條目 →</a></span></span>常低至 10⁻⁵，甚至 10⁻⁶。</p>
+<p class="prose">上一頁說明了 <span class="term" data-term="MRD" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-mrd-0">MRD<span class="term__pop" id="gd-mrd-0" role="tooltip"><b class="term__hd">MRD <i>微量殘存疾病</i></b><span class="term__def" data-lang="zh">治療（多為手術）後體內殘存、但影像看不到的極少量癌細胞。<b>MRD 偵測</b>是用定序技術從血液中找出這些微量的癌症訊號，目的是在臨床復發之前就發現它，據以決定要不要追加治療。⚠️ 部分論文（如 AccuScan）展開為 molecular residual disease，兩者指同一件事。</span><span class="term__def" data-lang="en" lang="en">The small amount of cancer remaining after treatment, below the detection limit of imaging. MRD detection uses sequencing to find these trace cancer signals in blood, aiming to detect relapse before it becomes clinically apparent. Some papers expand the acronym as molecular residual disease; both refer to the same concept.</span><a class="term__more" href="glossary.html#mrd">完整條目 →</a></span></span> 偵測要解決什麼問題。本頁建立讀懂後續五頁所需的共同語言：
+<b>三個基本量、三個共同前提，以及一次完整的流程走查</b>。</p>
 
-<p class="prose">面對「訊號太弱」，最直覺的反應是提高定序深度。
-本領域十年來的方法演進，起點正是<b>這個直覺被證明是錯的</b>。
-理解錯在哪裡，是理解其後所有方法設計的前提。</p>
+<p class="prose">後面每一頁都預設讀者已經接受這些前提 ——
+不知道「廣度取代深度」，就不會理解各家為何都在追蹤數千至數萬個位點；
+不知道 <span class="term" data-term="read-centric" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-read-centric-1">read-centric<span class="term__pop" id="gd-read-centric-1" role="tooltip"><b class="term__hd">read-centric <i>以讀取為單位</i></b><span class="term__def" data-lang="zh">MRDetect 的關鍵設計：因為 TF ≪ 1/depth，每個位點最多只期待<b>一條</b>支持 read，因此判斷單元是「單條 read 的真偽」，不能用「多條支持才算數」的傳統門檻。</span><span class="term__def" data-lang="en" lang="en">A key design in MRDetect: because TF is far below 1/depth, at most one supporting read is expected per site. The unit of judgement is therefore whether a single read is genuine, and conventional thresholds requiring multiple supporting reads do not apply.</span><a class="term__more" href="glossary.html#read-centric">完整條目 →</a></span></span>，就會覺得「支持 read 數多反而可疑」很違反直覺。</p>
 
-<div class="reveal__q"><p class="prose">若某個位點的腫瘤分數為 10⁻⁵，把該位點定序到 40,000 倍深度，
-能否可靠地偵測到那個突變？</p></div><details class="reveal"><summary>展開答案</summary><div class="reveal__a"><p class="prose">不能，而且再深也沒有用。</p>
-<p class="prose"><span class="term" data-term="MRDetect" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-mrdetect-4">MRDetect<span class="term__pop" id="gd-mrdetect-4" role="tooltip"><b class="term__hd">MRDetect <i>MRDetect（第一代）</i></b><span class="term__def" data-lang="zh">Landau lab 2020 年的方法（Nat Med），本專案的基準。核心是「廣度取代深度」：35X WGS + 全基因體數千個 SNV 累加，用線性 SVM 對單條 read 去噪（5 特徵）。LLOD 約 1e-5。⚠️ 程式碼未開源。</span><span class="term__def" data-lang="en" lang="en">The 2020 method from the Landau lab (Nat Med) and the baseline for this project. Its core is breadth supplanting depth: 35X WGS integrating thousands of genome-wide SNVs, with a linear SVM denoising individual reads on five features. LLOD about 1e-5. Code is not open source.</span><a class="term__more" href="glossary.html#mrdetect">完整條目 →</a></span></span> 的作者重新分析了一項使用約 40,000 倍深度標的定序的早期癌症偵測研究，
-發現偵測仍卡在 <span class="term" data-term="cVAF" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-cvaf-5">變異等位基因分率<span class="term__pop" id="gd-cvaf-5" role="tooltip"><b class="term__hd">cVAF <i>循環變異等位基因分率</i></b><span class="term__def" data-lang="zh">血漿中某變異的等位基因分率。與一般 VAF 的差別在量級：germline VAF 約 0.5，而 MRD 情境的 cVAF 常在 10⁻⁵–10⁻⁶ 之間，與定序錯誤率同一個數量級。</span><span class="term__def" data-lang="en" lang="en">The variant allele frequency of a mutation in plasma. It differs from ordinary VAF in magnitude: germline VAF is about 0.5, whereas cVAF in MRD settings is typically 1e-5 to 1e-6, the same order as the sequencing error rate.</span><a class="term__more" href="glossary.html#cvaf">完整條目 →</a></span></span> 約 10⁻³，
-且許多影像上可見疾病的病人，在深度定序下仍測不到 ctDNA。</p>
+<div class="reveal__q"><p class="prose">若某個位點的 <span class="term" data-term="tumor fraction" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-tumor-fraction-2">腫瘤分數<span class="term__pop" id="gd-tumor-fraction-2" role="tooltip"><b class="term__hd">tumor fraction <i>腫瘤分數</i></b><span class="term__def" data-lang="zh">樣本中源自腫瘤的 DNA 佔全部 DNA 的比例。MRD 情境常低至 10⁻⁵ 甚至 10⁻⁶。本專案因使用純細胞株（purity≈1），混合時的 tumor read 比例即等同 TF。</span><span class="term__def" data-lang="en" lang="en">The proportion of DNA in a sample that derives from tumour. In MRD settings it can be as low as 1e-5 to 1e-6. In this project, because pure cell lines are used (purity approximately 1), the tumour read ratio during admixture equals TF directly.</span><a class="term__more" href="glossary.html#tumor-fraction">完整條目 →</a></span></span>為 10⁻⁵，
+把該位點定序到 40,000 倍深度，能否可靠地偵測到那個突變？</p></div><details class="reveal"><summary>展開答案</summary><div class="reveal__a"><p class="prose">不能，而且再深也沒有用。</p>
+<p class="prose"><span class="term" data-term="MRDetect" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-mrdetect-3">MRDetect<span class="term__pop" id="gd-mrdetect-3" role="tooltip"><b class="term__hd">MRDetect <i>MRDetect（第一代）</i></b><span class="term__def" data-lang="zh">Landau lab 2020 年的方法（Nat Med），本專案的基準。核心是「廣度取代深度」：35X WGS + 全基因體數千個 SNV 累加，用線性 SVM 對單條 read 去噪（5 特徵）。LLOD 約 1e-5。⚠️ 程式碼未開源。</span><span class="term__def" data-lang="en" lang="en">The 2020 method from the Landau lab (Nat Med) and the baseline for this project. Its core is breadth supplanting depth: 35X WGS integrating thousands of genome-wide SNVs, with a linear SVM denoising individual reads on five features. LLOD about 1e-5. Code is not open source.</span><a class="term__more" href="glossary.html#mrdetect">完整條目 →</a></span></span> 的作者重新分析了一項使用約 40,000 倍深度標的定序的早期癌症偵測研究，
+發現偵測仍卡在 <span class="term" data-term="cVAF" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-cvaf-4">變異等位基因分率<span class="term__pop" id="gd-cvaf-4" role="tooltip"><b class="term__hd">cVAF <i>循環變異等位基因分率</i></b><span class="term__def" data-lang="zh">血漿中某變異的等位基因分率。與一般 VAF 的差別在量級：germline VAF 約 0.5，而 MRD 情境的 cVAF 常在 10⁻⁵–10⁻⁶ 之間，與定序錯誤率同一個數量級。</span><span class="term__def" data-lang="en" lang="en">The variant allele frequency of a mutation in plasma. It differs from ordinary VAF in magnitude: germline VAF is about 0.5, whereas cVAF in MRD settings is typically 1e-5 to 1e-6, the same order as the sequencing error rate.</span><a class="term__more" href="glossary.html#cvaf">完整條目 →</a></span></span> 約 10⁻³，
+且許多影像上可見疾病的病人，在深度定序下仍測不到 <span class="term" data-term="ctDNA" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-ctdna-5">ctDNA<span class="term__pop" id="gd-ctdna-5" role="tooltip"><b class="term__hd">ctDNA <i>循環腫瘤 DNA</i></b><span class="term__def" data-lang="zh">cfDNA 中源自腫瘤的那一部分，帶有腫瘤的體細胞變異。在 MRD 情境下它只佔 cfDNA 的極小比例（常低於百萬分之一），這是所有偵測困難的根源。</span><span class="term__def" data-lang="en" lang="en">The tumour-derived fraction of cfDNA, carrying the tumour's somatic alterations. In the MRD setting it constitutes an extremely small share of total cfDNA, often below one part per million — the root of the detection problem.</span><a class="term__more" href="glossary.html#ctdna">完整條目 →</a></span></span>。</p>
 <p class="prose">原因不在定序，而在<b>抽樣</b>：那條帶突變的分子，很可能根本沒有被抽進樣本裡。</p></div></details>
 </section>
 
 
 <section data-part="concept" class="part" id="part-concept">
-<h2 data-num="②" id="概念">概念</h2>
+<h2 data-num="②" id="一-前提">一 · 前提</h2>
 
-<h3 id="分子數的物理上限">分子數的物理上限</h3>
+<h3 id="問題的規模">問題的規模</h3>
 
 <p class="prose">一毫升血漿約含 1,000 至 10,000 個 <span class="term" data-term="genomic equivalents" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-genomic-equivalents-6">基因組當量<span class="term__pop" id="gd-genomic-equivalents-6" role="tooltip"><b class="term__hd">genomic equivalents <i>基因組當量</i></b><span class="term__def" data-lang="zh">樣本中含有的完整基因組份數。1 mL 血漿約只有 1,000–10,000 個 GE，這構成一個<b>物理上限</b>：若帶突變的分子根本沒被抽進樣本，再深的定序也測不到。</span><span class="term__def" data-lang="en" lang="en">The number of complete genome copies present in a sample. One millilitre of plasma contains only about 1,000 to 10,000 GE, imposing a physical ceiling: if a mutation-bearing molecule was never sampled, no amount of sequencing depth can recover it.</span><a class="term__more" href="glossary.html#genomic-equivalents">完整條目 →</a></span></span>，
 亦即完整基因組的份數。這個數字構成一道物理上限。</p>
-
-<p class="prose">設腫瘤分數為 <math><mi>TF</mi></math>、樣本含 <math><mi>n</mi></math> 個基因組當量，
-則某個特定位點上帶有突變的分子期望數為：</p>
 
 <div class="eq"><math display="block"><mi>E</mi><mo>[</mo><mtext>帶突變的分子數</mtext><mo>]</mo><mo>=</mo><mi>n</mi><mo>×</mo><mi>TF</mi></math><p class="eq__note">以 <math><mi>n</mi><mo>=</mo><msup><mn>10</mn><mn>4</mn></msup></math>、<math><mi>TF</mi><mo>=</mo><msup><mn>10</mn><mrow><mo>-</mo><mn>5</mn></mrow></msup></math> 代入，期望值為 0.1 條 ——
 即十次抽樣中約有九次，那條分子不存在於樣本內。</p></div>
@@ -169,35 +165,52 @@
   <text class="tick zh" x="44" y="442">n＝基因組當量數　d＝偵測極限　k＝追蹤的位點數　→ 增加 k 比增加深度有效得多</text>
 </svg><figcaption>左側為問題：基因組當量有物理上限，低腫瘤分數下目標分子多半未被抽入樣本。右側為解法：改為同時觀察全基因體上數千個位點，累積獨立機會。</figcaption></figure>
 
-<h3 id="廣度取代深度">廣度取代深度</h3>
+<h3 id="三個基本量">三個基本量</h3>
 
-<p class="prose">既然單一位點的偵測機率無法藉深度提升，
-解法是<b>增加位點數</b>：每個位點各自的機率仍極低，
-但只要任一位點命中即算偵測到該檢體含有腫瘤。</p>
+<p class="prose">偵測能力由三個量決定。後續各頁討論的所有取捨，都可以化約到這三者之間。</p>
 
-<p class="prose"><span class="term" data-term="iDES" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-ides-7">iDES<span class="term__pop" id="gd-ides-7" role="tooltip"><b class="term__hd">iDES <i>iDES</i></b><span class="term__def" data-lang="zh">Stanford 2016 年的 CAPP-Seq 改良（Nat Biotechnol）。整合分子條碼與 <b>background polishing</b>（逐位置逐取代類型建背景分布），兩者各約 3× 改善、合併達 ~15×，偵測極限降到 0.0025%。<b>其 background polishing 是本專案最可直接移植的降噪法。</b></span><span class="term__def" data-lang="en" lang="en">The 2016 Stanford refinement of CAPP-Seq (Nat Biotechnol), integrating molecular barcoding with background polishing that models background per position and substitution type. Each contributes about threefold, combining to roughly fifteenfold, lowering the detection limit to 0.0025%. Its background polishing is the most directly transferable denoising method for this project.</span><a class="term__more" href="glossary.html#ides">完整條目 →</a></span></span> 給出了此關係的簡潔形式。
-設 <math><mi>n</mi></math> 為定序到的基因組當量數、<math><mi>d</mi></math> 為偵測極限、<math><mi>k</mi></math> 為追蹤的
-<span class="term" data-term="reporter" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-reporter-8">位點<span class="term__pop" id="gd-reporter-8" role="tooltip"><b class="term__hd">reporter <i>報告位點</i></b><span class="term__def" data-lang="zh">compendium 中每一個被追蹤的變異位點。CAPP-Seq 的核心洞見是：每位病人的 reporter 數越多，偵測機率越高（見 detection probability model）。</span><span class="term__def" data-lang="en" lang="en">Each tracked variant site within the compendium. The core insight of CAPP-Seq is that the more reporters a patient has, the higher the detection probability.</span><a class="term__more" href="glossary.html#reporter">完整條目 →</a></span></span>數，則偵測到至少一個 ctDNA 分子的機率為：</p>
-
-<div class="eq"><math display="block"><mi>p</mi><mo>=</mo><mn>1</mn><mo>−</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>n</mi><mo>·</mo><mi>d</mi><mo>·</mo><mi>k</mi></mrow></msup></math><p class="eq__note">三個參數皆可反解。此式即 <span class="term" data-term="breadth supplants depth" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-breadth-supplants-depth-9">廣度取代深度<span class="term__pop" id="gd-breadth-supplants-depth-9" role="tooltip"><b class="term__hd">breadth supplants depth <i>廣度取代深度</i></b><span class="term__def" data-lang="zh">MRDetect 的核心論證：因為 GE 有物理上限，加深定序在低 TF 時毫無幫助；改為在全基因體上累加數千個位點的微弱訊號，才能突破偵測極限。</span><span class="term__def" data-lang="en" lang="en">The core argument of MRDetect: because genomic equivalents are physically limited, increasing sequencing depth does not help at low TF. Integrating weak signal across thousands of genome-wide sites is what breaks the detection barrier instead.</span><a class="term__more" href="glossary.html#breadth-supplants-depth">完整條目 →</a></span></span>的數學基礎 ——
-<math><mi>n</mi></math> 受生物學限制、<math><mi>d</mi></math> 受化學與演算法限制，而 <math><mi>k</mi></math> 是唯一可由設計自由決定的量。</p></div>
-
-<p class="prose">MRDetect 據此推算：整合超過 10,000 個 <span class="term" data-term="SNV" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-snv-10">SNV<span class="term__pop" id="gd-snv-10" role="tooltip"><b class="term__hd">SNV <i>單核苷酸變異</i></b><span class="term__def" data-lang="zh">單一鹼基的改變。與 SNP 的差別在於 SNV 不預設它在族群中常見 —— 腫瘤裡新產生的單點突變叫 somatic SNV（sSNV），不叫 SNP。</span><span class="term__def" data-lang="en" lang="en">A single-nucleotide change. Unlike SNP, it carries no implication of population frequency; new tumour mutations are sSNVs.</span><a class="term__more" href="glossary.html#snv">完整條目 →</a></span></span> 時，即使腫瘤分數為 10⁻⁵，
-20 倍深度即有超過 85% 的偵測機率，50 倍深度可達 99% 以上。
-這正是該方法選擇中等深度全基因體定序、而非超深標的定序的理由。</p>
-
-<div class="guardrail guardrail--info">
-<p class="guardrail__hd">位點數的效果是可量測的</p>
-<p class="prose"><span class="term" data-term="AccuScan" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-accuscan-11">AccuScan<span class="term__pop" id="gd-accuscan-11" role="tooltip"><b class="term__hd">AccuScan <i>AccuScan</i></b><span class="term__def" data-lang="zh">2024 年的 WGS MRD 方法（EMBO Mol Med）。用 <b>RCA concatemer</b> 讓錯誤校正在單一 read 內完成，錯誤率 4.2e-7、LOD 達 cVAF 1e-6。<b>背景錯誤率由樣本自身量測、門檻由統計模型反推，皆不需 control 世代。</b></span><span class="term__def" data-lang="en" lang="en">A 2024 WGS MRD method (EMBO Mol Med) using RCA concatemers so that error correction happens within a single read, reaching an error rate of 4.2e-7 and an LOD of cVAF 1e-6. Its background error rate is measured from the sample itself and its threshold derived from the statistical model, neither requiring a control cohort.</span><a class="term__more" href="glossary.html#accuscan">完整條目 →</a></span></span> 以健康人 cfDNA 互相稀釋做過直接量測：
-在 <span class="term" data-term="cVAF" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-cvaf-12">cVAF<span class="term__pop" id="gd-cvaf-12" role="tooltip"><b class="term__hd">cVAF <i>循環變異等位基因分率</i></b><span class="term__def" data-lang="zh">血漿中某變異的等位基因分率。與一般 VAF 的差別在量級：germline VAF 約 0.5，而 MRD 情境的 cVAF 常在 10⁻⁵–10⁻⁶ 之間，與定序錯誤率同一個數量級。</span><span class="term__def" data-lang="en" lang="en">The variant allele frequency of a mutation in plasma. It differs from ordinary VAF in magnitude: germline VAF is about 0.5, whereas cVAF in MRD settings is typically 1e-5 to 1e-6, the same order as the sequencing error rate.</span><a class="term__more" href="glossary.html#cvaf">完整條目 →</a></span></span> 為 10⁻⁵、60 倍深度的條件下，
-使用 2,000／5,000／10,000／20,000 個 <span class="term" data-term="marker" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-marker-13">標的<span class="term__pop" id="gd-marker-13" role="tooltip"><b class="term__hd">marker <i>標的</i></b><span class="term__def" data-lang="zh">與 reporter 同義，AccuScan 等論文使用的稱呼。實測顯示 marker 數對偵測率影響極大：在 cVAF 1e-5 下，2K/5K/10K/20K 個 marker 分別給出 38%/77%/96%/100% 的偵測率。</span><span class="term__def" data-lang="en" lang="en">Synonymous with reporter; the term used by AccuScan and others. Marker count strongly affects detection: at cVAF 1e-5, using 2K, 5K, 10K and 20K markers yields detection rates of 38%, 77%, 96% and 100% respectively.</span><a class="term__more" href="glossary.html#marker">完整條目 →</a></span></span>時，
-偵測率分別為 <b>38%／77%／96%／100%</b>。</p>
-<p class="prose">位點數從兩千增至兩萬，偵測率由不及四成升至完全偵測 —— 深度並未改變。</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th scope="col">量</th><th scope="col">是什麼</th><th scope="col">典型數值</th><th scope="col">能不能改</th></tr></thead>
+<tbody>
+<tr>
+  <td><b><span class="term" data-term="tumor fraction" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-tumor-fraction-7">腫瘤分數<span class="term__pop" id="gd-tumor-fraction-7" role="tooltip"><b class="term__hd">tumor fraction <i>腫瘤分數</i></b><span class="term__def" data-lang="zh">樣本中源自腫瘤的 DNA 佔全部 DNA 的比例。MRD 情境常低至 10⁻⁵ 甚至 10⁻⁶。本專案因使用純細胞株（purity≈1），混合時的 tumor read 比例即等同 TF。</span><span class="term__def" data-lang="en" lang="en">The proportion of DNA in a sample that derives from tumour. In MRD settings it can be as low as 1e-5 to 1e-6. In this project, because pure cell lines are used (purity approximately 1), the tumour read ratio during admixture equals TF directly.</span><a class="term__more" href="glossary.html#tumor-fraction">完整條目 →</a></span></span></b>（訊號強度）</td>
+  <td>樣本中源自腫瘤的 DNA 佔全部 DNA 的比例</td>
+  <td>MRD 情境 10⁻⁵ – 10⁻⁶</td>
+  <td>❌ 由病人的疾病狀態決定</td>
+</tr>
+<tr>
+  <td><b><span class="term" data-term="background error rate" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-background-error-rate-8">背景錯誤率<span class="term__pop" id="gd-background-error-rate-8" role="tooltip"><b class="term__hd">background error rate <i>背景錯誤率</i></b><span class="term__def" data-lang="zh">在確定無腫瘤的樣本上，每個鹼基被誤讀成非參考鹼基的比率。它決定了偵測極限的下界。各方法實測值：未過濾 Illumina WGS 約 1e-3、read-pair 校正 2.8e-5、duplex 7.7e-7、ONT simplex 約 6.7e-3。</span><span class="term__def" data-lang="en" lang="en">The rate at which a base is miscalled as non-reference in samples known to be tumour-free. It bounds the achievable detection limit. Measured values: unfiltered Illumina WGS about 1e-3, read-pair corrected 2.8e-5, duplex 7.7e-7, and ONT simplex about 6.7e-3.</span><a class="term__more" href="glossary.html#background-error-rate">完整條目 →</a></span></span></b>（雜訊強度）</td>
+  <td>確定無腫瘤時，每個鹼基被誤讀成非參考鹼基的比率</td>
+  <td>未處理的 Illumina 約 10⁻³；ONT 約 6.7×10⁻³</td>
+  <td>🔶 可用各種手段壓低，但有代價</td>
+</tr>
+<tr>
+  <td><b>追蹤位點數 <math><mi>k</mi></math></b>（機會次數）</td>
+  <td>清單上有幾個位點可以檢查</td>
+  <td>30 個到 35,000 個不等</td>
+  <td>✅ <b>唯一可由設計自由決定的</b></td>
+</tr>
+</tbody>
+</table>
 </div>
 
-<h3 id="read-centric-判斷單元必須改變">read-centric：判斷單元必須改變</h3>
+<p class="prose">三者的關係可寫成一條式子。設 <math><mi>n</mi></math> 為定序到的基因組當量數、
+<math><mi>d</mi></math> 為偵測極限、<math><mi>k</mi></math> 為追蹤位點數：</p>
 
-<p class="prose">增加位點數解決了「能不能抽到」，卻帶來第二個問題：<b>怎麼確認抽到的是真訊號</b>。</p>
+<div class="eq"><math display="block"><mi>p</mi><mo>=</mo><mn>1</mn><mo>−</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>n</mi><mo>·</mo><mi>d</mi><mo>·</mo><mi>k</mi></mrow></msup></math><p class="eq__note"><math><mi>p</mi></math> 為偵測到至少一個 <span class="term" data-term="ctDNA" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-ctdna-9">ctDNA<span class="term__pop" id="gd-ctdna-9" role="tooltip"><b class="term__hd">ctDNA <i>循環腫瘤 DNA</i></b><span class="term__def" data-lang="zh">cfDNA 中源自腫瘤的那一部分，帶有腫瘤的體細胞變異。在 MRD 情境下它只佔 cfDNA 的極小比例（常低於百萬分之一），這是所有偵測困難的根源。</span><span class="term__def" data-lang="en" lang="en">The tumour-derived fraction of cfDNA, carrying the tumour's somatic alterations. In the MRD setting it constitutes an extremely small share of total cfDNA, often below one part per million — the root of the detection problem.</span><a class="term__more" href="glossary.html#ctdna">完整條目 →</a></span></span> 分子的機率。
+三個參數皆可反解 —— 例如給定位點數與目標偵測率，反推所需的錯誤率。</p></div>
+
+<h3 id="前提一-廣度取代深度">前提一 · 廣度取代深度</h3>
+
+<p class="prose">既然單一位點的偵測機率無法藉深度提升，解法是<b>增加位點數</b>：
+每個位點各自的機率仍極低，但只要任一位點命中，即算偵測到該檢體含有腫瘤。</p>
+
+<p class="prose"><span class="term" data-term="AccuScan" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-accuscan-10">AccuScan<span class="term__pop" id="gd-accuscan-10" role="tooltip"><b class="term__hd">AccuScan <i>AccuScan</i></b><span class="term__def" data-lang="zh">2024 年的 WGS MRD 方法（EMBO Mol Med）。用 <b>RCA concatemer</b> 讓錯誤校正在單一 read 內完成，錯誤率 4.2e-7、LOD 達 cVAF 1e-6。<b>背景錯誤率由樣本自身量測、門檻由統計模型反推，皆不需 control 世代。</b></span><span class="term__def" data-lang="en" lang="en">A 2024 WGS MRD method (EMBO Mol Med) using RCA concatemers so that error correction happens within a single read, reaching an error rate of 4.2e-7 and an LOD of cVAF 1e-6. Its background error rate is measured from the sample itself and its threshold derived from the statistical model, neither requiring a control cohort.</span><a class="term__more" href="glossary.html#accuscan">完整條目 →</a></span></span> 直接量測過此效應：在 <span class="term" data-term="cVAF" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-cvaf-11">cVAF<span class="term__pop" id="gd-cvaf-11" role="tooltip"><b class="term__hd">cVAF <i>循環變異等位基因分率</i></b><span class="term__def" data-lang="zh">血漿中某變異的等位基因分率。與一般 VAF 的差別在量級：germline VAF 約 0.5，而 MRD 情境的 cVAF 常在 10⁻⁵–10⁻⁶ 之間，與定序錯誤率同一個數量級。</span><span class="term__def" data-lang="en" lang="en">The variant allele frequency of a mutation in plasma. It differs from ordinary VAF in magnitude: germline VAF is about 0.5, whereas cVAF in MRD settings is typically 1e-5 to 1e-6, the same order as the sequencing error rate.</span><a class="term__more" href="glossary.html#cvaf">完整條目 →</a></span></span> 10⁻⁵、60 倍深度的條件下，
+使用 2,000／5,000／10,000／20,000 個<span class="term" data-term="marker" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-marker-12">標的<span class="term__pop" id="gd-marker-12" role="tooltip"><b class="term__hd">marker <i>標的</i></b><span class="term__def" data-lang="zh">與 reporter 同義，AccuScan 等論文使用的稱呼。實測顯示 marker 數對偵測率影響極大：在 cVAF 1e-5 下，2K/5K/10K/20K 個 marker 分別給出 38%/77%/96%/100% 的偵測率。</span><span class="term__def" data-lang="en" lang="en">Synonymous with reporter; the term used by AccuScan and others. Marker count strongly affects detection: at cVAF 1e-5, using 2K, 5K, 10K and 20K markers yields detection rates of 38%, 77%, 96% and 100% respectively.</span><a class="term__more" href="glossary.html#marker">完整條目 →</a></span></span>時，
+偵測率分別為 <b>38%／77%／96%／100%</b> —— 深度並未改變。</p>
+
+<h3 id="前提二-read-centric">前提二 · read-centric</h3>
 
 <p class="prose">傳統的變異判定依賴支持數門檻 —— 例如要求至少三條 read 支持同一個變異，
 因為定序錯誤不太可能在同一位點重複三次。
@@ -278,115 +291,331 @@
   <text class="tick zh" x="664" y="394">INVAR 離群抑制、AccuScan 單分子準則</text>
 </svg><figcaption>上半為傳統以位點為單位的判定，適用於高變異等位基因分率；下半為極低腫瘤分數下的真實情況，此時判斷單元必須改為單一條 read。</figcaption></figure>
 
-<p class="prose">因此 MRDetect 把判斷單元改為<b>單一條 read 究竟是真突變還是定序錯誤</b>，
-稱為 <span class="term" data-term="read-centric" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-read-centric-14">read-centric<span class="term__pop" id="gd-read-centric-14" role="tooltip"><b class="term__hd">read-centric <i>以讀取為單位</i></b><span class="term__def" data-lang="zh">MRDetect 的關鍵設計：因為 TF ≪ 1/depth，每個位點最多只期待<b>一條</b>支持 read，因此判斷單元是「單條 read 的真偽」，不能用「多條支持才算數」的傳統門檻。</span><span class="term__def" data-lang="en" lang="en">A key design in MRDetect: because TF is far below 1/depth, at most one supporting read is expected per site. The unit of judgement is therefore whether a single read is genuine, and conventional thresholds requiring multiple supporting reads do not apply.</span><a class="term__more" href="glossary.html#read-centric">完整條目 →</a></span></span>。此後所有 <span class="term" data-term="error suppression" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-error-suppression-15">誤差抑制<span class="term__pop" id="gd-error-suppression-15" role="tooltip"><b class="term__hd">error suppression <i>誤差抑制</i></b><span class="term__def" data-lang="zh">降低定序與建庫錯誤的統稱。三條路線：靠濕實驗化學（UMI、duplex、RCA）、靠統計建模（background polishing、outlier suppression）、靠機器學習（SVM、深度學習）。</span><span class="term__def" data-lang="en" lang="en">The general term for reducing sequencing and library errors. Three routes exist: wet-lab chemistry (UMI, duplex, RCA), statistical modelling (background polishing, outlier suppression), and machine learning (SVM, deep learning).</span><a class="term__more" href="glossary.html#error-suppression">完整條目 →</a></span></span>方法，
-不論用機器學習或統計建模，都是在回答這個問題。</p>
+<p class="prose">因此判斷單元改為<b>單一條 read 究竟是真突變還是定序錯誤</b>。
+這個轉換有一個反直覺的推論：既然真訊號應該<b>隨機散布</b>在許多位點、
+且每個位點最多一條支持 read，那麼<b>支持數明顯偏多的位點反而可疑</b>。</p>
+
+<h3 id="前提三-必須有陰性對照">前提三 · 必須有陰性對照</h3>
+
+<p class="prose">算出一個分數之後，怎麼知道它算高還是低？
+必須先量出「沒有腫瘤時分數長什麼樣」—— 這就是<span class="term" data-term="control cohort" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-control-cohort-13">陰性對照<span class="term__pop" id="gd-control-cohort-13" role="tooltip"><b class="term__hd">control cohort <i>對照世代</i></b><span class="term__def" data-lang="zh">用於估計噪音水準或決定門檻的陰性樣本集合。MRDetect 用 30 個 control plasma、iDES 用 12 個、ichorCNA 用 27 個健康捐贈者。⚠️ <b>本專案只有 5 個獨立陰性個體</b>，這是主要約束。</span><span class="term__def" data-lang="en" lang="en">The set of negative samples used to estimate noise levels or set thresholds. MRDetect used 30 control plasmas, iDES 12, and ichorCNA 27 healthy donors. This project has only five independent negative individuals, which is a principal constraint.</span><a class="term__more" href="glossary.html#control-cohort">完整條目 →</a></span></span>的作用。</p>
+
+<figure class="dia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 450" class="dia-svg" role="img" aria-labelledby="negative-control__title" aria-describedby="negative-control__desc">
+  <title id="negative-control__title">陰性對照的角色：沒有它就不知道「沒有腫瘤時分數長什麼樣」</title>
+  <desc id="negative-control__desc">本圖說明為何判定必須依賴陰性對照。
+        上半部呈現核心問題：對一份待測檢體算出一個分數之後，
+        單看這個數字無法判斷它是高還是低，因為沒有比較的基準。
+        圖中以一條數線表示分數，待測檢體落在某個位置，
+        但數線上沒有任何刻度可以判斷該位置代表有腫瘤還是沒有。
+        下半部呈現解法：先取一批確定不含腫瘤的樣本，
+        用完全相同的流程各自算出分數，得到一個分布。
+        這個分布就是「沒有腫瘤時分數長什麼樣」的基準。
+        門檻畫在該分布的上緣，待測檢體超過門檻才判為陽性。
+        圖右側標出本領域的實際限制：
+        各方法所需的陰性樣本數差異極大，
+        從三十個、二十七個、十二個到七個不等，
+        而另有兩種做法完全不需要專用的陰性樣本，
+        分別是借用其他病人的樣本、以及由統計模型直接推導門檻。
+        陰性樣本因此是稀缺資源，這個限制貫穿門檻決定與效能評估兩個步驟。</desc>
+
+  <text class="ttl bold zh" x="20" y="34">陰性對照：判定的基準從哪裡來</text>
+
+  <!-- ══ 上：沒有基準的問題 ══ -->
+  <rect class="box plain" x="20" y="58" width="620" height="150" rx="10"/>
+  <text class="anno bold zh" x="44" y="88">問題：單一個分數無法解讀</text>
+
+  <path class="axis" d="M70 156 L590 156"/>
+  <text class="tick zh" x="70" y="180">低</text>
+  <text class="tick zh" x="566" y="180">高</text>
+  <circle class="mark somatic" cx="392" cy="156" r="10"/>
+  <text class="anno bold somatic zh" x="392" y="136" text-anchor="middle">待測檢體</text>
+
+  <text class="tick zh" x="44" y="200">這個位置算高還是低？數線上沒有刻度，無從判斷。</text>
+
+  <!-- ══ 右：實際限制 ══ -->
+  <rect class="box" x="660" y="58" width="320" height="150" rx="10"/>
+  <text class="anno bold zh" x="684" y="88">各方法需要幾個陰性樣本</text>
+  <text class="tick zh" x="684" y="116">MRDetect　30 個</text>
+  <text class="tick zh" x="684" y="138">ichorCNA　27 個</text>
+  <text class="tick zh" x="684" y="160">iDES　　　12 個</text>
+  <text class="tick zh" x="684" y="182">NanoRCS　　7 個</text>
+
+  <!-- ══ 下：解法 ══ -->
+  <rect class="box" x="20" y="228" width="620" height="200" rx="10"/>
+  <text class="anno bold zh" x="44" y="258">解法：先量「沒有腫瘤時長什麼樣」</text>
+
+  <text class="tick zh" x="44" y="284">取一批確定不含腫瘤的樣本，用完全相同的流程各自算分數</text>
+
+  <path class="axis" d="M70 366 L590 366"/>
+
+  <!-- 陰性分布 -->
+  <circle class="mark ref" cx="150" cy="366" r="8"/>
+  <circle class="mark ref" cx="178" cy="366" r="8"/>
+  <circle class="mark ref" cx="204" cy="366" r="8"/>
+  <circle class="mark ref" cx="226" cy="366" r="8"/>
+  <circle class="mark ref" cx="248" cy="366" r="8"/>
+  <circle class="mark ref" cx="272" cy="366" r="8"/>
+  <text class="tick mid zh" x="210" y="336">陰性樣本的分數分布</text>
+
+  <!-- 門檻 -->
+  <path class="guide thick" d="M310 320 L310 392"/>
+  <text class="anno bold accent zh" x="310" y="312" text-anchor="middle">門檻</text>
+
+  <!-- 待測 -->
+  <circle class="mark somatic" cx="392" cy="366" r="10"/>
+  <text class="anno bold somatic zh" x="392" y="336" text-anchor="middle">待測檢體</text>
+  <text class="anno bold ok zh" x="430" y="371">→ 超過門檻，判為陽性</text>
+
+  <text class="tick zh" x="44" y="412">門檻畫在陰性分布的上緣 —— 陰性樣本越少，這條線的位置越不可靠。</text>
+
+  <!-- 右下：兩條不需陰性樣本的路 -->
+  <rect class="box" x="660" y="228" width="320" height="200" rx="10"/>
+  <text class="anno bold ok zh" x="684" y="258">兩種不需專用陰性樣本的做法</text>
+
+  <text class="anno bold zh" x="684" y="292">① 借用其他病人的樣本</text>
+  <text class="tick zh" x="684" y="314">任兩人的腫瘤突變幾乎不重疊，</text>
+  <text class="tick zh" x="684" y="334">故 B 的樣本天然是 A 的陰性對照</text>
+
+  <text class="anno bold zh" x="684" y="370">② 由統計模型推導門檻</text>
+  <text class="tick zh" x="684" y="392">設定名目特異度，</text>
+  <text class="tick zh" x="684" y="412">由背景錯誤模型直接反推</text>
+</svg><figcaption>單一個分數無法解讀，必須先用確定不含腫瘤的樣本量出基準分布，門檻才有依據。右側列出各方法所需的陰性樣本數，以及兩種不需專用陰性樣本的做法。</figcaption></figure>
+
+<p class="prose">問題在於<b>陰性樣本是稀缺資源</b>：
+<span class="term" data-term="MRDetect" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-mrdetect-14">MRDetect<span class="term__pop" id="gd-mrdetect-14" role="tooltip"><b class="term__hd">MRDetect <i>MRDetect（第一代）</i></b><span class="term__def" data-lang="zh">Landau lab 2020 年的方法（Nat Med），本專案的基準。核心是「廣度取代深度」：35X WGS + 全基因體數千個 SNV 累加，用線性 SVM 對單條 read 去噪（5 特徵）。LLOD 約 1e-5。⚠️ 程式碼未開源。</span><span class="term__def" data-lang="en" lang="en">The 2020 method from the Landau lab (Nat Med) and the baseline for this project. Its core is breadth supplanting depth: 35X WGS integrating thousands of genome-wide SNVs, with a linear SVM denoising individual reads on five features. LLOD about 1e-5. Code is not open source.</span><a class="term__more" href="glossary.html#mrdetect">完整條目 →</a></span></span> 用了 30 個、<span class="term" data-term="ichorCNA" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-ichorcna-15">ichorCNA<span class="term__pop" id="gd-ichorcna-15" role="tooltip"><b class="term__hd">ichorCNA <i>ichorCNA</i></b><span class="term__def" data-lang="zh">Broad Institute 2017 年的工具（Nat Commun）。從 <b>0.1× 超低深度 WGS</b> 估 tumor fraction，不需事先知道腫瘤變異。用 HMM 同時預測 CNA 片段與估 TF。<b>MRDetect 三代都在用它。</b> ⚠️ 偵測下限 TF 3%，遠高於 MRD 目標區間。</span><span class="term__def" data-lang="en" lang="en">The 2017 Broad Institute tool (Nat Commun) estimating tumour fraction from 0.1x ultra-low-pass WGS without prior knowledge of tumour variants, using an HMM to jointly predict CNA segments and TF. All three MRDetect generations use it. Its detection floor of TF 3% is far above the MRD target range.</span><a class="term__more" href="glossary.html#ichorcna">完整條目 →</a></span></span> 27 個、<span class="term" data-term="iDES" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-ides-16">iDES<span class="term__pop" id="gd-ides-16" role="tooltip"><b class="term__hd">iDES <i>iDES</i></b><span class="term__def" data-lang="zh">Stanford 2016 年的 CAPP-Seq 改良（Nat Biotechnol）。整合分子條碼與 <b>background polishing</b>（逐位置逐取代類型建背景分布），兩者各約 3× 改善、合併達 ~15×，偵測極限降到 0.0025%。<b>其 background polishing 是本專案最可直接移植的降噪法。</b></span><span class="term__def" data-lang="en" lang="en">The 2016 Stanford refinement of CAPP-Seq (Nat Biotechnol), integrating molecular barcoding with background polishing that models background per position and substitution type. Each contributes about threefold, combining to roughly fifteenfold, lowering the detection limit to 0.0025%. Its background polishing is the most directly transferable denoising method for this project.</span><a class="term__more" href="glossary.html#ides">完整條目 →</a></span></span> 12 個、<span class="term" data-term="NanoRCS" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-nanorcs-17">NanoRCS<span class="term__pop" id="gd-nanorcs-17" role="tooltip"><b class="term__hd">NanoRCS <i>NanoRCS</i></b><span class="term__def" data-lang="zh">UMC Utrecht 2025 年的方法（Genome Research）。<b>唯一一篇在 ONT 平台上做 cfDNA 腫瘤偵測的方法論文。</b> RCA + 長讀共識把 ONT 錯誤率從 Q21 降到 Q31（改善 9.4×），LOD 為 TF 0.24%。同時取 SNV、CNA、fragmentomics 三種訊號。</span><span class="term__def" data-lang="en" lang="en">The 2025 method from UMC Utrecht (Genome Research) and the only methods paper performing cfDNA tumour detection on the ONT platform. RCA plus long-read consensus lowers ONT error from Q21 to Q31, a 9.4-fold improvement, achieving an LOD of TF 0.24% while extracting SNV, CNA and fragmentomics signals simultaneously.</span><a class="term__more" href="glossary.html#nanorcs">完整條目 →</a></span></span> 7 個。
+而同一批樣本若拿去決定門檻，就不能再拿來計算<span class="term" data-term="specificity" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-specificity-18">特異度<span class="term__pop" id="gd-specificity-18" role="tooltip"><b class="term__hd">specificity <i>特異度</i></b><span class="term__def" data-lang="zh">陰性樣本被正確判為陰性的比例：TN/(TN+FP)。<b>因為只由陰性樣本算出，不受陽性/陰性樣本組成比例影響</b>，是跨研究比較的主指標（Precision 與 F1 則會被 prevalence 綁架）。</span><span class="term__def" data-lang="en" lang="en">The proportion of negative samples correctly classified as negative: TN/(TN+FP). Because it is computed only from negatives, it is unaffected by the positive-to-negative composition and is the main metric for cross-study comparison, unlike precision and F1 which depend on prevalence.</span><a class="term__more" href="glossary.html#specificity">完整條目 →</a></span></span> ——
+否則等於用訓練資料證明自己不會誤判。</p>
+
+<p class="prose">這個限制貫穿第五步與第六步，是後續兩頁反覆出現的主題。</p>
 </section>
 
 
 <section data-part="evidence" class="part" id="part-evidence">
-<h2 data-num="③" id="由此推出的兩個設計">由此推出的兩個設計</h2>
+<h2 data-num="③" id="二-方法-一份檢體是怎麼被判定的">二 · 方法：一份檢體是怎麼被判定的</h2>
 
-<p class="prose">read-centric 有一個容易被忽略的推論：
-既然低腫瘤分數下真訊號應該<b>隨機散布</b>在許多位點、且每個位點最多一條支持 read，
-那麼<b>支持 read 數明顯偏多的位點反而可疑</b> —— 那更可能是該位點的系統性錯誤或殘留的
-<span class="term" data-term="germline filtering ladder" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-germline-filtering-ladder-16">germline<span class="term__pop" id="gd-germline-filtering-ladder-16" role="tooltip"><b class="term__hd">germline filtering ladder <i>生殖系過濾階梯</i></b><span class="term__def" data-lang="zh">本專案建 compendium 的分層過濾流程：C0（ClairS 原始約 11 萬位點）→ C2（+gnomAD）→ C3（+matched-normal ≥2）→ C4（+dbSNP）→ <b>C5（+CoLoRSdb 長讀長 PON，35,603 位點）</b>。⚠️ CoLoRSdb 是關鍵一步：短讀來源的資料庫漏掉的 ONT germline 要靠長讀長 PON 補抓。</span><span class="term__def" data-lang="en" lang="en">This project's layered filtering pipeline for building the compendium: C0 (about 110,000 raw ClairS sites) to C2 (plus gnomAD), C3 (plus matched-normal with two or more supporting reads), C4 (plus dbSNP) and C5 (plus the CoLoRSdb long-read PON, 35,603 sites). CoLoRSdb is the decisive step, catching ONT germline variants missed by short-read databases.</span><a class="term__more" href="glossary.html#germline-filtering-ladder">完整條目 →</a></span></span> 訊號。</p>
+<p class="prose">前一頁把六個步驟當作<b>比較各篇論文的框架</b>。
+這裡改用另一個角度：把它們當作<b>實際跑一遍的流程</b>，
+說明每一步為什麼不可省略。</p>
 
-<p class="prose">兩個獨立團隊各自得到了這個結論，並實作為兩個不同名稱的過濾步驟。</p>
+<figure class="dia"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 400" class="dia-svg" role="img" aria-labelledby="six-step-skeleton__title" aria-describedby="six-step-skeleton__desc">
+  <title id="six-step-skeleton__title">所有 MRD 偵測方法都要回答的六個問題</title>
+  <desc id="six-step-skeleton__desc">由左至右六個步驟，構成本知識庫的組織骨架。
+        第一步是追蹤標的：要追蹤哪些位點或特徵，這份清單怎麼得到。
+        第二步是驗證資料：用什麼資料證明方法有效，通常是稀釋序列。
+        第三步是 read 層去噪：怎麼分辨真訊號與定序錯誤。
+        第四步是樣本層分數：把成千上萬個位點的觀測合成一個數字。
+        第五步是門檻：判定有癌的線畫在哪裡，由誰決定。
+        第六步是評估：怎麼證明結果沒有過度擬合。
+        圖下方標出第三步與第四步之間是本領域的分水嶺：
+        有些方法把力氣放在壓低錯誤率，有些放在更好的整合統計或分類器。
+        不論用突變、片段長度還是甲基化，不論全基因體還是標的定序，
+        都要回答同樣這六個問題，差別只在每一步選了哪個做法。</desc>
 
-<div class="table-wrap">
-<table>
-<thead><tr><th scope="col">方法</th><th scope="col">名稱</th><th scope="col">作法</th><th scope="col">效果</th></tr></thead>
-<tbody>
-<tr>
-  <td><span class="term" data-term="INVAR" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-invar-17">INVAR<span class="term__pop" id="gd-invar-17" role="tooltip"><b class="term__hd">INVAR <i>INVAR</i></b><span class="term__def" data-lang="zh">劍橋 Rosenfeld lab 2020 年的方法（Sci Transl Med）。與 MRDetect 同期同目標但<b>走純統計路線不用 ML</b>：四層誤差抑制疊加（背景降 131×），以 likelihood ratio 判定，並<b>用其他病人的樣本當陰性對照定門檻</b>。有開源碼（INVAR2）。</span><span class="term__def" data-lang="en" lang="en">The 2020 method from Rosenfeld's lab in Cambridge (Sci Transl Med). Contemporaneous with MRDetect and sharing its goal but taking a purely statistical route without machine learning: four stacked layers of error suppression (131-fold background reduction), decisions by likelihood ratio, and thresholds set using other patients' samples as negative controls. Open source as INVAR2.</span><a class="term__more" href="glossary.html#invar">完整條目 →</a></span></span></td>
-  <td><span class="term" data-term="outlier suppression" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-outlier-suppression-18">離群抑制<span class="term__pop" id="gd-outlier-suppression-18" role="tooltip"><b class="term__hd">outlier suppression <i>離群抑制</i></b><span class="term__def" data-lang="zh">INVAR 的關鍵步驟：低 TF 下訊號應<b>隨機散布</b>在各位點、多數位點為零。對此分布找 outlier 並剔除不一致的單點訊號 → control 訊號降約 3 倍，病人訊號保留 96.1%。<b>不依賴任何平台特性。</b></span><span class="term__def" data-lang="en" lang="en">A key step in INVAR: at low TF, signal should be randomly scattered across sites with most sites at zero. Outliers against this distribution are identified and removed, reducing control signal roughly threefold while retaining 96.1% of patient signal. It depends on no platform-specific feature.</span><a class="term__more" href="glossary.html#outlier-suppression">完整條目 →</a></span></span></td>
-  <td>對「訊號應隨機散布」的分布找離群值，剔除不一致的單一位點訊號（校正多重檢定）</td>
-  <td>對照樣本訊號降約 <b>3 倍</b>，病人樣本保留 <b>96.1%</b></td>
-</tr>
-<tr>
-  <td><span class="term" data-term="AccuScan" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-accuscan-19">AccuScan<span class="term__pop" id="gd-accuscan-19" role="tooltip"><b class="term__hd">AccuScan <i>AccuScan</i></b><span class="term__def" data-lang="zh">2024 年的 WGS MRD 方法（EMBO Mol Med）。用 <b>RCA concatemer</b> 讓錯誤校正在單一 read 內完成，錯誤率 4.2e-7、LOD 達 cVAF 1e-6。<b>背景錯誤率由樣本自身量測、門檻由統計模型反推，皆不需 control 世代。</b></span><span class="term__def" data-lang="en" lang="en">A 2024 WGS MRD method (EMBO Mol Med) using RCA concatemers so that error correction happens within a single read, reaching an error rate of 4.2e-7 and an LOD of cVAF 1e-6. Its background error rate is measured from the sample itself and its threshold derived from the statistical model, neither requiring a control cohort.</span><a class="term__more" href="glossary.html#accuscan">完整條目 →</a></span></span></td>
-  <td><span class="term" data-term="single-molecule rule" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-single-molecule-rule-20">單分子準則<span class="term__pop" id="gd-single-molecule-rule-20" role="tooltip"><b class="term__hd">single-molecule rule <i>單分子準則</i></b><span class="term__def" data-lang="zh">AccuScan 的等價設計：低腫瘤負荷時，真 somatic 變異幾乎都只出現在<b>單一分子</b>上，因此<b>排除支持分子數 >1 的位點</b>。與 INVAR 的 outlier suppression 是兩個獨立團隊得出的同一個洞見。</span><span class="term__def" data-lang="en" lang="en">AccuScan's equivalent design: at low tumour burden, genuine somatic variants almost always appear on a single molecule, so sites supported by more than one molecule are excluded. This is the same insight as INVAR's outlier suppression, reached independently.</span><a class="term__more" href="glossary.html#single-molecule-rule">完整條目 →</a></span></span></td>
-  <td>低腫瘤負荷時，排除支持分子數大於 1 的位點</td>
-  <td>—（與二項式對數概似合併使用）</td>
-</tr>
-</tbody>
-</table>
-</div>
+  <text class="ttl bold zh" x="20" y="34">所有 MRD 偵測方法的六步共同骨架</text>
+  <text class="tick zh" x="20" y="60">不論用突變、片段長度還是甲基化，不論全基因體還是 panel，都要回答同樣六個問題</text>
 
-<p class="prose">INVAR 的實作細節可由其開源程式碼取得，比論文文字精確得多。
-論文僅稱「找出離群值（校正多重檢定）」，程式碼則給出完整規則：</p>
+  <!-- 六個步驟方塊 -->
+  <g>
+    <rect class="box plain" x="20" y="88" width="148" height="118" rx="10"/>
+    <text class="lbl bold mid accent" x="94" y="120">①</text>
+    <text class="anno bold mid zh" x="94" y="150">追蹤標的</text>
+    <text class="tick mid zh" x="94" y="176">追蹤哪些位點？</text>
+    <text class="tick mid zh" x="94" y="194">清單怎麼來？</text>
+  </g>
+  <g>
+    <rect class="box plain" x="184" y="88" width="148" height="118" rx="10"/>
+    <text class="lbl bold mid accent" x="258" y="120">②</text>
+    <text class="anno bold mid zh" x="258" y="150">驗證資料</text>
+    <text class="tick mid zh" x="258" y="176">用什麼資料</text>
+    <text class="tick mid zh" x="258" y="194">證明它有效？</text>
+  </g>
+  <g>
+    <rect class="box" x="348" y="88" width="148" height="118" rx="10"/>
+    <text class="lbl bold mid accent" x="422" y="120">③</text>
+    <text class="anno bold mid zh" x="422" y="150">read 層去噪</text>
+    <text class="tick mid zh" x="422" y="176">怎麼分辨真訊號</text>
+    <text class="tick mid zh" x="422" y="194">與定序錯誤？</text>
+  </g>
+  <g>
+    <rect class="box" x="512" y="88" width="148" height="118" rx="10"/>
+    <text class="lbl bold mid accent" x="586" y="120">④</text>
+    <text class="anno bold mid zh" x="586" y="150">樣本層分數</text>
+    <text class="tick mid zh" x="586" y="176">幾千個位點</text>
+    <text class="tick mid zh" x="586" y="194">怎麼變一個數字？</text>
+  </g>
+  <g>
+    <rect class="box plain" x="676" y="88" width="148" height="118" rx="10"/>
+    <text class="lbl bold mid accent" x="750" y="120">⑤</text>
+    <text class="anno bold mid zh" x="750" y="150">門檻</text>
+    <text class="tick mid zh" x="750" y="176">線畫在哪？</text>
+    <text class="tick mid zh" x="750" y="194">誰決定的？</text>
+  </g>
+  <g>
+    <rect class="box plain" x="840" y="88" width="140" height="118" rx="10"/>
+    <text class="lbl bold mid accent" x="910" y="120">⑥</text>
+    <text class="anno bold mid zh" x="910" y="150">評估</text>
+    <text class="tick mid zh" x="910" y="176">怎麼證明沒有</text>
+    <text class="tick mid zh" x="910" y="194">過度擬合？</text>
+  </g>
 
-<pre><code># R/3_outlier_suppression/outlierSuppression.R，函式 repolish
-# ① 估計樣本 ctDNA 水準 p 時，先排除這些位點
-filter(AF &lt;= 0.01 &amp; MUTATED_READS_PER_LOCI &lt;= 10 &amp; TUMOUR_AF &gt; 0)
-# 程式註解：「as we are trying to detect MRD」
+  <!-- 箭頭 -->
+  <path class="conn" d="M168 147 L184 147" marker-end="url(#six-step-skeleton__a1)"/>
+  <path class="conn" d="M332 147 L348 147" marker-end="url(#six-step-skeleton__a1)"/>
+  <path class="conn thick" d="M496 147 L512 147" marker-end="url(#six-step-skeleton__a1)"/>
+  <path class="conn" d="M660 147 L676 147" marker-end="url(#six-step-skeleton__a1)"/>
+  <path class="conn" d="M824 147 L840 147" marker-end="url(#six-step-skeleton__a1)"/>
+  <defs>
+    <marker id="six-step-skeleton__a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path class="conn" d="M0 0 L10 5 L0 10 z"/>
+    </marker>
+  </defs>
 
-# ② Bonferroni 校正 —— 除以位點數
-P_THRESHOLD = 0.05 / n_distinct(UNIQUE_POS)
+  <!-- 分水嶺標註 -->
+  <path class="guide" d="M504 76 L504 218"/>
+  <text class="anno bold accent zh" x="504" y="248" text-anchor="middle">↑ 本領域的分水嶺</text>
 
-# ③ 逐位點二項檢定
-binom.test(x = MUTATED_READS_PER_LOCI, n = DP, p = P_ESTIMATE,
-           alternative = &quot;greater&quot;)$p.value
+  <rect class="box plain" x="140" y="266" width="330" height="104" rx="10"/>
+  <text class="anno bold zh" x="164" y="296">力氣放在 ③ 壓低錯誤率</text>
+  <text class="tick zh" x="164" y="322">iDES 的背景拋光、duplex 定序、</text>
+  <text class="tick zh" x="164" y="342">RCA 共識（AccuScan、NanoRCS）</text>
 
-# ④ 判定（pass 表示「不是離群」，予以保留）
-OUTLIER.PASS = BINOMIAL_PROB &gt; P_THRESHOLD</code></pre>
+  <rect class="box plain" x="530" y="266" width="330" height="104" rx="10"/>
+  <text class="anno bold zh" x="554" y="296">力氣放在 ④ 更好的整合</text>
+  <text class="tick zh" x="554" y="322">INVAR 的概似比、Lung-CLiP 的</text>
+  <text class="tick zh" x="554" y="342">樣本層分類器、Monte Carlo 估 TF</text>
+</svg><figcaption>同樣六步，此處視為實際執行的流程。各方法的差別僅在每一步選了哪個做法。</figcaption></figure>
 
-<p class="prose">此步驟不依賴分子條碼、不依賴雙端定序，
-亦不依賴任何 <span class="term" data-term="ONT simplex" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-ont-simplex-21">ONT<span class="term__pop" id="gd-ont-simplex-21" role="tooltip"><b class="term__hd">ONT simplex <i>ONT 單股定序</i></b><span class="term__def" data-lang="zh">Oxford Nanopore 的標準單分子定序，一個分子讀一次。本專案的資料即為此類。實測錯誤率約 6.7e-3（Q21）—— 比 NanoRCS 的 RCA 共識（Q31）差 9.4 倍，比 Illumina duplex（7.7e-7）高約四個數量級。</span><span class="term__def" data-lang="en" lang="en">Oxford Nanopore's standard single-molecule sequencing, reading each molecule once. This is the data type used in this project, with a measured error rate of about 6.7e-3 (Q21) — 9.4-fold worse than NanoRCS's RCA consensus (Q31) and roughly four orders of magnitude above Illumina duplex (7.7e-7).</span><a class="term__more" href="glossary.html#ont-simplex">完整條目 →</a></span></span> 所缺乏的平台特性 ——
-是本專案可直接移植的少數降噪手段之一。詳見 <a href="p03.html">p03</a>。</p>
+<h3 id="先要有一份清單">① 先要有一份清單</h3>
+
+<p class="prose">不然不知道要看哪裡。這份清單稱為 <span class="term" data-term="compendium" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-compendium-19">變異圖譜<span class="term__pop" id="gd-compendium-19" role="tooltip"><b class="term__hd">compendium <i>變異圖譜</i></b><span class="term__def" data-lang="zh">病人（或細胞株）專屬的體細胞變異位點集合，是 tumor-informed 偵測要追蹤的目標。規模從數百（panel）到數萬（WGS）不等。本專案現行版本為 35,603 個位點。</span><span class="term__def" data-lang="en" lang="en">The patient-specific (or cell-line-specific) set of somatic variant sites that tumour-informed detection tracks. Sizes range from hundreds (panel) to tens of thousands (WGS). The current version in this project contains 35,603 sites.</span><a class="term__more" href="glossary.html#compendium">完整條目 →</a></span></span>：
+由病人的腫瘤組織定序取得，是<b>這位病人專屬</b>的體細胞突變位點集合，
+規模從數百到數萬個不等。</p>
+
+<p class="prose"><b>清單建立時必須移除 germline 變異</b> ——
+這是 11 篇論文唯一的共同步驟，無一例外。
+理由是 germline 位點的 <span class="term" data-term="VAF" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-vaf-20">VAF<span class="term__pop" id="gd-vaf-20" role="tooltip"><b class="term__hd">VAF <i>變異等位基因頻率</i></b><span class="term__def" data-lang="zh">在某個位點上，支持 alt allele 的 read 佔全部 read 的比例。<b>VAF 不等於帶有這個突變的細胞比例</b>。</span><span class="term__def" data-lang="en" lang="en">Variant Allele Frequency: the fraction of reads supporting the alternate allele. Not the same as the fraction of cells carrying it.</span><a class="term__more" href="glossary.html#vaf">完整條目 →</a></span></span> 約為 0.5，
+比 10⁻⁵ 量級的腫瘤訊號高四個數量級，混進來會完全淹沒真訊號。</p>
+
+<p class="prose">怎麼建、用哪些資料庫過濾，見 <a href="p02.html">p02</a>。</p>
+
+<h3 id="抽血-定序">② 抽血、定序</h3>
+
+<p class="prose">取得血漿中 <span class="term" data-term="cfDNA" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-cfdna-21">游離 DNA<span class="term__pop" id="gd-cfdna-21" role="tooltip"><b class="term__hd">cfDNA <i>游離 DNA</i></b><span class="term__def" data-lang="zh">血漿中游離的短 DNA 片段，主要由凋亡與壞死的細胞釋出，長度以約 166 bp 為眾數（對應核小體）。健康人與癌症病人都有。</span><span class="term__def" data-lang="en" lang="en">Short DNA fragments circulating freely in plasma, released mainly by apoptotic and necrotic cells, with a modal length of about 166 bp reflecting nucleosome protection. Present in both healthy and cancer subjects.</span><a class="term__more" href="glossary.html#cfdna">完整條目 →</a></span></span> 的定序資料。
+其中絕大多數來自正常細胞，只有極少部分來自腫瘤。</p>
+
+<h3 id="逐位點檢查-並判斷每條-read-的真偽">③ 逐位點檢查，並判斷每條 read 的真偽</h3>
+
+<p class="prose">在清單的每個位點上，檢查有沒有 read 帶著對應的突變。
+核心困難在此：<b>帶了也可能只是機器讀錯</b>，
+而兩者出現的頻率同一個數量級。</p>
+
+<p class="prose">因此需要<span class="term" data-term="error suppression" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-error-suppression-22">誤差抑制<span class="term__pop" id="gd-error-suppression-22" role="tooltip"><b class="term__hd">error suppression <i>誤差抑制</i></b><span class="term__def" data-lang="zh">降低定序與建庫錯誤的統稱。三條路線：靠濕實驗化學（UMI、duplex、RCA）、靠統計建模（background polishing、outlier suppression）、靠機器學習（SVM、深度學習）。</span><span class="term__def" data-lang="en" lang="en">The general term for reducing sequencing and library errors. Three routes exist: wet-lab chemistry (UMI, duplex, RCA), statistical modelling (background polishing, outlier suppression), and machine learning (SVM, deep learning).</span><a class="term__more" href="glossary.html#error-suppression">完整條目 →</a></span></span>。
+各家的做法從濕實驗化學、統計建模到機器學習都有 —— 這是設計空間最寬的一步。
+七種做法及其代價，見 <a href="p03.html">p03</a>。</p>
+
+<h3 id="把成千上萬個觀測合成一個數">④ 把成千上萬個觀測合成一個數</h3>
+
+<p class="prose">單一位點的觀測不可靠，累加才有訊號 —— 這正是前提一的直接應用。
+輸出是一個「這份檢體有多像含有腫瘤」的分數。</p>
+
+<p class="prose">八種聚合統計，見 <a href="p04.html">p04</a>。</p>
+
+<h3 id="跟門檻比">⑤ 跟門檻比</h3>
+
+<p class="prose">分數要高到多少才算「有」？門檻的來源即前提三 ——
+必須先知道沒有腫瘤時分數長什麼樣。</p>
+
+<p class="prose">六種門檻決定方式，以及在陰性樣本稀缺時可用的兩條路徑，見 <a href="p04.html">p04</a>。</p>
+
+<h3 id="判定-然後檢查有沒有騙自己">⑥ 判定，然後檢查有沒有騙自己</h3>
+
+<p class="prose">門檻是<b>從資料學出來的</b>，因此有過度擬合的風險：
+若用來定門檻的樣本又拿去算特異度，得到的數字必然好看，但沒有意義。</p>
+
+<p class="prose">切分紀律與偵測極限的報告方式，見 <a href="p05.html">p05</a>。</p>
 </section>
 
 
 <section data-part="predict" class="part" id="part-predict">
-<h2 data-num="④" id="不要搞混">不要搞混</h2>
+<h2 data-num="④" id="三-怎麼證明一個方法真的有效">三 · 怎麼證明一個方法真的有效</h2>
 
-<aside class="guardrail" id="guard-4"><p class="guardrail__hd">重要區分 #4：「加深定序」與「增加位點數」解的不是同一個問題</p><p class="prose">兩者常被混為一談，但在偵測機率式 <math><mi>p</mi><mo>=</mo><mn>1</mn><mo>−</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>n</mi><mo>·</mo><mi>d</mi><mo>·</mo><mi>k</mi></mrow></msup></math> 中位置不同：</p>
+<h3 id="用已知答案的樣本">用已知答案的樣本</h3>
+
+<p class="prose">臨床樣本的真實<span class="term" data-term="tumor fraction" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-tumor-fraction-23">腫瘤分數<span class="term__pop" id="gd-tumor-fraction-23" role="tooltip"><b class="term__hd">tumor fraction <i>腫瘤分數</i></b><span class="term__def" data-lang="zh">樣本中源自腫瘤的 DNA 佔全部 DNA 的比例。MRD 情境常低至 10⁻⁵ 甚至 10⁻⁶。本專案因使用純細胞株（purity≈1），混合時的 tumor read 比例即等同 TF。</span><span class="term__def" data-lang="en" lang="en">The proportion of DNA in a sample that derives from tumour. In MRD settings it can be as low as 1e-5 to 1e-6. In this project, because pure cell lines are used (purity approximately 1), the tumour read ratio during admixture equals TF directly.</span><a class="term__more" href="glossary.html#tumor-fraction">完整條目 →</a></span></span>是未知的 ——
+無法用它證明「這個方法能測到 10⁻⁵」。
+因此所有方法都必須另外準備<b>已知 TF 的樣本</b>：
+把含腫瘤的樣本按已知比例稀釋進不含腫瘤的樣本，做成一系列濃度。</p>
+
+<p class="prose"><b>11 篇論文全部做了某種形式的<span class="term" data-term="dilution series" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-dilution-series-24">稀釋序列<span class="term__pop" id="gd-dilution-series-24" role="tooltip"><b class="term__hd">dilution series <i>稀釋序列</i></b><span class="term__def" data-lang="zh">濕實驗版的混合：把高負荷樣本的 DNA 實際稀釋進陰性樣本。比 in silico 更貼近實況（含建庫變異），但成本高、replicate 少。11 篇 Tier A 論文<b>全部</b>做了某種形式的稀釋序列來量測 LLOD。</span><span class="term__def" data-lang="en" lang="en">The wet-lab counterpart of admixture: physically diluting DNA from a high-burden sample into a negative sample. Closer to reality since it includes library-preparation variation, but costly with few replicates. All eleven Tier A papers performed some form of dilution series to measure LLOD.</span><a class="term__more" href="glossary.html#dilution-series">完整條目 →</a></span></span>，無一例外。</b>
+差別只在是用電腦混合定序資料，還是在實驗室裡真的稀釋 DNA。</p>
+
+<h3 id="偵測極限必須附帶條件">偵測極限必須附帶條件</h3>
+
+<p class="prose"><span class="term" data-term="LLOD" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-llod-25">偵測極限<span class="term__pop" id="gd-llod-25" role="tooltip"><b class="term__hd">LLOD <i>偵測極限</i></b><span class="term__def" data-lang="zh">能被可靠偵測到的最低 TF。<b>報告時必須附條件</b>：定序深度、位點數、以及對應的 specificity。不同方法的 LLOD 若深度與位點數不同，不可直接比較。</span><span class="term__def" data-lang="en" lang="en">The lowest tumour fraction reliably detectable. Reporting it requires stating the conditions: sequencing depth, number of tracked sites, and the corresponding specificity. LLODs from methods with different depths or site counts are not directly comparable.</span><a class="term__more" href="glossary.html#llod">完整條目 →</a></span></span>是能被可靠偵測到的最低 TF。
+但單獨一個數字無法解讀 —— 它至少依賴三件事：</p>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th scope="col">條件</th><th scope="col">為什麼影響 LLOD</th><th scope="col">各方法的範圍</th></tr></thead>
+<tbody>
+<tr><td><b>定序深度</b></td><td>決定每個位點能被檢查幾次</td><td>0.1 倍 – 10,000 倍</td></tr>
+<tr><td><b>追蹤位點數</b></td><td><math><mi>k</mi></math> 越大，累積的機會越多</td><td>30 – 35,000 個</td></tr>
+<tr><td><b><span class="term" data-term="specificity" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-specificity-26">特異度<span class="term__pop" id="gd-specificity-26" role="tooltip"><b class="term__hd">specificity <i>特異度</i></b><span class="term__def" data-lang="zh">陰性樣本被正確判為陰性的比例：TN/(TN+FP)。<b>因為只由陰性樣本算出，不受陽性/陰性樣本組成比例影響</b>，是跨研究比較的主指標（Precision 與 F1 則會被 prevalence 綁架）。</span><span class="term__def" data-lang="en" lang="en">The proportion of negative samples correctly classified as negative: TN/(TN+FP). Because it is computed only from negatives, it is unaffected by the positive-to-negative composition and is the main metric for cross-study comparison, unlike precision and F1 which depend on prevalence.</span><a class="term__more" href="glossary.html#specificity">完整條目 →</a></span></span>工作點</b></td><td>特異度提高必然壓低敏感度</td><td>95% – 99%</td></tr>
+</tbody>
+</table>
+</div>
+
+<aside class="guardrail" id="guard-4"><p class="guardrail__hd">重要區分 #4：「加深定序」與「增加位點數」解的不是同一個問題</p><p class="prose">兩者常被混為一談，但在 <math><mi>p</mi><mo>=</mo><mn>1</mn><mo>−</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>n</mi><mo>·</mo><mi>d</mi><mo>·</mo><mi>k</mi></mrow></msup></math> 中位置不同：</p>
 <ul class="prose">
 <li><b>加深定序</b>改善的是 <math><mi>d</mi></math>（該位點被正確讀出的能力）。
 當目標分子未被抽入樣本時，<math><mi>d</mi></math> 再小也無濟於事。</li>
 <li><b>增加位點數</b>改善的是 <math><mi>k</mi></math>（獨立機會的次數）。
-這是唯一能繞開 <span class="term" data-term="genomic equivalents" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-genomic-equivalents-22">基因組當量<span class="term__pop" id="gd-genomic-equivalents-22" role="tooltip"><b class="term__hd">genomic equivalents <i>基因組當量</i></b><span class="term__def" data-lang="zh">樣本中含有的完整基因組份數。1 mL 血漿約只有 1,000–10,000 個 GE，這構成一個<b>物理上限</b>：若帶突變的分子根本沒被抽進樣本，再深的定序也測不到。</span><span class="term__def" data-lang="en" lang="en">The number of complete genome copies present in a sample. One millilitre of plasma contains only about 1,000 to 10,000 GE, imposing a physical ceiling: if a mutation-bearing molecule was never sampled, no amount of sequencing depth can recover it.</span><a class="term__more" href="glossary.html#genomic-equivalents">完整條目 →</a></span></span>上限的參數。</li>
+這是唯一能繞開<span class="term" data-term="genomic equivalents" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-genomic-equivalents-27">基因組當量<span class="term__pop" id="gd-genomic-equivalents-27" role="tooltip"><b class="term__hd">genomic equivalents <i>基因組當量</i></b><span class="term__def" data-lang="zh">樣本中含有的完整基因組份數。1 mL 血漿約只有 1,000–10,000 個 GE，這構成一個<b>物理上限</b>：若帶突變的分子根本沒被抽進樣本，再深的定序也測不到。</span><span class="term__def" data-lang="en" lang="en">The number of complete genome copies present in a sample. One millilitre of plasma contains only about 1,000 to 10,000 GE, imposing a physical ceiling: if a mutation-bearing molecule was never sampled, no amount of sequencing depth can recover it.</span><a class="term__more" href="glossary.html#genomic-equivalents">完整條目 →</a></span></span>上限的參數。</li>
 </ul>
 <p class="prose">深度並非無用 —— 它決定每個位點能否被檢查到。
 但在低腫瘤分數下，<b>提高 <math><mi>k</mi></math> 的邊際效益遠高於提高深度</b>。</p></aside>
 
 <aside class="guardrail" id="guard-5"><p class="guardrail__hd">重要區分 #5：支持 read 數多，在低腫瘤分數下是可疑而非可信</p><p class="prose">這與一般變異判定的直覺完全相反，是本領域最容易誤判的一點。</p>
-<p class="prose">在 <span class="term" data-term="cVAF" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-cvaf-23">cVAF<span class="term__pop" id="gd-cvaf-23" role="tooltip"><b class="term__hd">cVAF <i>循環變異等位基因分率</i></b><span class="term__def" data-lang="zh">血漿中某變異的等位基因分率。與一般 VAF 的差別在量級：germline VAF 約 0.5，而 MRD 情境的 cVAF 常在 10⁻⁵–10⁻⁶ 之間，與定序錯誤率同一個數量級。</span><span class="term__def" data-lang="en" lang="en">The variant allele frequency of a mutation in plasma. It differs from ordinary VAF in magnitude: germline VAF is about 0.5, whereas cVAF in MRD settings is typically 1e-5 to 1e-6, the same order as the sequencing error rate.</span><a class="term__more" href="glossary.html#cvaf">完整條目 →</a></span></span> 約 10⁻⁵ 的情境下，同一位點出現多條支持 read 的機率極低。
+<p class="prose">在 <span class="term" data-term="cVAF" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-cvaf-28">cVAF<span class="term__pop" id="gd-cvaf-28" role="tooltip"><b class="term__hd">cVAF <i>循環變異等位基因分率</i></b><span class="term__def" data-lang="zh">血漿中某變異的等位基因分率。與一般 VAF 的差別在量級：germline VAF 約 0.5，而 MRD 情境的 cVAF 常在 10⁻⁵–10⁻⁶ 之間，與定序錯誤率同一個數量級。</span><span class="term__def" data-lang="en" lang="en">The variant allele frequency of a mutation in plasma. It differs from ordinary VAF in magnitude: germline VAF is about 0.5, whereas cVAF in MRD settings is typically 1e-5 to 1e-6, the same order as the sequencing error rate.</span><a class="term__more" href="glossary.html#cvaf">完整條目 →</a></span></span> 約 10⁻⁵ 的情境下，同一位點出現多條支持 read 的機率極低。
 若確實出現，較可能的解釋是該位點的系統性錯誤、殘留的 germline 變異，
-或 <span class="term" data-term="compendium" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-compendium-24">變異圖譜<span class="term__pop" id="gd-compendium-24" role="tooltip"><b class="term__hd">compendium <i>變異圖譜</i></b><span class="term__def" data-lang="zh">病人（或細胞株）專屬的體細胞變異位點集合，是 tumor-informed 偵測要追蹤的目標。規模從數百（panel）到數萬（WGS）不等。本專案現行版本為 35,603 個位點。</span><span class="term__def" data-lang="en" lang="en">The patient-specific (or cell-line-specific) set of somatic variant sites that tumour-informed detection tracks. Sizes range from hundreds (panel) to tens of thousands (WGS). The current version in this project contains 35,603 sites.</span><a class="term__more" href="glossary.html#compendium">完整條目 →</a></span></span>中混入的偽陽性 —— 而非強烈的腫瘤訊號。</p>
-<p class="prose">本專案的 <span class="term" data-term="germline filtering ladder" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-germline-filtering-ladder-25">C0→C5 過濾階梯<span class="term__pop" id="gd-germline-filtering-ladder-25" role="tooltip"><b class="term__hd">germline filtering ladder <i>生殖系過濾階梯</i></b><span class="term__def" data-lang="zh">本專案建 compendium 的分層過濾流程：C0（ClairS 原始約 11 萬位點）→ C2（+gnomAD）→ C3（+matched-normal ≥2）→ C4（+dbSNP）→ <b>C5（+CoLoRSdb 長讀長 PON，35,603 位點）</b>。⚠️ CoLoRSdb 是關鍵一步：短讀來源的資料庫漏掉的 ONT germline 要靠長讀長 PON 補抓。</span><span class="term__def" data-lang="en" lang="en">This project's layered filtering pipeline for building the compendium: C0 (about 110,000 raw ClairS sites) to C2 (plus gnomAD), C3 (plus matched-normal with two or more supporting reads), C4 (plus dbSNP) and C5 (plus the CoLoRSdb long-read PON, 35,603 sites). CoLoRSdb is the decisive step, catching ONT germline variants missed by short-read databases.</span><a class="term__more" href="glossary.html#germline-filtering-ladder">完整條目 →</a></span></span>處理的正是這類汙染。</p></aside>
+或<span class="term" data-term="compendium" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-compendium-29">清單<span class="term__pop" id="gd-compendium-29" role="tooltip"><b class="term__hd">compendium <i>變異圖譜</i></b><span class="term__def" data-lang="zh">病人（或細胞株）專屬的體細胞變異位點集合，是 tumor-informed 偵測要追蹤的目標。規模從數百（panel）到數萬（WGS）不等。本專案現行版本為 35,603 個位點。</span><span class="term__def" data-lang="en" lang="en">The patient-specific (or cell-line-specific) set of somatic variant sites that tumour-informed detection tracks. Sizes range from hundreds (panel) to tens of thousands (WGS). The current version in this project contains 35,603 sites.</span><a class="term__more" href="glossary.html#compendium">完整條目 →</a></span></span>中混入的偽陽性 —— 而非強烈的腫瘤訊號。</p>
+<p class="prose">兩個獨立團隊據此各自設計了過濾步驟：
+<span class="term" data-term="INVAR" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-invar-30">INVAR<span class="term__pop" id="gd-invar-30" role="tooltip"><b class="term__hd">INVAR <i>INVAR</i></b><span class="term__def" data-lang="zh">劍橋 Rosenfeld lab 2020 年的方法（Sci Transl Med）。與 MRDetect 同期同目標但<b>走純統計路線不用 ML</b>：四層誤差抑制疊加（背景降 131×），以 likelihood ratio 判定，並<b>用其他病人的樣本當陰性對照定門檻</b>。有開源碼（INVAR2）。</span><span class="term__def" data-lang="en" lang="en">The 2020 method from Rosenfeld's lab in Cambridge (Sci Transl Med). Contemporaneous with MRDetect and sharing its goal but taking a purely statistical route without machine learning: four stacked layers of error suppression (131-fold background reduction), decisions by likelihood ratio, and thresholds set using other patients' samples as negative controls. Open source as INVAR2.</span><a class="term__more" href="glossary.html#invar">完整條目 →</a></span></span> 的<span class="term" data-term="outlier suppression" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-outlier-suppression-31">離群抑制<span class="term__pop" id="gd-outlier-suppression-31" role="tooltip"><b class="term__hd">outlier suppression <i>離群抑制</i></b><span class="term__def" data-lang="zh">INVAR 的關鍵步驟：低 TF 下訊號應<b>隨機散布</b>在各位點、多數位點為零。對此分布找 outlier 並剔除不一致的單點訊號 → control 訊號降約 3 倍，病人訊號保留 96.1%。<b>不依賴任何平台特性。</b></span><span class="term__def" data-lang="en" lang="en">A key step in INVAR: at low TF, signal should be randomly scattered across sites with most sites at zero. Outliers against this distribution are identified and removed, reducing control signal roughly threefold while retaining 96.1% of patient signal. It depends on no platform-specific feature.</span><a class="term__more" href="glossary.html#outlier-suppression">完整條目 →</a></span></span>（對照訊號降約 3 倍，病人訊號保留 96.1%）
+與 <span class="term" data-term="AccuScan" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-accuscan-32">AccuScan<span class="term__pop" id="gd-accuscan-32" role="tooltip"><b class="term__hd">AccuScan <i>AccuScan</i></b><span class="term__def" data-lang="zh">2024 年的 WGS MRD 方法（EMBO Mol Med）。用 <b>RCA concatemer</b> 讓錯誤校正在單一 read 內完成，錯誤率 4.2e-7、LOD 達 cVAF 1e-6。<b>背景錯誤率由樣本自身量測、門檻由統計模型反推，皆不需 control 世代。</b></span><span class="term__def" data-lang="en" lang="en">A 2024 WGS MRD method (EMBO Mol Med) using RCA concatemers so that error correction happens within a single read, reaching an error rate of 4.2e-7 and an LOD of cVAF 1e-6. Its background error rate is measured from the sample itself and its threshold derived from the statistical model, neither requiring a control cohort.</span><a class="term__more" href="glossary.html#accuscan">完整條目 →</a></span></span> 的<span class="term" data-term="single-molecule rule" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-single-molecule-rule-33">單分子準則<span class="term__pop" id="gd-single-molecule-rule-33" role="tooltip"><b class="term__hd">single-molecule rule <i>單分子準則</i></b><span class="term__def" data-lang="zh">AccuScan 的等價設計：低腫瘤負荷時，真 somatic 變異幾乎都只出現在<b>單一分子</b>上，因此<b>排除支持分子數 >1 的位點</b>。與 INVAR 的 outlier suppression 是兩個獨立團隊得出的同一個洞見。</span><span class="term__def" data-lang="en" lang="en">AccuScan's equivalent design: at low tumour burden, genuine somatic variants almost always appear on a single molecule, so sites supported by more than one molecule are excluded. This is the same insight as INVAR's outlier suppression, reached independently.</span><a class="term__more" href="glossary.html#single-molecule-rule">完整條目 →</a></span></span>。細節見 <a href="p03.html">p03</a>。</p></aside>
 </section>
 
 
 <section data-part="practice" class="part" id="part-practice">
-<h2 data-num="⑤" id="本頁與本專案的關聯">本頁與本專案的關聯</h2>
+<h2 data-num="⑤" id="小結">小結</h2>
 
 <div class="table-wrap">
 <table>
-<thead><tr><th scope="col">本頁的概念</th><th scope="col">本專案的對應</th></tr></thead>
+<thead><tr><th scope="col">本頁建立的</th><th scope="col">在後面哪裡用到</th></tr></thead>
 <tbody>
-<tr><td><span class="term" data-term="genomic equivalents" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-genomic-equivalents-26">基因組當量<span class="term__pop" id="gd-genomic-equivalents-26" role="tooltip"><b class="term__hd">genomic equivalents <i>基因組當量</i></b><span class="term__def" data-lang="zh">樣本中含有的完整基因組份數。1 mL 血漿約只有 1,000–10,000 個 GE，這構成一個<b>物理上限</b>：若帶突變的分子根本沒被抽進樣本，再深的定序也測不到。</span><span class="term__def" data-lang="en" lang="en">The number of complete genome copies present in a sample. One millilitre of plasma contains only about 1,000 to 10,000 GE, imposing a physical ceiling: if a mutation-bearing molecule was never sampled, no amount of sequencing depth can recover it.</span><a class="term__more" href="glossary.html#genomic-equivalents">完整條目 →</a></span></span>上限</td>
-    <td><b>本專案不受此限</b> —— 使用 <span class="term" data-term="in silico admixture" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-in-silico-admixture-27">電腦模擬混合<span class="term__pop" id="gd-in-silico-admixture-27" role="tooltip"><b class="term__hd">in silico admixture <i>電腦模擬混合</i></b><span class="term__def" data-lang="zh">以程式（<code>samtools view --subsample</code> + <code>merge</code>）按比例混合腫瘤與正常的 read，模擬不同 TF 的檢體。本專案 Phase 2 即此法。優點是 TF 精確已知且 replicate 便宜。</span><span class="term__def" data-lang="en" lang="en">Mixing tumour and normal reads computationally in defined proportions (samtools view --subsample plus merge) to simulate specimens at various TF. This is Phase 2 of the project; TF is exactly known and replicates are cheap.</span><a class="term__more" href="glossary.html#in-silico-admixture">完整條目 →</a></span></span>的細胞株，非真實血漿</td></tr>
-<tr><td>位點數 <math><mi>k</mi></math> 是可自由設計的參數</td>
-    <td>現行 <span class="term" data-term="compendium" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-compendium-28">compendium<span class="term__pop" id="gd-compendium-28" role="tooltip"><b class="term__hd">compendium <i>變異圖譜</i></b><span class="term__def" data-lang="zh">病人（或細胞株）專屬的體細胞變異位點集合，是 tumor-informed 偵測要追蹤的目標。規模從數百（panel）到數萬（WGS）不等。本專案現行版本為 35,603 個位點。</span><span class="term__def" data-lang="en" lang="en">The patient-specific (or cell-line-specific) set of somatic variant sites that tumour-informed detection tracks. Sizes range from hundreds (panel) to tens of thousands (WGS). The current version in this project contains 35,603 sites.</span><a class="term__more" href="glossary.html#compendium">完整條目 →</a></span></span> 為 <b>35,603 個位點</b>，比 <span class="term" data-term="NanoRCS" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-nanorcs-29">NanoRCS<span class="term__pop" id="gd-nanorcs-29" role="tooltip"><b class="term__hd">NanoRCS <i>NanoRCS</i></b><span class="term__def" data-lang="zh">UMC Utrecht 2025 年的方法（Genome Research）。<b>唯一一篇在 ONT 平台上做 cfDNA 腫瘤偵測的方法論文。</b> RCA + 長讀共識把 ONT 錯誤率從 Q21 降到 Q31（改善 9.4×），LOD 為 TF 0.24%。同時取 SNV、CNA、fragmentomics 三種訊號。</span><span class="term__def" data-lang="en" lang="en">The 2025 method from UMC Utrecht (Genome Research) and the only methods paper performing cfDNA tumour detection on the ONT platform. RCA plus long-read consensus lowers ONT error from Q21 to Q31, a 9.4-fold improvement, achieving an LOD of TF 0.24% while extracting SNV, CNA and fragmentomics signals simultaneously.</span><a class="term__more" href="glossary.html#nanorcs">完整條目 →</a></span></span> 的 10–582 個多兩個數量級</td></tr>
-<tr><td><span class="term" data-term="read-centric" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-read-centric-30">read-centric<span class="term__pop" id="gd-read-centric-30" role="tooltip"><b class="term__hd">read-centric <i>以讀取為單位</i></b><span class="term__def" data-lang="zh">MRDetect 的關鍵設計：因為 TF ≪ 1/depth，每個位點最多只期待<b>一條</b>支持 read，因此判斷單元是「單條 read 的真偽」，不能用「多條支持才算數」的傳統門檻。</span><span class="term__def" data-lang="en" lang="en">A key design in MRDetect: because TF is far below 1/depth, at most one supporting read is expected per site. The unit of judgement is therefore whether a single read is genuine, and conventional thresholds requiring multiple supporting reads do not apply.</span><a class="term__more" href="glossary.html#read-centric">完整條目 →</a></span></span> 判斷單元</td>
-    <td>本專案的 <span class="term" data-term="detection rate" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-detection-rate-31">偵測率<span class="term__pop" id="gd-detection-rate-31" role="tooltip"><b class="term__hd">detection rate <i>偵測率</i></b><span class="term__def" data-lang="zh">本專案的定義（2026-08-09 定案）：帶到突變（ALT）的 read 數 ÷ 在 compendium 位點上檢查過的 read 數。⚠️ 論文的分子是<b>被偵測到的位點數 M</b>，低 TF 下兩者相同，高 TF 或有 germline 汙染時會分岔。</span><span class="term__def" data-lang="en" lang="en">As defined in this project: the number of ALT-bearing reads divided by the number of reads examined at compendium sites. Note that the papers use the number of detected sites as numerator; the two coincide at low TF but diverge at high TF or under germline contamination.</span><a class="term__more" href="glossary.html#detection-rate">完整條目 →</a></span></span>定義即建立於此</td></tr>
-<tr><td><span class="term" data-term="outlier suppression" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-outlier-suppression-32">離群抑制<span class="term__pop" id="gd-outlier-suppression-32" role="tooltip"><b class="term__hd">outlier suppression <i>離群抑制</i></b><span class="term__def" data-lang="zh">INVAR 的關鍵步驟：低 TF 下訊號應<b>隨機散布</b>在各位點、多數位點為零。對此分布找 outlier 並剔除不一致的單點訊號 → control 訊號降約 3 倍，病人訊號保留 96.1%。<b>不依賴任何平台特性。</b></span><span class="term__def" data-lang="en" lang="en">A key step in INVAR: at low TF, signal should be randomly scattered across sites with most sites at zero. Outliers against this distribution are identified and removed, reducing control signal roughly threefold while retaining 96.1% of patient signal. It depends on no platform-specific feature.</span><a class="term__more" href="glossary.html#outlier-suppression">完整條目 →</a></span></span>／<span class="term" data-term="single-molecule rule" tabindex="0" role="button" aria-expanded="false" aria-describedby="gd-single-molecule-rule-33">單分子準則<span class="term__pop" id="gd-single-molecule-rule-33" role="tooltip"><b class="term__hd">single-molecule rule <i>單分子準則</i></b><span class="term__def" data-lang="zh">AccuScan 的等價設計：低腫瘤負荷時，真 somatic 變異幾乎都只出現在<b>單一分子</b>上，因此<b>排除支持分子數 >1 的位點</b>。與 INVAR 的 outlier suppression 是兩個獨立團隊得出的同一個洞見。</span><span class="term__def" data-lang="en" lang="en">AccuScan's equivalent design: at low tumour burden, genuine somatic variants almost always appear on a single molecule, so sites supported by more than one molecule are excluded. This is the same insight as INVAR's outlier suppression, reached independently.</span><a class="term__more" href="glossary.html#single-molecule-rule">完整條目 →</a></span></span></td>
-    <td><b>尚未實作</b> —— 兩者皆為純計算方法，屬可立即進行的改進</td></tr>
+<tr><td>三個基本量與 <math><mi>p</mi><mo>=</mo><mn>1</mn><mo>−</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>n</mi><mo>·</mo><mi>d</mi><mo>·</mo><mi>k</mi></mrow></msup></math></td>
+    <td>貫穿全部；<a href="p03.html">p03</a> 用它換算錯誤率與深度</td></tr>
+<tr><td><b>前提一</b>：廣度取代深度</td>
+    <td><a href="p02.html">p02</a> 的位點數與深度取捨</td></tr>
+<tr><td><b>前提二</b>：read-centric</td>
+    <td><a href="p03.html">p03</a> 的七種去噪做法</td></tr>
+<tr><td><b>前提三</b>：必須有陰性對照</td>
+    <td><a href="p04.html">p04</a> 的門檻、<a href="p05.html">p05</a> 的評估</td></tr>
+<tr><td>六步流程與各步的必要性</td>
+    <td><a href="p02.html">p02</a> – <a href="p05.html">p05</a> 逐步放大</td></tr>
+<tr><td>稀釋序列與 LLOD 的三個條件</td>
+    <td><a href="p02.html">p02</a> 的驗證資料、<a href="p05.html">p05</a> 的偵測極限總表</td></tr>
 </tbody>
 </table>
 </div>
 
-<p class="prose">下一頁起進入方法細節：
-<a href="p02.html">p02</a> 比較 11 篇如何定義追蹤標的與驗證資料，
-<a href="p03.html">p03</a> 比較七種壓低錯誤率的做法及其代價。</p>
+<p class="prose">下一頁起進入逐步驟的方法比較，
+從<a href="p02.html">追蹤標的與驗證資料</a>開始。</p>
 </section>
 
     <nav class="pager" aria-label="模組導覽"><a class="prev" href="p00.html"><small>← 上一模組</small>這份知識庫在回答什麼</a><a class="next" href="p02.html"><small>下一模組 →</small>① 追蹤標的 與 ② 驗證資料</a></nav>
-    <section class="glossary-appendix"><h2>本模組術語</h2><dl><dt>AccuScan（AccuScan）</dt><dd>2024 年的 WGS MRD 方法（EMBO Mol Med）。用 <b>RCA concatemer</b> 讓錯誤校正在單一 read 內完成，錯誤率 4.2e-7、LOD 達 cVAF 1e-6。<b>背景錯誤率由樣本自身量測、門檻由統計模型反推，皆不需 control 世代。</b></dd><dt>INVAR（INVAR）</dt><dd>劍橋 Rosenfeld lab 2020 年的方法（Sci Transl Med）。與 MRDetect 同期同目標但<b>走純統計路線不用 ML</b>：四層誤差抑制疊加（背景降 131×），以 likelihood ratio 判定，並<b>用其他病人的樣本當陰性對照定門檻</b>。有開源碼（INVAR2）。</dd><dt>MRD（微量殘存疾病）</dt><dd>治療（多為手術）後體內殘存、但影像看不到的極少量癌細胞。<b>MRD 偵測</b>是用定序技術從血液中找出這些微量的癌症訊號，目的是在臨床復發之前就發現它，據以決定要不要追加治療。⚠️ 部分論文（如 AccuScan）展開為 molecular residual disease，兩者指同一件事。</dd><dt>MRDetect（MRDetect（第一代））</dt><dd>Landau lab 2020 年的方法（Nat Med），本專案的基準。核心是「廣度取代深度」：35X WGS + 全基因體數千個 SNV 累加，用線性 SVM 對單條 read 去噪（5 特徵）。LLOD 約 1e-5。⚠️ 程式碼未開源。</dd><dt>NanoRCS（NanoRCS）</dt><dd>UMC Utrecht 2025 年的方法（Genome Research）。<b>唯一一篇在 ONT 平台上做 cfDNA 腫瘤偵測的方法論文。</b> RCA + 長讀共識把 ONT 錯誤率從 Q21 降到 Q31（改善 9.4×），LOD 為 TF 0.24%。同時取 SNV、CNA、fragmentomics 三種訊號。</dd><dt>ONT simplex（ONT 單股定序）</dt><dd>Oxford Nanopore 的標準單分子定序，一個分子讀一次。本專案的資料即為此類。實測錯誤率約 6.7e-3（Q21）—— 比 NanoRCS 的 RCA 共識（Q31）差 9.4 倍，比 Illumina duplex（7.7e-7）高約四個數量級。</dd><dt>SNV（單核苷酸變異）</dt><dd>單一鹼基的改變。與 SNP 的差別在於 SNV 不預設它在族群中常見 —— 腫瘤裡新產生的單點突變叫 somatic SNV（sSNV），不叫 SNP。</dd><dt>breadth supplants depth（廣度取代深度）</dt><dd>MRDetect 的核心論證：因為 GE 有物理上限，加深定序在低 TF 時毫無幫助；改為在全基因體上累加數千個位點的微弱訊號，才能突破偵測極限。</dd><dt>cVAF（循環變異等位基因分率）</dt><dd>血漿中某變異的等位基因分率。與一般 VAF 的差別在量級：germline VAF 約 0.5，而 MRD 情境的 cVAF 常在 10⁻⁵–10⁻⁶ 之間，與定序錯誤率同一個數量級。</dd><dt>cfDNA（游離 DNA）</dt><dd>血漿中游離的短 DNA 片段，主要由凋亡與壞死的細胞釋出，長度以約 166 bp 為眾數（對應核小體）。健康人與癌症病人都有。</dd><dt>compendium（變異圖譜）</dt><dd>病人（或細胞株）專屬的體細胞變異位點集合，是 tumor-informed 偵測要追蹤的目標。規模從數百（panel）到數萬（WGS）不等。本專案現行版本為 35,603 個位點。</dd><dt>ctDNA（循環腫瘤 DNA）</dt><dd>cfDNA 中源自腫瘤的那一部分，帶有腫瘤的體細胞變異。在 MRD 情境下它只佔 cfDNA 的極小比例（常低於百萬分之一），這是所有偵測困難的根源。</dd><dt>detection rate（偵測率）</dt><dd>本專案的定義（2026-08-09 定案）：帶到突變（ALT）的 read 數 ÷ 在 compendium 位點上檢查過的 read 數。⚠️ 論文的分子是<b>被偵測到的位點數 M</b>，低 TF 下兩者相同，高 TF 或有 germline 汙染時會分岔。</dd><dt>error suppression（誤差抑制）</dt><dd>降低定序與建庫錯誤的統稱。三條路線：靠濕實驗化學（UMI、duplex、RCA）、靠統計建模（background polishing、outlier suppression）、靠機器學習（SVM、深度學習）。</dd><dt>genomic equivalents（基因組當量）</dt><dd>樣本中含有的完整基因組份數。1 mL 血漿約只有 1,000–10,000 個 GE，這構成一個<b>物理上限</b>：若帶突變的分子根本沒被抽進樣本，再深的定序也測不到。</dd><dt>germline filtering ladder（生殖系過濾階梯）</dt><dd>本專案建 compendium 的分層過濾流程：C0（ClairS 原始約 11 萬位點）→ C2（+gnomAD）→ C3（+matched-normal ≥2）→ C4（+dbSNP）→ <b>C5（+CoLoRSdb 長讀長 PON，35,603 位點）</b>。⚠️ CoLoRSdb 是關鍵一步：短讀來源的資料庫漏掉的 ONT germline 要靠長讀長 PON 補抓。</dd><dt>iDES（iDES）</dt><dd>Stanford 2016 年的 CAPP-Seq 改良（Nat Biotechnol）。整合分子條碼與 <b>background polishing</b>（逐位置逐取代類型建背景分布），兩者各約 3× 改善、合併達 ~15×，偵測極限降到 0.0025%。<b>其 background polishing 是本專案最可直接移植的降噪法。</b></dd><dt>in silico admixture（電腦模擬混合）</dt><dd>以程式（<code>samtools view --subsample</code> + <code>merge</code>）按比例混合腫瘤與正常的 read，模擬不同 TF 的檢體。本專案 Phase 2 即此法。優點是 TF 精確已知且 replicate 便宜。</dd><dt>marker（標的）</dt><dd>與 reporter 同義，AccuScan 等論文使用的稱呼。實測顯示 marker 數對偵測率影響極大：在 cVAF 1e-5 下，2K/5K/10K/20K 個 marker 分別給出 38%/77%/96%/100% 的偵測率。</dd><dt>outlier suppression（離群抑制）</dt><dd>INVAR 的關鍵步驟：低 TF 下訊號應<b>隨機散布</b>在各位點、多數位點為零。對此分布找 outlier 並剔除不一致的單點訊號 → control 訊號降約 3 倍，病人訊號保留 96.1%。<b>不依賴任何平台特性。</b></dd><dt>read-centric（以讀取為單位）</dt><dd>MRDetect 的關鍵設計：因為 TF ≪ 1/depth，每個位點最多只期待<b>一條</b>支持 read，因此判斷單元是「單條 read 的真偽」，不能用「多條支持才算數」的傳統門檻。</dd><dt>reporter（報告位點）</dt><dd>compendium 中每一個被追蹤的變異位點。CAPP-Seq 的核心洞見是：每位病人的 reporter 數越多，偵測機率越高（見 detection probability model）。</dd><dt>single-molecule rule（單分子準則）</dt><dd>AccuScan 的等價設計：低腫瘤負荷時，真 somatic 變異幾乎都只出現在<b>單一分子</b>上，因此<b>排除支持分子數 >1 的位點</b>。與 INVAR 的 outlier suppression 是兩個獨立團隊得出的同一個洞見。</dd><dt>tumor fraction（腫瘤分數）</dt><dd>樣本中源自腫瘤的 DNA 佔全部 DNA 的比例。MRD 情境常低至 10⁻⁵ 甚至 10⁻⁶。本專案因使用純細胞株（purity≈1），混合時的 tumor read 比例即等同 TF。</dd></dl></section>
+    <section class="glossary-appendix"><h2>本模組術語</h2><dl><dt>AccuScan（AccuScan）</dt><dd>2024 年的 WGS MRD 方法（EMBO Mol Med）。用 <b>RCA concatemer</b> 讓錯誤校正在單一 read 內完成，錯誤率 4.2e-7、LOD 達 cVAF 1e-6。<b>背景錯誤率由樣本自身量測、門檻由統計模型反推，皆不需 control 世代。</b></dd><dt>INVAR（INVAR）</dt><dd>劍橋 Rosenfeld lab 2020 年的方法（Sci Transl Med）。與 MRDetect 同期同目標但<b>走純統計路線不用 ML</b>：四層誤差抑制疊加（背景降 131×），以 likelihood ratio 判定，並<b>用其他病人的樣本當陰性對照定門檻</b>。有開源碼（INVAR2）。</dd><dt>LLOD（偵測極限）</dt><dd>能被可靠偵測到的最低 TF。<b>報告時必須附條件</b>：定序深度、位點數、以及對應的 specificity。不同方法的 LLOD 若深度與位點數不同，不可直接比較。</dd><dt>MRD（微量殘存疾病）</dt><dd>治療（多為手術）後體內殘存、但影像看不到的極少量癌細胞。<b>MRD 偵測</b>是用定序技術從血液中找出這些微量的癌症訊號，目的是在臨床復發之前就發現它，據以決定要不要追加治療。⚠️ 部分論文（如 AccuScan）展開為 molecular residual disease，兩者指同一件事。</dd><dt>MRDetect（MRDetect（第一代））</dt><dd>Landau lab 2020 年的方法（Nat Med），本專案的基準。核心是「廣度取代深度」：35X WGS + 全基因體數千個 SNV 累加，用線性 SVM 對單條 read 去噪（5 特徵）。LLOD 約 1e-5。⚠️ 程式碼未開源。</dd><dt>NanoRCS（NanoRCS）</dt><dd>UMC Utrecht 2025 年的方法（Genome Research）。<b>唯一一篇在 ONT 平台上做 cfDNA 腫瘤偵測的方法論文。</b> RCA + 長讀共識把 ONT 錯誤率從 Q21 降到 Q31（改善 9.4×），LOD 為 TF 0.24%。同時取 SNV、CNA、fragmentomics 三種訊號。</dd><dt>VAF（變異等位基因頻率）</dt><dd>在某個位點上，支持 alt allele 的 read 佔全部 read 的比例。<b>VAF 不等於帶有這個突變的細胞比例</b>。</dd><dt>background error rate（背景錯誤率）</dt><dd>在確定無腫瘤的樣本上，每個鹼基被誤讀成非參考鹼基的比率。它決定了偵測極限的下界。各方法實測值：未過濾 Illumina WGS 約 1e-3、read-pair 校正 2.8e-5、duplex 7.7e-7、ONT simplex 約 6.7e-3。</dd><dt>cVAF（循環變異等位基因分率）</dt><dd>血漿中某變異的等位基因分率。與一般 VAF 的差別在量級：germline VAF 約 0.5，而 MRD 情境的 cVAF 常在 10⁻⁵–10⁻⁶ 之間，與定序錯誤率同一個數量級。</dd><dt>cfDNA（游離 DNA）</dt><dd>血漿中游離的短 DNA 片段，主要由凋亡與壞死的細胞釋出，長度以約 166 bp 為眾數（對應核小體）。健康人與癌症病人都有。</dd><dt>compendium（變異圖譜）</dt><dd>病人（或細胞株）專屬的體細胞變異位點集合，是 tumor-informed 偵測要追蹤的目標。規模從數百（panel）到數萬（WGS）不等。本專案現行版本為 35,603 個位點。</dd><dt>control cohort（對照世代）</dt><dd>用於估計噪音水準或決定門檻的陰性樣本集合。MRDetect 用 30 個 control plasma、iDES 用 12 個、ichorCNA 用 27 個健康捐贈者。⚠️ <b>本專案只有 5 個獨立陰性個體</b>，這是主要約束。</dd><dt>ctDNA（循環腫瘤 DNA）</dt><dd>cfDNA 中源自腫瘤的那一部分，帶有腫瘤的體細胞變異。在 MRD 情境下它只佔 cfDNA 的極小比例（常低於百萬分之一），這是所有偵測困難的根源。</dd><dt>dilution series（稀釋序列）</dt><dd>濕實驗版的混合：把高負荷樣本的 DNA 實際稀釋進陰性樣本。比 in silico 更貼近實況（含建庫變異），但成本高、replicate 少。11 篇 Tier A 論文<b>全部</b>做了某種形式的稀釋序列來量測 LLOD。</dd><dt>error suppression（誤差抑制）</dt><dd>降低定序與建庫錯誤的統稱。三條路線：靠濕實驗化學（UMI、duplex、RCA）、靠統計建模（background polishing、outlier suppression）、靠機器學習（SVM、深度學習）。</dd><dt>genomic equivalents（基因組當量）</dt><dd>樣本中含有的完整基因組份數。1 mL 血漿約只有 1,000–10,000 個 GE，這構成一個<b>物理上限</b>：若帶突變的分子根本沒被抽進樣本，再深的定序也測不到。</dd><dt>iDES（iDES）</dt><dd>Stanford 2016 年的 CAPP-Seq 改良（Nat Biotechnol）。整合分子條碼與 <b>background polishing</b>（逐位置逐取代類型建背景分布），兩者各約 3× 改善、合併達 ~15×，偵測極限降到 0.0025%。<b>其 background polishing 是本專案最可直接移植的降噪法。</b></dd><dt>ichorCNA（ichorCNA）</dt><dd>Broad Institute 2017 年的工具（Nat Commun）。從 <b>0.1× 超低深度 WGS</b> 估 tumor fraction，不需事先知道腫瘤變異。用 HMM 同時預測 CNA 片段與估 TF。<b>MRDetect 三代都在用它。</b> ⚠️ 偵測下限 TF 3%，遠高於 MRD 目標區間。</dd><dt>marker（標的）</dt><dd>與 reporter 同義，AccuScan 等論文使用的稱呼。實測顯示 marker 數對偵測率影響極大：在 cVAF 1e-5 下，2K/5K/10K/20K 個 marker 分別給出 38%/77%/96%/100% 的偵測率。</dd><dt>outlier suppression（離群抑制）</dt><dd>INVAR 的關鍵步驟：低 TF 下訊號應<b>隨機散布</b>在各位點、多數位點為零。對此分布找 outlier 並剔除不一致的單點訊號 → control 訊號降約 3 倍，病人訊號保留 96.1%。<b>不依賴任何平台特性。</b></dd><dt>read-centric（以讀取為單位）</dt><dd>MRDetect 的關鍵設計：因為 TF ≪ 1/depth，每個位點最多只期待<b>一條</b>支持 read，因此判斷單元是「單條 read 的真偽」，不能用「多條支持才算數」的傳統門檻。</dd><dt>single-molecule rule（單分子準則）</dt><dd>AccuScan 的等價設計：低腫瘤負荷時，真 somatic 變異幾乎都只出現在<b>單一分子</b>上，因此<b>排除支持分子數 >1 的位點</b>。與 INVAR 的 outlier suppression 是兩個獨立團隊得出的同一個洞見。</dd><dt>specificity（特異度）</dt><dd>陰性樣本被正確判為陰性的比例：TN/(TN+FP)。<b>因為只由陰性樣本算出，不受陽性/陰性樣本組成比例影響</b>，是跨研究比較的主指標（Precision 與 F1 則會被 prevalence 綁架）。</dd><dt>tumor fraction（腫瘤分數）</dt><dd>樣本中源自腫瘤的 DNA 佔全部 DNA 的比例。MRD 情境常低至 10⁻⁵ 甚至 10⁻⁶。本專案因使用純細胞株（purity≈1），混合時的 tumor read 比例即等同 TF。</dd></dl></section>
   </main>
-  <nav class="toc--sticky" aria-label="本頁目錄"><h2>本頁目錄</h2><ol><li class="lv2"><a href="#為什麼重要">為什麼重要</a></li><li class="lv2"><a href="#概念">概念</a></li><li class="lv3"><a href="#分子數的物理上限">分子數的物理上限</a></li><li class="lv3"><a href="#廣度取代深度">廣度取代深度</a></li><li class="lv3"><a href="#read-centric-判斷單元必須改變">read-centric：判斷單元必須改變</a></li><li class="lv2"><a href="#由此推出的兩個設計">由此推出的兩個設計</a></li><li class="lv2"><a href="#不要搞混">不要搞混</a></li><li class="lv2"><a href="#本頁與本專案的關聯">本頁與本專案的關聯</a></li></ol></nav>
+  <nav class="toc--sticky" aria-label="本頁目錄"><h2>本頁目錄</h2><ol><li class="lv2"><a href="#為什麼重要">為什麼重要</a></li><li class="lv2"><a href="#一-前提">一 · 前提</a></li><li class="lv3"><a href="#問題的規模">問題的規模</a></li><li class="lv3"><a href="#三個基本量">三個基本量</a></li><li class="lv3"><a href="#前提一-廣度取代深度">前提一 · 廣度取代深度</a></li><li class="lv3"><a href="#前提二-read-centric">前提二 · read-centric</a></li><li class="lv3"><a href="#前提三-必須有陰性對照">前提三 · 必須有陰性對照</a></li><li class="lv2"><a href="#二-方法-一份檢體是怎麼被判定的">二 · 方法：一份檢體是怎麼被判定的</a></li><li class="lv3"><a href="#先要有一份清單">① 先要有一份清單</a></li><li class="lv3"><a href="#抽血-定序">② 抽血、定序</a></li><li class="lv3"><a href="#逐位點檢查-並判斷每條-read-的真偽">③ 逐位點檢查，並判斷每條 read 的真偽</a></li><li class="lv3"><a href="#把成千上萬個觀測合成一個數">④ 把成千上萬個觀測合成一個數</a></li><li class="lv3"><a href="#跟門檻比">⑤ 跟門檻比</a></li><li class="lv3"><a href="#判定-然後檢查有沒有騙自己">⑥ 判定，然後檢查有沒有騙自己</a></li><li class="lv2"><a href="#三-怎麼證明一個方法真的有效">三 · 怎麼證明一個方法真的有效</a></li><li class="lv3"><a href="#用已知答案的樣本">用已知答案的樣本</a></li><li class="lv3"><a href="#偵測極限必須附帶條件">偵測極限必須附帶條件</a></li><li class="lv2"><a href="#小結">小結</a></li></ol></nav>
 </div>
 
 <footer class="site-footer">

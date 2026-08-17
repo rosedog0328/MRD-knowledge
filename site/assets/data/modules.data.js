@@ -14,12 +14,12 @@ window.TW_MODULES = [
  {
   "id": "p01",
   "num": "1",
-  "title_zh": "為什麼 MRD 偵測是個難題",
-  "title_en": "Why MRD detection is hard",
-  "short": "問題設定",
+  "title_zh": "基本介紹",
+  "title_en": "Foundations",
+  "short": "基本介紹",
   "q": "既然測不到，為什麼不把定序做得更深？",
-  "sub": "由血漿分子數的物理上限推導出「廣度取代深度」，並說明 read-centric 判斷單元的由來。",
-  "est_min": 25,
+  "sub": "血漿的分子數有物理上限，因此加深定序無效。由此建立三個基本量與三個共同前提，並走完一次完整流程。",
+  "est_min": 30,
   "group": "導覽"
  },
  {

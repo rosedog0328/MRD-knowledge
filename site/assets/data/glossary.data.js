@@ -112,9 +112,7 @@ window.TW_GLOSSARY = {
    "read-centric"
   ],
   "slug": "breadth-supplants-depth",
-  "modules": [
-   "p01"
-  ]
+  "modules": []
  },
  "LLOD": {
   "zh_gloss": "偵測極限",
@@ -132,6 +130,7 @@ window.TW_GLOSSARY = {
   "slug": "llod",
   "modules": [
    "p00",
+   "p01",
    "p02",
    "p05",
    "p08"
@@ -220,9 +219,7 @@ window.TW_GLOSSARY = {
    "marker"
   ],
   "slug": "reporter",
-  "modules": [
-   "p01"
-  ]
+  "modules": []
  },
  "marker": {
   "zh_gloss": "標的",
@@ -318,7 +315,6 @@ window.TW_GLOSSARY = {
   ],
   "slug": "detection-rate",
   "modules": [
-   "p01",
    "p04",
    "p06"
   ]
@@ -386,7 +382,9 @@ window.TW_GLOSSARY = {
    "Q-score"
   ],
   "slug": "background-error-rate",
-  "modules": []
+  "modules": [
+   "p01"
+  ]
  },
  "signal-to-noise enrichment": {
   "zh_gloss": "訊噪比增益",
@@ -958,6 +956,7 @@ window.TW_GLOSSARY = {
   "slug": "specificity",
   "modules": [
    "p00",
+   "p01",
    "p02",
    "p04",
    "p05",
@@ -1006,6 +1005,7 @@ window.TW_GLOSSARY = {
   ],
   "slug": "control-cohort",
   "modules": [
+   "p01",
    "p03",
    "p04",
    "p08"
@@ -1088,7 +1088,6 @@ window.TW_GLOSSARY = {
   "slug": "ont-simplex",
   "modules": [
    "p00",
-   "p01",
    "p03",
    "p06",
    "p08"
@@ -1159,7 +1158,6 @@ window.TW_GLOSSARY = {
   ],
   "slug": "in-silico-admixture",
   "modules": [
-   "p01",
    "p02",
    "p08"
   ]
@@ -1174,6 +1172,7 @@ window.TW_GLOSSARY = {
   ],
   "slug": "dilution-series",
   "modules": [
+   "p01",
    "p02"
   ]
  },
@@ -1214,7 +1213,6 @@ window.TW_GLOSSARY = {
   ],
   "slug": "germline-filtering-ladder",
   "modules": [
-   "p01",
    "p02"
   ]
  },
@@ -1416,6 +1414,7 @@ window.TW_GLOSSARY = {
   "slug": "ichorcna",
   "modules": [
    "p00",
+   "p01",
    "p02",
    "p04",
    "p05",
@@ -1478,9 +1477,7 @@ window.TW_GLOSSARY = {
   ],
   "_inherited": "lab-tutorial glossary（基礎術語，非 MRD 專屬）",
   "slug": "snv",
-  "modules": [
-   "p01"
-  ]
+  "modules": []
  },
  "VAF": {
   "zh_gloss": "變異等位基因頻率",
@@ -1496,6 +1493,7 @@ window.TW_GLOSSARY = {
   "_inherited": "lab-tutorial glossary（基礎術語，非 MRD 專屬）",
   "slug": "vaf",
   "modules": [
+   "p01",
    "p02",
    "p04"
   ]
